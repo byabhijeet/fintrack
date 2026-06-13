@@ -32,11 +32,11 @@
   - **Blocked by**: Slice 4
   - **Description**: Build the Expense and Outflow form + list view using `finance_entries` with category selection.
 
-- [ ] **Slice 6: Dashboard Net Overview & Charts**
+- [x] **Slice 6: Dashboard Net Overview & Charts**
   - **Type**: AFK
   - **Blocked by**: Slices 4, 5
   - **Description**: Build the Dashboard landing page. Calculate the Ecosystem Net and add the Victory Native area/bar charts.
-  - **Note**: UI, charts, Income, Expenses, Business, and Cards implemented. DO NOT mark as `[x]` until Loans & Credit Book (Slices 9-15) are integrated into the Ecosystem Net.
+  - **Note**: UI, charts, Income, Expenses, Business, Cards, Loans, and Credit Book all integrated into the Ecosystem Net formula.
 
 - [x] **Slice 7: Credit Cards & Spends Tracker**
   - **Type**: AFK
@@ -73,10 +73,11 @@
   - **Blocked by**: Slice 12
   - **Description**: Detect if a party mobile matches a BillZest org, fetch B2B transactions, and merge them as read-only into the ledger.
 
-- [ ] **Slice 14: Expense Split (Groups & Penny Algorithm)**
+- [x] **Slice 14: Expense Split (Groups & Penny Algorithm)**
   - **Type**: AFK
   - **Blocked by**: Slice 4
   - **Description**: Create Split Groups and add Split Expenses using the penny-rounding algorithm (equal, percent, exact, shares). *Must include Unit Tests for the penny algorithm math.*
+  - **Note**: Implemented split groups, split expenses, participant management, and penny-perfect splitting algorithm with equal, percent, exact, and shares-based splitting.
 
 - [ ] **Slice 15: Split Settlements**
   - **Type**: AFK
