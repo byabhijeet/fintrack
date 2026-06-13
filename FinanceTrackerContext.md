@@ -46,6 +46,9 @@ This project has strict authoritative documentation. **Do not hallucinate featur
   - When working on ANY task, YOU MUST check if a relevant skill exists. 
   - If a skill is relevant, YOU MUST use the `view_file` tool on its `SKILL.md` file to read the instructions before proceeding, and apply those patterns exactly as documented.
 
+### Rule on Expo MCP Tools
+- **Expo MCP**: This project uses Expo. Use Expo MCP tools whenever they provide a more accurate answer than static code analysis.
+
 ---
 
 ## 3. Tech Stack

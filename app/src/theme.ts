@@ -44,6 +44,12 @@ export const typography = {
     lineHeight: 38,
     letterSpacing: -0.64,
   },
+  displayLgMobile: {
+    fontFamily: 'Inter',
+    fontSize: 28,
+    fontWeight: '700' as const,
+    lineHeight: 33.6, // 28 * 1.2
+  },
   labelCaps: {
     fontFamily: 'Inter',
     fontSize: 12,

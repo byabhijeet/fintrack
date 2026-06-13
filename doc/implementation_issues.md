@@ -17,7 +17,7 @@
   - **Blocked by**: Slice 1
   - **Description**: Build the Login Screen, configure Supabase Auth (OTP), and set up the `authStore` in Zustand.
 
-- [ ] **Slice 3: Subscription Gate & Biometric Prompt**
+- [x] **Slice 3: Subscription Gate & Biometric Prompt**
   - **Type**: AFK
   - **Blocked by**: Slice 2
   - **Description**: Add `expo-local-authentication` (FaceID/TouchID), check subscription status against the `accounts` and `subscriptions` tables, and build the Blocked Screen for users without an active plan. *Must include Unit Tests for the gate logic.*
