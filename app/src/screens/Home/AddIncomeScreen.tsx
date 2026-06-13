@@ -3,14 +3,15 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../theme';
 import { useIncomeCategories, useAddIncomeMutation } from '../../lib/queries/income';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 export default function AddIncomeScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
   const router = useRouter();
-  const [amount, setAmount] = useState('');
+  const params = useLocalSearchParams();
+  const [amount, setAmount] = useState(params.amount ? String(params.amount) : '');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState(params.notes ? String(params.notes) : '');
 
   const { data: categories, isLoading: isCategoriesLoading } = useIncomeCategories();
   const addIncomeMutation = useAddIncomeMutation();

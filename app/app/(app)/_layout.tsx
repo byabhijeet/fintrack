@@ -6,6 +6,8 @@ import { useAppTheme } from '@/theme';
 import Sidebar from '@/components/navigation/Sidebar';
 import AppHeader from '@/components/navigation/AppHeader';
 import { LayoutDashboard, Wallet, ArrowLeftRight, Settings } from 'lucide-react-native';
+import GlobalFAB from '@/components/boi/GlobalFAB';
+import BOIAssistant from '@/components/boi/BOIAssistant';
 
 export default function AppLayout() {
   const breakpoint = useBreakpoint();
@@ -35,6 +37,7 @@ export default function AppLayout() {
 
   // Mobile layout uses Tabs
   return (
+    <>
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -87,5 +90,8 @@ export default function AppLayout() {
       <Tabs.Screen name="loans" options={{ href: null }} />
       <Tabs.Screen name="bills" options={{ href: null }} />
     </Tabs>
+    <GlobalFAB />
+    <BOIAssistant />
+    </>
   );
 }
