@@ -26,6 +26,7 @@ export default function AppLayout() {
             <Stack.Screen name="credit-cards" />
             <Stack.Screen name="business" />
             <Stack.Screen name="loans" />
+            <Stack.Screen name="bills" />
           </Stack>
         </View>
       </View>
@@ -84,6 +85,7 @@ export default function AppLayout() {
       <Tabs.Screen name="credit-cards" options={{ href: null }} />
       <Tabs.Screen name="business" options={{ href: null }} />
       <Tabs.Screen name="loans" options={{ href: null }} />
+      <Tabs.Screen name="bills" options={{ href: null }} />
     </Tabs>
   );
 }

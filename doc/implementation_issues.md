@@ -53,12 +53,12 @@
   - **Blocked by**: Slice 4
   - **Description**: Build the Add Loan form with EMI math (reducing/flat). Generate and insert the `loan_amortisation_schedule`. *Must include Unit Tests for the EMI and Amortization calculations.*
 
-- [ ] **Slice 10: Loan Part Payments & Foreclosure**
+- [x] **Slice 10: Loan Part Payments & Foreclosure**
   - **Type**: AFK
   - **Blocked by**: Slice 9
   - **Description**: Implement loan part payments (reduce EMI or tenure), recalculating the remaining schedule, and handle loan foreclosure.
 
-- [ ] **Slice 11: Bills (Recurring Templates)**
+- [x] **Slice 11: Bills (Recurring Templates)**
   - **Type**: AFK
   - **Blocked by**: Slice 5
   - **Description**: Build the Recurring Templates view. Implement "Mark Paid" and auto-process active bills on app launch.

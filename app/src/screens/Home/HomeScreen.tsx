@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
@@ -6,8 +6,10 @@ import { useRouter } from 'expo-router';
 import { useIncomeEntries } from '../../lib/queries/income';
 import { useExpenseEntries } from '../../lib/queries/expenses';
 import { useAllBusinessIncome, useAllBusinessExpenses } from '../../lib/queries/business';
+import { processRecurringTransactions } from '../../lib/queries/bills';
 import { useAllCardSpends } from '../../lib/queries/creditCards';
 import { useUIStore } from '../../store/uiStore';
+import { useAuthStore } from '../../store/authStore';
 import { Banknote, History, CreditCard, Store, EyeOff, Eye } from 'lucide-react-native';
 import { BarChart } from 'react-native-gifted-charts';
 
@@ -23,6 +25,13 @@ export default function HomeScreen() {
   
   // UI state
   const { privacyMode, togglePrivacyMode } = useUIStore();
+  const user = useAuthStore((state) => state.user);
+
+  useEffect(() => {
+    if (user?.id) {
+      processRecurringTransactions(user.id).catch(console.error);
+    }
+  }, [user?.id]);
 
   // Aggregations
   const { totalIncome, totalExpenses, ecosystemNet, chartData, recentActivity } = useMemo(() => {
@@ -185,6 +194,10 @@ export default function HomeScreen() {
           <TouchableOpacity style={styles.gridButton} onPress={() => router.push('/(app)/loans')}>
             <Banknote color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
             <Text style={styles.gridButtonText}>Loan Tracker</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.gridButton} onPress={() => router.push('/(app)/bills')}>
+            <History color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
+            <Text style={styles.gridButtonText}>My Bills</Text>
           </TouchableOpacity>
         </View>
 
