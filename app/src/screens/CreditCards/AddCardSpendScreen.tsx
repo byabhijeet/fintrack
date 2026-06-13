@@ -3,13 +3,13 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../theme';
 import { useAddCardSpendMutation } from '../../lib/queries/creditCards';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 export default function AddCardSpendScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
-  const navigation = useNavigation();
-  const route = useRoute<any>();
-  const { cardId } = route.params;
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const cardId = params.id as string;
   
   const [amount, setAmount] = useState('');
   const [merchant, setMerchant] = useState('');
@@ -46,7 +46,7 @@ export default function AddCardSpendScreen() {
       {
         onSuccess: () => {
           Alert.alert('Success', 'Spend added successfully!');
-          navigation.goBack();
+          router.back();
         },
         onError: (err) => {
           Alert.alert('Error', err.message);

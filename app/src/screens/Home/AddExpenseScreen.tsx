@@ -3,11 +3,11 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../theme';
 import { useExpenseCategories, useAddExpenseMutation } from '../../lib/queries/expenses';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 export default function AddExpenseScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
-  const navigation = useNavigation();
+  const router = useRouter();
   const [amount, setAmount] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [description, setDescription] = useState('');
@@ -43,7 +43,7 @@ export default function AddExpenseScreen() {
       {
         onSuccess: () => {
           Alert.alert('Success', 'Entry added successfully!');
-          navigation.goBack();
+          router.back();
         },
         onError: (err) => {
           Alert.alert('Error', err.message);
@@ -82,7 +82,7 @@ export default function AddExpenseScreen() {
     toggleText: {
       ...typography.bodySm,
       color: colors.textSecondary,
-      fontWeight: typography.weights.medium,
+      fontWeight: typography.weights.semibold,
     },
     toggleTextActive: {
       color: colors.textPrimary,

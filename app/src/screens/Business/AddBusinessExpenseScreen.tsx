@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Alert, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { useAddBusinessExpenseMutation } from '../../lib/queries/business';
 
 export default function AddBusinessExpenseScreen() {
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
-  const businessId = route.params?.businessId;
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const businessId = params.id as string;
   
   const addExpense = useAddBusinessExpenseMutation();
 
@@ -51,7 +51,7 @@ export default function AddBusinessExpenseScreen() {
         notes: notes.trim() || null,
         receipt_url: null // Vault integration pending
       });
-      navigation.goBack();
+      router.back();
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to add expense');
     }
@@ -60,7 +60,7 @@ export default function AddBusinessExpenseScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ArrowLeft color={theme.colors.textPrimary} size={24} />
         </TouchableOpacity>
         <Text style={styles.title}>Add Business Expense</Text>

@@ -3,11 +3,11 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../theme';
 import { useIncomeCategories, useAddIncomeMutation } from '../../lib/queries/income';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 export default function AddIncomeScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
-  const navigation = useNavigation();
+  const router = useRouter();
   const [amount, setAmount] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
@@ -36,7 +36,7 @@ export default function AddIncomeScreen() {
       {
         onSuccess: () => {
           Alert.alert('Success', 'Income added successfully!');
-          navigation.goBack();
+          router.back();
         },
         onError: (err) => {
           Alert.alert('Error', err.message);

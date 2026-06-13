@@ -1,20 +1,20 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { useAppTheme } from '../../theme';
 import { useCreditCards } from '../../lib/queries/creditCards';
 import { CreditCard as CreditCardIcon, Plus } from 'lucide-react-native';
 
 export default function CreditCardListScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { data: creditCards, isLoading } = useCreditCards();
 
   const renderCard = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={styles.cardItem}
-      onPress={() => navigation.navigate('CreditCardDetails', { cardId: item.id })}
+      onPress={() => router.push({ pathname: '/(app)/credit-cards/[id]', params: { id: item.id } })}
     >
       <View style={styles.cardHeader}>
         <View style={styles.cardBank}>
@@ -69,7 +69,7 @@ export default function CreditCardListScreen() {
     },
     cardName: {
       color: colors.textPrimary,
-      ...typography.title,
+      ...typography.displayLgMobile,
       marginBottom: spacing.md,
     },
     cardFooter: {
@@ -138,7 +138,7 @@ export default function CreditCardListScreen() {
       )}
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate('AddCreditCard')}
+        onPress={() => router.push('/(app)/credit-cards/add')}
       >
         <Plus color="#000" size={24} />
       </TouchableOpacity>

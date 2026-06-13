@@ -39,7 +39,7 @@ export default function ExpenseHistoryScreen() {
           <Text style={styles.descriptionText}>
             {item.description || (item.context === 'expense' ? 'Expense' : 'Fixed Outflow')}
           </Text>
-          {item.notes && (
+          {!!item.notes && (
             <Text style={styles.notesText}>{item.notes}</Text>
           )}
         </View>
@@ -108,7 +108,7 @@ export default function ExpenseHistoryScreen() {
     descriptionText: {
       ...typography.bodyMd,
       color: colors.textPrimary,
-      fontWeight: typography.weights.medium,
+      fontWeight: typography.weights.semibold,
       marginBottom: 2,
     },
     notesText: {
@@ -116,7 +116,7 @@ export default function ExpenseHistoryScreen() {
       color: colors.textSecondary,
     },
     amountText: {
-      ...typography.bodyLg,
+      ...typography.bodyMd,
       color: '#FF4B4B', // Standard red for expenses/outflows, can use colors.error if preferred
       fontWeight: typography.weights.bold,
     },

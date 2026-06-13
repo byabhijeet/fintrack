@@ -1,29 +1,9 @@
 import { create } from 'zustand';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
-import * as SecureStore from 'expo-secure-store';
-import { Platform } from 'react-native';
-
-const setSecureItem = async (key: string, value: string) => {
-  if (Platform.OS === 'web') {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(key, value);
-    }
-  } else {
-    await SecureStore.setItemAsync(key, value);
-  }
-};
-
-const getSecureItem = async (key: string) => {
-  if (Platform.OS === 'web') {
-    if (typeof localStorage !== 'undefined') {
-      return localStorage.getItem(key);
-    }
-    return null;
-  } else {
-    return await SecureStore.getItemAsync(key);
-  }
-};
+// Platform-agnostic storage: Metro resolves storage.native.ts on mobile,
+// storage.web.ts on web. No Platform.OS checks needed here.
+import { setItem, getItem } from '../services/storage';
 
 interface AuthState {
   session: Session | null;
@@ -57,12 +37,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isUnlocked: false,
 
   setSession: (session) => {
+    const currentUser = get().user;
     set({ session, user: session?.user || null });
+    
     if (session?.user) {
-      set({ isCheckingSubscription: true });
+      // Only show the loading screen if this is a new login or first load
+      if (!currentUser || currentUser.id !== session.user.id) {
+        set({ isCheckingSubscription: true });
+      }
       get().checkSubscription(session.user.id);
     } else {
-      set({ isCheckingSubscription: false });
+      set({ isCheckingSubscription: false, hasValidSubscription: false });
     }
   },
 
@@ -88,7 +73,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
       }
 
-      // Check 2: Merchant User Plan
+      // Check 2: Merchant User Plan via org membership
       const { data: orgMembers, error: orgError } = await supabase
         .from('organization_members')
         .select('organization_id')
@@ -152,28 +137,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   enableBiometric: async () => {
-    await setSecureItem('biometric_enabled', 'true');
-    await setSecureItem('biometric_setup_complete', 'true');
+    await setItem('biometric_enabled', 'true');
+    await setItem('biometric_setup_complete', 'true');
     set({ biometricEnabled: true, biometricSetupComplete: true });
   },
 
   skipBiometricSetup: async () => {
-    await setSecureItem('biometric_enabled', 'false');
-    await setSecureItem('biometric_setup_complete', 'true');
+    await setItem('biometric_enabled', 'false');
+    await setItem('biometric_setup_complete', 'true');
     set({ biometricEnabled: false, biometricSetupComplete: true, isUnlocked: true });
   },
 
   unlockApp: () => set({ isUnlocked: true }),
 
   init: async () => {
-    // Load biometric preference
-    const bioEnabled = await getSecureItem('biometric_enabled');
-    const bioSetup = await getSecureItem('biometric_setup_complete');
-    
-    set({ 
+    // Load biometric preference from platform-agnostic storage.
+    // On native: reads from SecureStore. On web: reads from localStorage.
+    const bioEnabled = await getItem('biometric_enabled');
+    const bioSetup = await getItem('biometric_setup_complete');
+
+    set({
       biometricEnabled: bioEnabled === 'true',
       biometricSetupComplete: bioSetup === 'true',
-      isUnlocked: bioEnabled !== 'true' // If not enabled, it's unlocked by default
+      isUnlocked: bioEnabled !== 'true', // if biometrics not enabled, app is unlocked by default
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {

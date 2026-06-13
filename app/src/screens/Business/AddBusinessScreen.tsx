@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { useAddBusinessMutation } from '../../lib/queries/business';
 
 export default function AddBusinessScreen() {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const addBusiness = useAddBusinessMutation();
 
   const [name, setName] = useState('');
@@ -24,7 +24,7 @@ export default function AddBusinessScreen() {
         name: name.trim(),
         description: description.trim() || null
       });
-      navigation.goBack();
+      router.back();
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to add business');
     }
@@ -33,7 +33,7 @@ export default function AddBusinessScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ArrowLeft color={theme.colors.textPrimary} size={24} />
         </TouchableOpacity>
         <Text style={styles.title}>Add Business</Text>

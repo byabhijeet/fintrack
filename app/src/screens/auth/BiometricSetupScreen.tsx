@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useAuthStore } from '../../store/authStore';
 import { useAppTheme } from '../../theme';
-import * as LocalAuthentication from 'expo-local-authentication';
+import { checkAvailable, authenticate } from '../../services/biometrics';
 import { ShieldCheck } from 'lucide-react-native';
 
 export default function BiometricSetupScreen() {
@@ -12,11 +12,10 @@ export default function BiometricSetupScreen() {
 
   useEffect(() => {
     (async () => {
-      const compatible = await LocalAuthentication.hasHardwareAsync();
-      const enrolled = await LocalAuthentication.isEnrolledAsync();
-      setIsSupported(compatible && enrolled);
+      const isAvailable = await checkAvailable();
+      setIsSupported(isAvailable);
       
-      if (!compatible || !enrolled) {
+      if (!isAvailable) {
         // If device doesn't support it, just skip automatically
         skipBiometricSetup();
       }
@@ -25,17 +24,12 @@ export default function BiometricSetupScreen() {
 
   const handleEnable = async () => {
     try {
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Enable Biometric Authentication',
-        fallbackLabel: 'Use Passcode',
-        cancelLabel: 'Cancel',
-        disableDeviceFallback: false,
-      });
+      const result = await authenticate('Enable Biometric Authentication');
 
       if (result.success) {
         await enableBiometric();
       } else {
-        Alert.alert('Authentication Failed', 'Please try again.');
+        Alert.alert('Authentication Failed', result.error || 'Please try again.');
       }
     } catch (error) {
       console.error('Biometric auth error', error);

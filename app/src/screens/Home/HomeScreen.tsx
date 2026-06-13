@@ -2,13 +2,13 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { useIncomeEntries } from '../../lib/queries/income';
 import { useExpenseEntries } from '../../lib/queries/expenses';
 import { Banknote, History, CreditCard, Receipt, Store } from 'lucide-react-native';
 
 export default function HomeScreen() {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { data: incomeEntries } = useIncomeEntries();
   const { data: expenseEntries } = useExpenseEntries();
 
@@ -33,49 +33,45 @@ export default function HomeScreen() {
         </View>
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <View style={styles.grid}>
+        <View style={styles.actionsGrid}>
           <TouchableOpacity 
             style={styles.gridButton}
-            onPress={() => navigation.navigate('AddIncome')}
+            onPress={() => router.push('/(app)/(home)/add-income')}
           >
             <Banknote color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
             <Text style={styles.gridButtonText}>Add Income</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.gridButton}
-            onPress={() => navigation.navigate('AddExpense')}
+            onPress={() => router.push('/(app)/(home)/add-expense')}
           >
             <CreditCard color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
             <Text style={styles.gridButtonText}>Add Expense</Text>
           </TouchableOpacity>
-        </View>
-        <View style={[styles.grid, { marginTop: theme.spacing.md }]}>
           <TouchableOpacity 
             style={styles.gridButton}
-            onPress={() => navigation.navigate('IncomeHistory')}
+            onPress={() => router.push('/(app)/(home)/income-history')}
           >
             <History color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
             <Text style={styles.gridButtonText}>History</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.gridButton}
-            onPress={() => navigation.navigate('ExpenseHistory')}
+            onPress={() => router.push('/(app)/(home)/expense-history')}
           >
             <History color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
             <Text style={styles.gridButtonText}>Expense History</Text>
           </TouchableOpacity>
-        </View>
-        <View style={[styles.grid, { marginTop: theme.spacing.md }]}>
           <TouchableOpacity 
             style={styles.gridButton}
-            onPress={() => navigation.navigate('CreditCardList')}
+            onPress={() => router.push('/(app)/credit-cards')}
           >
             <CreditCard color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
             <Text style={styles.gridButtonText}>Credit Cards</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.gridButton}
-            onPress={() => navigation.navigate('Business')}
+            onPress={() => router.push('/(app)/business')}
           >
             <Store color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
             <Text style={styles.gridButtonText}>Business Ledger</Text>
@@ -131,12 +127,15 @@ const styles = StyleSheet.create({
     color: theme.colors.textPrimary,
     marginBottom: theme.spacing.md,
   },
-  grid: {
+  actionsGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: theme.spacing.md,
   },
   gridButton: {
-    flex: 1,
+    width: 160,
+    flexGrow: 1,
+    maxWidth: 240,
     backgroundColor: theme.colors.surfaceElevated,
     borderRadius: theme.borderRadius.md,
     padding: theme.spacing.md,

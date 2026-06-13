@@ -3,11 +3,11 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../theme';
 import { useAddCreditCardMutation } from '../../lib/queries/creditCards';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 export default function AddCreditCardScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
-  const navigation = useNavigation();
+  const router = useRouter();
   
   const [cardName, setCardName] = useState('');
   const [bank, setBank] = useState('');
@@ -42,7 +42,7 @@ export default function AddCreditCardScreen() {
       {
         onSuccess: () => {
           Alert.alert('Success', 'Credit card added successfully!');
-          navigation.goBack();
+          router.back();
         },
         onError: (err) => {
           Alert.alert('Error', err.message);

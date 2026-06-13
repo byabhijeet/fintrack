@@ -1,13 +1,15 @@
 {
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "BillZest FinTrack",
+    "slug": "billzest-fintrack",
+    "scheme": "billzest-fintrack",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.billzest.fintrack"
     },
     "android": {
       "adaptiveIcon": {
@@ -16,10 +18,20 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
+      "package": "com.billzest.fintrack",
       "predictiveBackGestureEnabled": false
     },
     "web": {
+      "bundler": "metro",
+      "output": "single",
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }

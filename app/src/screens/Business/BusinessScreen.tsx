@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { Plus, TrendingUp, TrendingDown, Store } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { useBusinesses, useBusinessIncome, useBusinessExpenses } from '../../lib/queries/business';
 
 export default function BusinessScreen() {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { data: businesses, isLoading: loadingBusinesses } = useBusinesses();
   
   // State for selected business ID
@@ -36,7 +36,7 @@ export default function BusinessScreen() {
           <Text style={styles.title}>Business Ledger</Text>
           <TouchableOpacity 
             style={styles.addButton}
-            onPress={() => navigation.navigate('AddBusiness')}
+            onPress={() => router.push('/(app)/business/add')}
           >
             <Plus color={theme.colors.background} size={20} />
             <Text style={styles.addButtonText}>Add</Text>
@@ -95,14 +95,14 @@ export default function BusinessScreen() {
                 <View style={styles.grid}>
                   <TouchableOpacity 
                     style={styles.gridButton}
-                    onPress={() => navigation.navigate('AddBusinessIncome', { businessId: selectedBusinessId })}
+                    onPress={() => router.push({ pathname: '/(app)/business/[id]/add-income', params: { id: selectedBusinessId } })}
                   >
                     <TrendingUp color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
                     <Text style={styles.gridButtonText}>Add Income</Text>
                   </TouchableOpacity>
                   <TouchableOpacity 
                     style={styles.gridButton}
-                    onPress={() => navigation.navigate('AddBusinessExpense', { businessId: selectedBusinessId })}
+                    onPress={() => router.push({ pathname: '/(app)/business/[id]/add-expense', params: { id: selectedBusinessId } })}
                   >
                     <TrendingDown color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
                     <Text style={styles.gridButtonText}>Add Expense</Text>
@@ -118,7 +118,7 @@ export default function BusinessScreen() {
             <Text style={styles.emptyStateSub}>Add a business to start tracking its income and expenses.</Text>
             <TouchableOpacity 
               style={styles.primaryButton}
-              onPress={() => navigation.navigate('AddBusiness')}
+              onPress={() => router.push('/(app)/business/add')}
             >
               <Text style={styles.primaryButtonText}>Add Business</Text>
             </TouchableOpacity>

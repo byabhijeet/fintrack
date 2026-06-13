@@ -1,16 +1,16 @@
 import React from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAppTheme } from '../../theme';
 import { useCreditCards, useCardSpends } from '../../lib/queries/creditCards';
 import { Plus } from 'lucide-react-native';
 
 export default function CreditCardDetailsScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
-  const { cardId } = route.params;
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const cardId = params.id as string;
 
   const { data: cards, isLoading: isCardsLoading } = useCreditCards();
   const { data: spends, isLoading: isSpendsLoading } = useCardSpends(cardId);
@@ -55,7 +55,7 @@ export default function CreditCardDetailsScreen() {
       borderBottomColor: colors.border,
     },
     cardName: {
-      ...typography.title,
+      ...typography.displayLgMobile,
       color: colors.textPrimary,
       marginBottom: spacing.xs,
     },
@@ -90,14 +90,14 @@ export default function CreditCardDetailsScreen() {
     },
     progressBarFill: {
       height: '100%',
-      backgroundColor: utilization > 80 ? colors.danger : colors.primary,
+      backgroundColor: utilization > 80 ? colors.error : colors.primary,
       width: `${utilization}%`,
     },
     listContent: {
       padding: spacing.md,
     },
     sectionTitle: {
-      ...typography.title,
+      ...typography.displayLgMobile,
       color: colors.textPrimary,
       marginBottom: spacing.md,
       marginTop: spacing.lg,
@@ -128,7 +128,7 @@ export default function CreditCardDetailsScreen() {
       color: colors.textSecondary,
     },
     spendDate: {
-      ...typography.bodyXs,
+      ...typography.bodySm,
       color: colors.textMuted,
       marginTop: 2,
     },
@@ -194,7 +194,7 @@ export default function CreditCardDetailsScreen() {
               {card.credit_limit ? `$${card.credit_limit.toLocaleString()}` : 'No Limit'}
             </Text>
           </View>
-          {card.credit_limit && (
+          {!!card.credit_limit && (
             <View style={styles.progressBarBg}>
               <View style={styles.progressBarFill} />
             </View>
@@ -215,7 +215,7 @@ export default function CreditCardDetailsScreen() {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate('AddCardSpend', { cardId })}
+        onPress={() => router.push({ pathname: '/(app)/credit-cards/[id]/add-spend', params: { id: cardId } })}
       >
         <Plus color="#000" size={24} />
       </TouchableOpacity>

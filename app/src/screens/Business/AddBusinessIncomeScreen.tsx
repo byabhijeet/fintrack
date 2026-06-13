@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { useAddBusinessIncomeMutation } from '../../lib/queries/business';
 
 export default function AddBusinessIncomeScreen() {
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
-  const businessId = route.params?.businessId;
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const businessId = params.id as string;
   
   const addIncome = useAddBusinessIncomeMutation();
 
@@ -43,7 +43,7 @@ export default function AddBusinessIncomeScreen() {
         source_description: sourceDescription.trim(),
         notes: notes.trim() || null
       });
-      navigation.goBack();
+      router.back();
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to add income');
     }
@@ -52,7 +52,7 @@ export default function AddBusinessIncomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ArrowLeft color={theme.colors.textPrimary} size={24} />
         </TouchableOpacity>
         <Text style={styles.title}>Add Business Income</Text>

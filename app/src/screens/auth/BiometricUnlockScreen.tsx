@@ -2,21 +2,16 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useAuthStore } from '../../store/authStore';
 import { useAppTheme } from '../../theme';
-import * as LocalAuthentication from 'expo-local-authentication';
+import { authenticate } from '../../services/biometrics';
 import { Lock } from 'lucide-react-native';
 
 export default function BiometricUnlockScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
   const unlockApp = useAuthStore((state) => state.unlockApp);
 
-  const authenticate = async () => {
+  const authenticateUser = async () => {
     try {
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Unlock FinTrack',
-        fallbackLabel: 'Use Passcode',
-        cancelLabel: 'Cancel',
-        disableDeviceFallback: false,
-      });
+      const result = await authenticate('Unlock FinTrack');
 
       if (result.success) {
         unlockApp();
@@ -29,7 +24,7 @@ export default function BiometricUnlockScreen() {
 
   useEffect(() => {
     // Automatically prompt when the screen mounts
-    authenticate();
+    authenticateUser();
   }, []);
 
   return (
@@ -49,7 +44,7 @@ export default function BiometricUnlockScreen() {
       <View style={styles.footer}>
         <TouchableOpacity 
           style={[styles.primaryButton, { backgroundColor: colors.primary, borderRadius: borderRadius.pill }]} 
-          onPress={authenticate}
+          onPress={authenticateUser}
           activeOpacity={0.8}
         >
           <Text style={[styles.primaryButtonText, typography.labelCaps]}>Unlock</Text>

@@ -32,7 +32,7 @@ export default function IncomeHistoryScreen() {
       <View style={styles.cardBody}>
         <View>
           <Text style={styles.amountText}>+${item.amount.toLocaleString()}</Text>
-          {item.notes && <Text style={styles.notesText}>{item.notes}</Text>}
+          {!!item.notes && <Text style={styles.notesText}>{item.notes}</Text>}
         </View>
         <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteButton}>
           <Text style={styles.deleteText}>Delete</Text>
