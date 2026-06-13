@@ -25,6 +25,7 @@ export default function AppLayout() {
             <Stack.Screen name="(hub)" />
             <Stack.Screen name="credit-cards" />
             <Stack.Screen name="business" />
+            <Stack.Screen name="loans" />
           </Stack>
         </View>
       </View>
@@ -82,6 +83,7 @@ export default function AppLayout() {
       {/* Hide non-tab screens from tab bar */}
       <Tabs.Screen name="credit-cards" options={{ href: null }} />
       <Tabs.Screen name="business" options={{ href: null }} />
+      <Tabs.Screen name="loans" options={{ href: null }} />
     </Tabs>
   );
 }

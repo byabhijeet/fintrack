@@ -31,7 +31,7 @@ export default function IncomeHistoryScreen() {
       
       <View style={styles.cardBody}>
         <View>
-          <Text style={styles.amountText}>+${item.amount.toLocaleString()}</Text>
+          <Text style={styles.amountText}>+₹{item.amount.toLocaleString('en-IN')}</Text>
           {!!item.notes && <Text style={styles.notesText}>{item.notes}</Text>}
         </View>
         <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteButton}>

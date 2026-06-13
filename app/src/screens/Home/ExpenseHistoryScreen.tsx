@@ -44,7 +44,7 @@ export default function ExpenseHistoryScreen() {
           )}
         </View>
         <Text style={styles.amountText}>
-          ${Number(item.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          ₹{Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </Text>
       </View>
 

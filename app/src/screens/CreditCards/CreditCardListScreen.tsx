@@ -25,7 +25,7 @@ export default function CreditCardListScreen() {
       </View>
       <Text style={styles.cardName}>{item.card_name}</Text>
       <View style={styles.cardFooter}>
-        <Text style={styles.limitLabel}>Limit: ${item.credit_limit?.toLocaleString() ?? 'N/A'}</Text>
+        <Text style={styles.limitLabel}>Limit: ₹{item.credit_limit?.toLocaleString('en-IN') ?? 'N/A'}</Text>
         <Text style={styles.billingDay}>Billing Day: {item.billing_day || 'N/A'}</Text>
       </View>
     </TouchableOpacity>

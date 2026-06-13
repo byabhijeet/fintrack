@@ -75,7 +75,7 @@ export default function BusinessScreen() {
                 <View style={styles.netCard}>
                   <Text style={styles.cardLabel}>Business Net ({selectedBusiness?.name})</Text>
                   <Text style={[styles.cardValue, { color: net >= 0 ? theme.colors.primary : '#FF4B4B' }]}>
-                    ${Math.abs(net).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ₹{Math.abs(net).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     {net < 0 && ' (Loss)'}
                   </Text>
                 </View>
@@ -83,11 +83,11 @@ export default function BusinessScreen() {
                 <View style={{ flexDirection: 'row', gap: theme.spacing.md, marginBottom: theme.spacing.xl }}>
                   <View style={[styles.miniCard, { flex: 1 }]}>
                     <Text style={styles.cardLabel}>Total Income</Text>
-                    <Text style={styles.miniCardValue}>${totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+                    <Text style={styles.miniCardValue}>₹{totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
                   </View>
                   <View style={[styles.miniCard, { flex: 1 }]}>
                     <Text style={styles.cardLabel}>Total Expenses</Text>
-                    <Text style={[styles.miniCardValue, { color: '#FF4B4B' }]}>${totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+                    <Text style={[styles.miniCardValue, { color: '#FF4B4B' }]}>₹{totalExpenses.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
                   </View>
                 </View>
 

@@ -39,7 +39,7 @@ export default function CreditCardDetailsScreen() {
         <Text style={styles.spendCategory}>{item.category || 'General'}</Text>
         <Text style={styles.spendDate}>{item.spend_date}</Text>
       </View>
-      <Text style={styles.amount}>${Number(item.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
+      <Text style={styles.amount}>₹{Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</Text>
     </View>
   );
 
@@ -186,12 +186,12 @@ export default function CreditCardDetailsScreen() {
         <View style={styles.statsContainer}>
           <View style={styles.statsRow}>
             <Text style={styles.statsLabel}>Current Cycle Spend</Text>
-            <Text style={styles.statsValue}>${currentCycleTotal.toLocaleString()}</Text>
+            <Text style={styles.statsValue}>₹{currentCycleTotal.toLocaleString('en-IN')}</Text>
           </View>
           <View style={styles.statsRow}>
             <Text style={styles.statsLabel}>Credit Limit</Text>
             <Text style={styles.statsValue}>
-              {card.credit_limit ? `$${card.credit_limit.toLocaleString()}` : 'No Limit'}
+              {card.credit_limit ? `₹${card.credit_limit.toLocaleString('en-IN')}` : 'No Limit'}
             </Text>
           </View>
           {!!card.credit_limit && (
