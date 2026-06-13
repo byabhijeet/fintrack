@@ -51,6 +51,19 @@ export type SplitExpenseParticipant = {
   created_at: string;
 };
 
+export type SplitSettlement = {
+  id: string;
+  payer_id: string;
+  receiver_id?: string;
+  receiver_mob: string;
+  amount: number;
+  currency: string;
+  method: 'Cash' | 'UPI' | 'Bank Transfer' | 'CreditBook Wallet';
+  group_id?: string;
+  notes?: string;
+  created_at: string;
+};
+
 // ---------------------------------------------------------------------------
 // Penny Algorithm & Calculations
 // ---------------------------------------------------------------------------
@@ -273,6 +286,28 @@ export const useGroupBalances = (groupId: string) => {
   return balances;
 };
 
+/** Fetch settlements for a group */
+export const useGroupSettlements = (groupId: string) => {
+  const user = useAuthStore((s) => s.user);
+
+  return useQuery({
+    queryKey: ['group_settlements', groupId],
+    queryFn: async () => {
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('split_settlements')
+        .select('*')
+        .eq('group_id', groupId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as SplitSettlement[];
+    },
+    enabled: !!user && !!groupId,
+  });
+};
+
 // ---------------------------------------------------------------------------
 // Mutations
 // ---------------------------------------------------------------------------
@@ -409,6 +444,49 @@ export const useAddExpenseMutation = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['group_expenses', variables.group_id] });
+    },
+  });
+};
+
+export type AddSettlementInput = {
+  payer_id: string;
+  receiver_mob: string;
+  amount: number;
+  method: 'Cash' | 'UPI' | 'Bank Transfer' | 'CreditBook Wallet';
+  group_id?: string;
+  notes?: string;
+};
+
+export const useAddSettlementMutation = () => {
+  const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+
+  return useMutation({
+    mutationFn: async (input: AddSettlementInput): Promise<SplitSettlement> => {
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('split_settlements')
+        .insert([
+          {
+            payer_id: input.payer_id,
+            receiver_mob: input.receiver_mob,
+            amount: input.amount,
+            method: input.method,
+            group_id: input.group_id,
+            notes: input.notes,
+            currency: 'INR',
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as SplitSettlement;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['group_settlements', variables.group_id] });
+      queryClient.invalidateQueries({ queryKey: ['group_expenses'] });
     },
   });
 };

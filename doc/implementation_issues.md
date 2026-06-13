@@ -79,20 +79,22 @@
   - **Description**: Create Split Groups and add Split Expenses using the penny-rounding algorithm (equal, percent, exact, shares). *Must include Unit Tests for the penny algorithm math.*
   - **Note**: Implemented split groups, split expenses, participant management, and penny-perfect splitting algorithm with equal, percent, exact, and shares-based splitting.
 
-- [ ] **Slice 15: Split Settlements**
+- [x] **Slice 15: Split Settlements**
   - **Type**: AFK
   - **Blocked by**: Slice 14
   - **Description**: Implement "Settle Up" to record payments between group members in `split_settlements`.
+  - **Note**: Implemented settlement mutations, queries for outstanding debts, and SettleUpScreen with payment method selection.
 
 - [ ] **Slice 16: Vault (Camera & Storage Upload)**
   - **Type**: AFK
   - **Blocked by**: Slice 4
   - **Description**: Integrate camera/gallery. Upload receipt images to Supabase storage and create `vault_entries`.
 
-- [ ] **Slice 17: Hub Extras (Rewards, Deals, Partner)**
+- [x] **Slice 17: Hub Extras (Rewards, Deals, Partner)**
   - **Type**: AFK
   - **Blocked by**: Slice 4
   - **Description**: Display Rewards (points/redemptions), active Flash Deals, and Partner Referral screens.
+  - **Note**: Implemented rewards display, flash deals carousel, redemption system with points calculation, and partner referral invitations with email/phone tracking.
 
 - [ ] **Slice 18: Profile, Settings, & Realtime Notifications**
   - **Type**: AFK
