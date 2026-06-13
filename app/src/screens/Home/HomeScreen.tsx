@@ -5,7 +5,7 @@ import { theme } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 import { useIncomeEntries } from '../../lib/queries/income';
 import { useExpenseEntries } from '../../lib/queries/expenses';
-import { Banknote, History, CreditCard, Receipt } from 'lucide-react-native';
+import { Banknote, History, CreditCard, Receipt, Store } from 'lucide-react-native';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
@@ -72,6 +72,13 @@ export default function HomeScreen() {
           >
             <CreditCard color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
             <Text style={styles.gridButtonText}>Credit Cards</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.gridButton}
+            onPress={() => navigation.navigate('Business')}
+          >
+            <Store color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
+            <Text style={styles.gridButtonText}>Business Ledger</Text>
           </TouchableOpacity>
         </View>
       </View>

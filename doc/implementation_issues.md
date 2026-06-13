@@ -42,7 +42,7 @@
   - **Blocked by**: Slice 4
   - **Description**: Add Credit Card management, Card Spends logging, and calculate credit utilization based on billing cycles.
 
-- [ ] **Slice 8: Business Ledger (Multi-business)**
+- [x] **Slice 8: Business Ledger (Multi-business)**
   - **Type**: AFK
   - **Blocked by**: Slice 4
   - **Description**: Build the Business Switcher, record Business Income/Expenses, and calculate Business Net.

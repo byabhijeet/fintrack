@@ -2,6 +2,28 @@ import { create } from 'zustand';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
+
+const setSecureItem = async (key: string, value: string) => {
+  if (Platform.OS === 'web') {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(key, value);
+    }
+  } else {
+    await SecureStore.setItemAsync(key, value);
+  }
+};
+
+const getSecureItem = async (key: string) => {
+  if (Platform.OS === 'web') {
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem(key);
+    }
+    return null;
+  } else {
+    return await SecureStore.getItemAsync(key);
+  }
+};
 
 interface AuthState {
   session: Session | null;
@@ -130,14 +152,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   enableBiometric: async () => {
-    await SecureStore.setItemAsync('biometric_enabled', 'true');
-    await SecureStore.setItemAsync('biometric_setup_complete', 'true');
+    await setSecureItem('biometric_enabled', 'true');
+    await setSecureItem('biometric_setup_complete', 'true');
     set({ biometricEnabled: true, biometricSetupComplete: true });
   },
 
   skipBiometricSetup: async () => {
-    await SecureStore.setItemAsync('biometric_enabled', 'false');
-    await SecureStore.setItemAsync('biometric_setup_complete', 'true');
+    await setSecureItem('biometric_enabled', 'false');
+    await setSecureItem('biometric_setup_complete', 'true');
     set({ biometricEnabled: false, biometricSetupComplete: true, isUnlocked: true });
   },
 
@@ -145,8 +167,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   init: async () => {
     // Load biometric preference
-    const bioEnabled = await SecureStore.getItemAsync('biometric_enabled');
-    const bioSetup = await SecureStore.getItemAsync('biometric_setup_complete');
+    const bioEnabled = await getSecureItem('biometric_enabled');
+    const bioSetup = await getSecureItem('biometric_setup_complete');
     
     set({ 
       biometricEnabled: bioEnabled === 'true',

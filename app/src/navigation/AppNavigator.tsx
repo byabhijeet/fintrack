@@ -14,6 +14,10 @@ import CreditCardListScreen from '../screens/CreditCards/CreditCardListScreen';
 import AddCreditCardScreen from '../screens/CreditCards/AddCreditCardScreen';
 import CreditCardDetailsScreen from '../screens/CreditCards/CreditCardDetailsScreen';
 import AddCardSpendScreen from '../screens/CreditCards/AddCardSpendScreen';
+import BusinessScreen from '../screens/Business/BusinessScreen';
+import AddBusinessScreen from '../screens/Business/AddBusinessScreen';
+import AddBusinessIncomeScreen from '../screens/Business/AddBusinessIncomeScreen';
+import AddBusinessExpenseScreen from '../screens/Business/AddBusinessExpenseScreen';
 import { useAuthStore } from '../store/authStore';
 import { useAppTheme } from '../theme';
 
@@ -131,6 +135,26 @@ export default function AppNavigator() {
               headerTintColor: colors.textPrimary,
               headerTitleStyle: { ...typography.bodyMd, fontWeight: '700' }
             }} 
+          />
+          <Stack.Screen 
+            name="Business" 
+            component={BusinessScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="AddBusiness" 
+            component={AddBusinessScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="AddBusinessIncome" 
+            component={AddBusinessIncomeScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="AddBusinessExpense" 
+            component={AddBusinessExpenseScreen} 
+            options={{ headerShown: false }} 
           />
         </>
       )}
