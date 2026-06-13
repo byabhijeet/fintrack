@@ -12,7 +12,7 @@
   - **Blocked by**: None
   - **Description**: Scaffold the Expo managed React Native project and configure the React Navigation bottom tabs (Home, Credit Book, Split, Hub) with placeholder screens.
 
-- [ ] **Slice 2: Supabase Auth & Phone Login**
+- [x] **Slice 2: Supabase Auth & Phone Login**
   - **Type**: AFK
   - **Blocked by**: Slice 1
   - **Description**: Build the Login Screen, configure Supabase Auth (OTP), and set up the `authStore` in Zustand.
