@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supabase';
 import { useAuthStore } from '../../store/authStore';
-import { AmortizationRow, generateAmortizationSchedule } from '../loanMath';
+import { AmortizationRow, generateAmortizationSchedule, recalculateAmortizationSchedule } from '../loanMath';
 
 export interface Loan {
   id: string;
@@ -180,6 +180,194 @@ export function usePayEMI() {
       if (updateError) throw updateError;
 
       return payment;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['loans'] });
+      queryClient.invalidateQueries({ queryKey: ['loans', variables.loanId] });
+    },
+  });
+}
+
+export function usePartPayment() {
+  const queryClient = useQueryClient();
+  const { user } = useAuthStore();
+
+  return useMutation({
+    mutationFn: async ({
+      loanId,
+      amount,
+      impactType,
+      newEmi,
+      newTenureMonths,
+      monthsSaved,
+      interestSaved,
+      outstandingBefore,
+      outstandingAfter,
+      newSchedule,
+      paymentMode,
+      referenceNumber,
+      notes,
+    }: {
+      loanId: string;
+      amount: number;
+      impactType: 'reduce_emi' | 'reduce_tenure';
+      newEmi: number;
+      newTenureMonths: number;
+      monthsSaved: number;
+      interestSaved: number;
+      outstandingBefore: number;
+      outstandingAfter: number;
+      newSchedule: AmortizationRow[];
+      paymentMode?: string;
+      referenceNumber?: string;
+      notes?: string;
+    }) => {
+      if (!user?.id) throw new Error('Not authenticated');
+
+      const today = new Date().toISOString().split('T')[0];
+
+      // 1. Insert into loan_part_payments
+      const { error: partPaymentError } = await supabase
+        .from('loan_part_payments')
+        .insert([{
+          loan_id: loanId,
+          user_id: user.id,
+          payment_date: today,
+          amount,
+          impact_type: impactType,
+          new_emi: newEmi,
+          new_tenure_months: newTenureMonths,
+          months_saved: monthsSaved,
+          interest_saved: interestSaved,
+          outstanding_before: outstandingBefore,
+          outstanding_after: outstandingAfter,
+          payment_mode: paymentMode || 'NEFT',
+          reference_number: referenceNumber,
+          notes,
+        }]);
+
+      if (partPaymentError) throw partPaymentError;
+
+      // 2. Delete pending schedule rows for this loan
+      const { error: deleteError } = await supabase
+        .from('loan_amortisation_schedule')
+        .delete()
+        .eq('loan_id', loanId)
+        .eq('status', 'pending');
+
+      if (deleteError) throw deleteError;
+
+      // 3. Insert new schedule rows
+      if (newSchedule.length > 0) {
+        const scheduleRows = newSchedule.map(row => ({
+          ...row,
+          loan_id: loanId,
+          user_id: user.id,
+          status: 'pending'
+        }));
+        
+        const { error: scheduleError } = await supabase
+          .from('loan_amortisation_schedule')
+          .insert(scheduleRows);
+
+        if (scheduleError) throw scheduleError;
+      }
+
+      // 4. Update loan emi or tenure
+      const updateData: any = {};
+      if (impactType === 'reduce_emi') updateData.emi_amount = newEmi;
+      if (impactType === 'reduce_tenure') updateData.tenure_months = newTenureMonths;
+      
+      if (newSchedule.length === 0) {
+         updateData.status = 'closed';
+      }
+
+      const { error: loanUpdateError } = await supabase
+        .from('loans')
+        .update(updateData)
+        .eq('id', loanId);
+
+      if (loanUpdateError) throw loanUpdateError;
+
+      return true;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['loans'] });
+      queryClient.invalidateQueries({ queryKey: ['loans', variables.loanId] });
+    },
+  });
+}
+
+export function useForeclosure() {
+  const queryClient = useQueryClient();
+  const { user } = useAuthStore();
+
+  return useMutation({
+    mutationFn: async ({
+      loanId,
+      outstandingPrincipal,
+      foreclosureChargePct,
+      foreclosureChargeType,
+      foreclosureChargeAmount,
+      totalPayable,
+      interestSaved,
+      paymentMode,
+      referenceNumber,
+      notes,
+    }: {
+      loanId: string;
+      outstandingPrincipal: number;
+      foreclosureChargePct: number;
+      foreclosureChargeType: string;
+      foreclosureChargeAmount: number;
+      totalPayable: number;
+      interestSaved: number;
+      paymentMode?: string;
+      referenceNumber?: string;
+      notes?: string;
+    }) => {
+      if (!user?.id) throw new Error('Not authenticated');
+
+      const today = new Date().toISOString().split('T')[0];
+
+      // 1. Insert into loan_foreclosures
+      const { error: foreclosureError } = await supabase
+        .from('loan_foreclosures')
+        .insert([{
+          loan_id: loanId,
+          user_id: user.id,
+          foreclosure_date: today,
+          outstanding_principal: outstandingPrincipal,
+          foreclosure_charge_pct: foreclosureChargePct,
+          foreclosure_charge_type: foreclosureChargeType,
+          foreclosure_charge_amount: foreclosureChargeAmount,
+          total_payable: totalPayable,
+          interest_saved: interestSaved,
+          payment_mode: paymentMode || 'NEFT',
+          reference_number: referenceNumber,
+          notes,
+        }]);
+
+      if (foreclosureError) throw foreclosureError;
+
+      // 2. Delete pending schedule rows
+      const { error: deleteError } = await supabase
+        .from('loan_amortisation_schedule')
+        .delete()
+        .eq('loan_id', loanId)
+        .eq('status', 'pending');
+
+      if (deleteError) throw deleteError;
+
+      // 3. Update loan status
+      const { error: loanUpdateError } = await supabase
+        .from('loans')
+        .update({ status: 'foreclosed' })
+        .eq('id', loanId);
+
+      if (loanUpdateError) throw loanUpdateError;
+
+      return true;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['loans'] });

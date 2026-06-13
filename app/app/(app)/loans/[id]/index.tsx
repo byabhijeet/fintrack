@@ -89,6 +89,24 @@ export default function LoanDetailScreen() {
               <View style={[styles.progressBarFill, { backgroundColor: colors.primary, width: `${progress}%` }]} />
             </View>
           </View>
+
+          {loan.status === 'active' && (
+            <View style={styles.actionButtonsRow}>
+              <TouchableOpacity 
+                style={[styles.actionBtn, { backgroundColor: colors.background, borderColor: colors.border }]}
+                onPress={() => router.push(`/loans/${loan.id}/part-payment`)}
+              >
+                <Text style={[typography.labelCaps, { color: colors.primary }]}>Part Payment</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={[styles.actionBtn, { backgroundColor: colors.background, borderColor: colors.border }]}
+                onPress={() => router.push(`/loans/${loan.id}/foreclose`)}
+              >
+                <Text style={[typography.labelCaps, { color: colors.error }]}>Foreclose</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         <Text style={[typography.title3, { color: colors.text, marginBottom: 12, marginTop: 8 }]}>Amortization Schedule</Text>
@@ -185,6 +203,19 @@ const styles = StyleSheet.create({
   },
   progressBarFill: {
     height: '100%',
+  },
+  actionButtonsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 20,
+  },
+  actionBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    borderWidth: 1,
   },
   tableContainer: {
     borderWidth: 1,

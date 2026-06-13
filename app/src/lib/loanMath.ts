@@ -125,3 +125,116 @@ export function generateAmortizationSchedule(
 
   return schedule;
 }
+
+/**
+ * Recalculates the remaining Amortization Schedule after a part payment.
+ */
+export function recalculateAmortizationSchedule(
+  currentBalance: number,
+  annualRate: number,
+  oldEmi: number,
+  partPaymentAmount: number,
+  impactType: 'reduce_emi' | 'reduce_tenure',
+  interestType: 'reducing' | 'flat',
+  remainingMonths: number,
+  nextPaymentDate: Date | string,
+  emiDay: number,
+  startingInstallmentNo: number
+): {
+  schedule: AmortizationRow[];
+  newEmi: number;
+  newTenureMonths: number;
+  monthsSaved: number;
+} {
+  const newBalance = currentBalance - partPaymentAmount;
+  if (newBalance <= 0) {
+    return {
+      schedule: [],
+      newEmi: 0,
+      newTenureMonths: 0,
+      monthsSaved: remainingMonths
+    };
+  }
+
+  let newEmi = oldEmi;
+  let newRemainingMonths = remainingMonths;
+
+  if (impactType === 'reduce_emi') {
+    newRemainingMonths = remainingMonths;
+    newEmi = calculateEMI(newBalance, annualRate, newRemainingMonths, interestType);
+  } else if (impactType === 'reduce_tenure') {
+    if (interestType === 'flat') {
+      newRemainingMonths = Math.ceil(newBalance / oldEmi);
+    } else {
+      const r = annualRate / 12 / 100;
+      if (r === 0) {
+        newRemainingMonths = Math.ceil(newBalance / oldEmi);
+      } else {
+        const val = 1 - (newBalance * r) / oldEmi;
+        if (val <= 0) {
+          newRemainingMonths = remainingMonths;
+        } else {
+          newRemainingMonths = Math.ceil(-Math.log(val) / Math.log(1 + r));
+        }
+      }
+    }
+  }
+
+  const r = annualRate / 12 / 100;
+  const schedule: AmortizationRow[] = [];
+  let balance = newBalance;
+  let currentMonthDate = new Date(nextPaymentDate);
+  currentMonthDate = addMonths(currentMonthDate, -1);
+
+  for (let i = 1; i <= newRemainingMonths; i++) {
+    currentMonthDate = addMonths(currentMonthDate, 1);
+    
+    const maxDaysInNextMonth = new Date(
+      currentMonthDate.getFullYear(),
+      currentMonthDate.getMonth() + 1,
+      0
+    ).getDate();
+    
+    const targetDay = Math.min(emiDay, maxDaysInNextMonth);
+    const emiDate = setDate(currentMonthDate, targetDay);
+
+    let interestComponent = 0;
+    let principalComponent = 0;
+
+    if (interestType === 'flat') {
+      const totalInterest = newBalance * (annualRate / 100) * (newRemainingMonths / 12);
+      interestComponent = totalInterest / newRemainingMonths;
+      principalComponent = newEmi - interestComponent;
+    } else {
+      interestComponent = balance * r;
+      principalComponent = newEmi - interestComponent;
+    }
+
+    if (i === newRemainingMonths || principalComponent >= balance) {
+      principalComponent = balance;
+    }
+
+    balance -= principalComponent;
+    if (balance < 0.005) balance = 0;
+
+    schedule.push({
+      installment_no: startingInstallmentNo + i - 1,
+      emi_month: format(emiDate, 'yyyy-MM-dd'),
+      principal_component: Math.round(principalComponent * 100) / 100,
+      interest_component: Math.round(interestComponent * 100) / 100,
+      closing_balance: Math.round(balance * 100) / 100,
+    });
+    
+    if (balance <= 0) {
+       newRemainingMonths = i;
+       break;
+    }
+  }
+
+  return {
+    schedule,
+    newEmi: Math.round(newEmi * 100) / 100,
+    newTenureMonths: newRemainingMonths,
+    monthsSaved: remainingMonths - newRemainingMonths
+  };
+}
