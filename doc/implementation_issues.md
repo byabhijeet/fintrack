@@ -22,10 +22,10 @@
   - **Blocked by**: Slice 2
   - **Description**: Add `expo-local-authentication` (FaceID/TouchID), check subscription status against the `accounts` and `subscriptions` tables, and build the Blocked Screen for users without an active plan. *Must include Unit Tests for the gate logic.*
 
-- [ ] **Slice 4: Income Entry & React Query Setup**
+- [x] **Slice 4: Income Entry & React Query Setup**
   - **Type**: AFK
   - **Blocked by**: Slice 2
-  - **Description**: Set up TanStack React Query. Build the Add Income form and list view, reading/writing to `income_entries` and `finance_categories`.
+  - **Description**: Set up TanStack React Query. Build the Add Income form and list view, reading/writing to `income_entries` and `finance_categories`.  
 
 - [ ] **Slice 5: Personal Expenses & Outflows**
   - **Type**: AFK

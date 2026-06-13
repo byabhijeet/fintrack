@@ -1,16 +1,44 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
+import { useNavigation } from '@react-navigation/native';
+import { useIncomeEntries } from '../../lib/queries/income';
+import { Banknote, History } from 'lucide-react-native';
 
 export default function HomeScreen() {
+  const navigation = useNavigation<any>();
+  const { data: incomeEntries } = useIncomeEntries();
+
+  const totalIncome = incomeEntries?.reduce((sum, entry) => sum + Number(entry.amount), 0) || 0;
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Home Dashboard</Text>
+        <Text style={styles.title}>Dashboard</Text>
         <Text style={styles.subtitle}>Welcome back to BillZest Finance</Text>
+        
         <View style={styles.card}>
-          <Text style={styles.cardText}>Finance data overview will appear here.</Text>
+          <Text style={styles.cardLabel}>Total Income</Text>
+          <Text style={styles.cardValue}>${totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+        </View>
+
+        <Text style={styles.sectionTitle}>Quick Actions</Text>
+        <View style={styles.grid}>
+          <TouchableOpacity 
+            style={styles.gridButton}
+            onPress={() => navigation.navigate('AddIncome')}
+          >
+            <Banknote color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
+            <Text style={styles.gridButtonText}>Add Income</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.gridButton}
+            onPress={() => navigation.navigate('IncomeHistory')}
+          >
+            <History color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
+            <Text style={styles.gridButtonText}>History</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
@@ -25,8 +53,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: theme.spacing.lg,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   title: {
     fontSize: theme.typography.sizes.xxl,
@@ -46,10 +72,43 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: theme.borderRadius.md,
     padding: theme.spacing.lg,
-    alignItems: 'center',
+    marginBottom: theme.spacing.xl,
   },
-  cardText: {
-    color: theme.colors.textMuted,
+  cardLabel: {
+    color: theme.colors.textSecondary,
     fontSize: theme.typography.sizes.sm,
+    marginBottom: theme.spacing.xs,
+  },
+  cardValue: {
+    color: theme.colors.primary,
+    fontSize: theme.typography.sizes.title,
+    fontWeight: theme.typography.weights.bold,
+  },
+  sectionTitle: {
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.semibold,
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.md,
+  },
+  grid: {
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+  },
+  gridButton: {
+    flex: 1,
+    backgroundColor: theme.colors.surfaceElevated,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
+    alignItems: 'center',
+    borderColor: theme.colors.border,
+    borderWidth: 1,
+  },
+  gridButtonIcon: {
+    marginBottom: theme.spacing.sm,
+  },
+  gridButtonText: {
+    color: theme.colors.textPrimary,
+    fontSize: theme.typography.sizes.sm,
+    fontWeight: theme.typography.weights.semibold,
   },
 });

@@ -6,18 +6,22 @@ import CreditBookScreen from '../screens/CreditBook/CreditBookScreen';
 import SplitScreen from '../screens/Split/SplitScreen';
 import HubScreen from '../screens/Hub/HubScreen';
 import { theme } from '../theme';
+import { Home, Book, SplitSquareHorizontal, LayoutGrid } from 'lucide-react-native';
 
 const Tab = createBottomTabNavigator();
 
 function TabIcon({ label, focused }: { label: string; focused: boolean }) {
-  let emoji = '🏠';
-  if (label === 'Credit Book') emoji = '📖';
-  if (label === 'Split') emoji = '⇄';
-  if (label === 'Hub') emoji = '⊞';
+  const color = focused ? theme.colors.primaryLight : theme.colors.textSecondary;
+  const size = 24;
+
+  let IconComponent = Home;
+  if (label === 'Credit Book') IconComponent = Book;
+  if (label === 'Split') IconComponent = SplitSquareHorizontal;
+  if (label === 'Hub') IconComponent = LayoutGrid;
 
   return (
     <View style={styles.iconContainer}>
-      <Text style={[styles.iconText, focused && styles.iconTextActive]}>{emoji}</Text>
+      <IconComponent color={color} size={size} />
       {focused && <View style={styles.activeDot} />}
     </View>
   );
@@ -69,13 +73,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: 40,
-  },
-  iconText: {
-    fontSize: 20,
-    opacity: 0.6,
-  },
-  iconTextActive: {
-    opacity: 1,
   },
   activeDot: {
     width: 4,
