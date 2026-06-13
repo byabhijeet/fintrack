@@ -36,22 +36,67 @@ export const lightTheme = {
 };
 
 export const typography = {
-  fontFamily: 'Inter', // Assuming Inter is linked/loaded, else fallback to System
+  // Brand & Headings (Playfair Display)
+  display: {
+    fontFamily: 'PlayfairDisplay_600SemiBold',
+    fontSize: 32,
+    lineHeight: 38,
+    letterSpacing: -0.64,
+  },
+  pageTitle: {
+    fontFamily: 'PlayfairDisplay_600SemiBold',
+    fontSize: 24,
+    lineHeight: 32,
+  },
+  sectionTitle: {
+    fontFamily: 'PlayfairDisplay_600SemiBold',
+    fontSize: 20,
+    lineHeight: 28,
+  },
+  // UI & Body (Inter)
+  body: {
+    fontFamily: 'Inter_400Regular',
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  bodyMedium: {
+    fontFamily: 'Inter_500Medium',
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  label: {
+    fontFamily: 'Inter_500Medium',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  caption: {
+    fontFamily: 'Inter_400Regular',
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  amount: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 18,
+    lineHeight: 24,
+  },
+
+  // Backward compatibility
+  fontFamily: 'Inter_400Regular',
   displayLg: {
-    fontFamily: 'Inter',
+    fontFamily: 'Inter_700Bold',
     fontSize: 32,
     fontWeight: '700' as const,
     lineHeight: 38,
     letterSpacing: -0.64,
   },
   displayLgMobile: {
-    fontFamily: 'Inter',
+    fontFamily: 'Inter_700Bold',
     fontSize: 28,
     fontWeight: '700' as const,
-    lineHeight: 33.6, // 28 * 1.2
+    lineHeight: 33.6,
   },
   labelCaps: {
-    fontFamily: 'Inter',
+    fontFamily: 'Inter_700Bold',
     fontSize: 12,
     fontWeight: '700' as const,
     lineHeight: 12,
@@ -59,18 +104,17 @@ export const typography = {
     textTransform: 'uppercase' as const,
   },
   bodyMd: {
-    fontFamily: 'Inter',
+    fontFamily: 'Inter_400Regular',
     fontSize: 16,
     fontWeight: '400' as const,
     lineHeight: 24,
   },
   bodySm: {
-    fontFamily: 'Inter',
+    fontFamily: 'Inter_400Regular',
     fontSize: 14,
     fontWeight: '400' as const,
     lineHeight: 21,
   },
-  // Added for backward compatibility with old placeholder screens
   sizes: {
     xs: 12,
     sm: 14,

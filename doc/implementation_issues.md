@@ -63,7 +63,7 @@
   - **Blocked by**: Slice 5
   - **Description**: Build the Recurring Templates view. Implement "Mark Paid" and auto-process active bills on app launch.
 
-- [ ] **Slice 12: Credit Book (P2P Ledger)**
+- [x] **Slice 12: Credit Book (P2P Ledger)**
   - **Type**: AFK
   - **Blocked by**: Slice 4
   - **Description**: Add Credit Parties (enforcing mobile uniqueness). Build the Add Transaction (gave/got) form and show net balances.

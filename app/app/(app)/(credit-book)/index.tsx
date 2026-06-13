@@ -1,1 +1,1 @@
-export { default } from '@/screens/CreditBook/CreditBookScreen';
+export { default } from '@/screens/CreditBook/CreditBookListScreen';
