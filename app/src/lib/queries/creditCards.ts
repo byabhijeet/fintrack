@@ -93,6 +93,26 @@ export const useCardSpends = (cardId: string) => {
   });
 };
 
+export const useAllCardSpends = () => {
+  const user = useAuthStore((state) => state.user);
+
+  return useQuery({
+    queryKey: ['card_spends_all', user?.id],
+    queryFn: async () => {
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('card_spends')
+        .select('*')
+        .order('spend_date', { ascending: false });
+
+      if (error) throw error;
+      return data as CardSpend[];
+    },
+    enabled: !!user,
+  });
+};
+
 export const useAddCardSpendMutation = () => {
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);

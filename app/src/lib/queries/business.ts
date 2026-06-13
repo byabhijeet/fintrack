@@ -107,6 +107,27 @@ export const useBusinessIncome = (businessId?: string) => {
   });
 };
 
+// Fetch all business income for dashboard
+export const useAllBusinessIncome = () => {
+  const user = useAuthStore((state) => state.user);
+
+  return useQuery({
+    queryKey: ['business_income_all', user?.id],
+    queryFn: async () => {
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('business_income')
+        .select('*')
+        .order('entry_date', { ascending: false });
+
+      if (error) throw error;
+      return data as BusinessIncome[];
+    },
+    enabled: !!user,
+  });
+};
+
 // Add business income
 export const useAddBusinessIncomeMutation = () => {
   const queryClient = useQueryClient();
@@ -154,6 +175,27 @@ export const useBusinessExpenses = (businessId?: string) => {
       return data as BusinessExpense[];
     },
     enabled: !!user && !!businessId,
+  });
+};
+
+// Fetch all business expenses for dashboard
+export const useAllBusinessExpenses = () => {
+  const user = useAuthStore((state) => state.user);
+
+  return useQuery({
+    queryKey: ['business_expenses_all', user?.id],
+    queryFn: async () => {
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('business_expenses')
+        .select('*')
+        .order('entry_date', { ascending: false });
+
+      if (error) throw error;
+      return data as BusinessExpense[];
+    },
+    enabled: !!user,
   });
 };
 
