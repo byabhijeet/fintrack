@@ -1817,7 +1817,7 @@ CREATE TABLE public.credit_cards (
   user_id uuid NOT NULL DEFAULT auth.uid(),
   card_name text NOT NULL,
   bank text NOT NULL,
-  last4 character,
+  last4 character varying(4),
   credit_limit numeric,
   billing_day integer CHECK (billing_day >= 1 AND billing_day <= 31),
   created_at timestamp with time zone DEFAULT now(),

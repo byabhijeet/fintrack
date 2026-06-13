@@ -27,7 +27,7 @@
   - **Blocked by**: Slice 2
   - **Description**: Set up TanStack React Query. Build the Add Income form and list view, reading/writing to `income_entries` and `finance_categories`.  
 
-- [ ] **Slice 5: Personal Expenses & Outflows**
+- [x] **Slice 5: Personal Expenses & Outflows**
   - **Type**: AFK
   - **Blocked by**: Slice 4
   - **Description**: Build the Expense and Outflow form + list view using `finance_entries` with category selection.
@@ -37,7 +37,7 @@
   - **Blocked by**: Slices 4, 5
   - **Description**: Build the Dashboard landing page. Calculate the Ecosystem Net and add the Victory Native area/bar charts.
 
-- [ ] **Slice 7: Credit Cards & Spends Tracker**
+- [x] **Slice 7: Credit Cards & Spends Tracker**
   - **Type**: AFK
   - **Blocked by**: Slice 4
   - **Description**: Add Credit Card management, Card Spends logging, and calculate credit utilization based on billing cycles.

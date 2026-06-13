@@ -5,9 +5,15 @@ import TabNavigator from './TabNavigator';
 import LoginScreen from '../screens/LoginScreen';
 import AddIncomeScreen from '../screens/Home/AddIncomeScreen';
 import IncomeHistoryScreen from '../screens/Home/IncomeHistoryScreen';
+import AddExpenseScreen from '../screens/Home/AddExpenseScreen';
+import ExpenseHistoryScreen from '../screens/Home/ExpenseHistoryScreen';
 import BlockedScreen from '../screens/auth/BlockedScreen';
 import BiometricSetupScreen from '../screens/auth/BiometricSetupScreen';
 import BiometricUnlockScreen from '../screens/auth/BiometricUnlockScreen';
+import CreditCardListScreen from '../screens/CreditCards/CreditCardListScreen';
+import AddCreditCardScreen from '../screens/CreditCards/AddCreditCardScreen';
+import CreditCardDetailsScreen from '../screens/CreditCards/CreditCardDetailsScreen';
+import AddCardSpendScreen from '../screens/CreditCards/AddCardSpendScreen';
 import { useAuthStore } from '../store/authStore';
 import { useAppTheme } from '../theme';
 
@@ -55,6 +61,72 @@ export default function AppNavigator() {
             options={{ 
               headerShown: true, 
               title: 'Income History',
+              headerStyle: { backgroundColor: colors.background },
+              headerTintColor: colors.textPrimary,
+              headerTitleStyle: { ...typography.bodyMd, fontWeight: '700' }
+            }} 
+          />
+          <Stack.Screen 
+            name="AddExpense" 
+            component={AddExpenseScreen} 
+            options={{ 
+              headerShown: true, 
+              title: 'Add Expense',
+              headerStyle: { backgroundColor: colors.background },
+              headerTintColor: colors.textPrimary,
+              headerTitleStyle: { ...typography.bodyMd, fontWeight: '700' }
+            }} 
+          />
+          <Stack.Screen 
+            name="ExpenseHistory" 
+            component={ExpenseHistoryScreen} 
+            options={{ 
+              headerShown: true, 
+              title: 'Expense History',
+              headerStyle: { backgroundColor: colors.background },
+              headerTintColor: colors.textPrimary,
+              headerTitleStyle: { ...typography.bodyMd, fontWeight: '700' }
+            }} 
+          />
+          <Stack.Screen 
+            name="CreditCardList" 
+            component={CreditCardListScreen} 
+            options={{ 
+              headerShown: true, 
+              title: 'Credit Cards',
+              headerStyle: { backgroundColor: colors.background },
+              headerTintColor: colors.textPrimary,
+              headerTitleStyle: { ...typography.bodyMd, fontWeight: '700' }
+            }} 
+          />
+          <Stack.Screen 
+            name="AddCreditCard" 
+            component={AddCreditCardScreen} 
+            options={{ 
+              headerShown: true, 
+              title: 'Add Credit Card',
+              headerStyle: { backgroundColor: colors.background },
+              headerTintColor: colors.textPrimary,
+              headerTitleStyle: { ...typography.bodyMd, fontWeight: '700' }
+            }} 
+          />
+          <Stack.Screen 
+            name="CreditCardDetails" 
+            component={CreditCardDetailsScreen} 
+            options={{ 
+              headerShown: true, 
+              title: 'Card Details',
+              headerStyle: { backgroundColor: colors.background },
+              headerTintColor: colors.textPrimary,
+              headerTitleStyle: { ...typography.bodyMd, fontWeight: '700' }
+            }} 
+          />
+          <Stack.Screen 
+            name="AddCardSpend" 
+            component={AddCardSpendScreen} 
+            options={{ 
+              headerShown: true, 
+              title: 'Add Spend',
               headerStyle: { backgroundColor: colors.background },
               headerTintColor: colors.textPrimary,
               headerTitleStyle: { ...typography.bodyMd, fontWeight: '700' }

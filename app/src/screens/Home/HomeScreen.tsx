@@ -4,13 +4,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 import { useIncomeEntries } from '../../lib/queries/income';
-import { Banknote, History } from 'lucide-react-native';
+import { useExpenseEntries } from '../../lib/queries/expenses';
+import { Banknote, History, CreditCard, Receipt } from 'lucide-react-native';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const { data: incomeEntries } = useIncomeEntries();
+  const { data: expenseEntries } = useExpenseEntries();
 
   const totalIncome = incomeEntries?.reduce((sum, entry) => sum + Number(entry.amount), 0) || 0;
+  const totalExpenses = expenseEntries?.reduce((sum, entry) => sum + Number(entry.amount), 0) || 0;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -18,9 +21,15 @@ export default function HomeScreen() {
         <Text style={styles.title}>Dashboard</Text>
         <Text style={styles.subtitle}>Welcome back to BillZest Finance</Text>
         
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>Total Income</Text>
-          <Text style={styles.cardValue}>${totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+        <View style={{ flexDirection: 'row', gap: theme.spacing.md, marginBottom: theme.spacing.xl }}>
+          <View style={[styles.card, { flex: 1, marginBottom: 0 }]}>
+            <Text style={styles.cardLabel}>Total Income</Text>
+            <Text style={styles.cardValue}>${totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+          </View>
+          <View style={[styles.card, { flex: 1, marginBottom: 0 }]}>
+            <Text style={styles.cardLabel}>Total Out</Text>
+            <Text style={[styles.cardValue, { color: '#FF4B4B' }]}>${totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+          </View>
         </View>
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>
@@ -34,10 +43,35 @@ export default function HomeScreen() {
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.gridButton}
+            onPress={() => navigation.navigate('AddExpense')}
+          >
+            <CreditCard color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
+            <Text style={styles.gridButtonText}>Add Expense</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={[styles.grid, { marginTop: theme.spacing.md }]}>
+          <TouchableOpacity 
+            style={styles.gridButton}
             onPress={() => navigation.navigate('IncomeHistory')}
           >
             <History color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
             <Text style={styles.gridButtonText}>History</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.gridButton}
+            onPress={() => navigation.navigate('ExpenseHistory')}
+          >
+            <History color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
+            <Text style={styles.gridButtonText}>Expense History</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={[styles.grid, { marginTop: theme.spacing.md }]}>
+          <TouchableOpacity 
+            style={styles.gridButton}
+            onPress={() => navigation.navigate('CreditCardList')}
+          >
+            <CreditCard color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
+            <Text style={styles.gridButtonText}>Credit Cards</Text>
           </TouchableOpacity>
         </View>
       </View>
