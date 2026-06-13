@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../billzest_fin"
+		},
+		{
+			"path": "../billzest_fin_flutter"
+		}
+	],
+	"settings": {}
+}

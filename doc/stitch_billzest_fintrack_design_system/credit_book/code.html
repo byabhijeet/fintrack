@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Credit Book - BillZest</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "on-tertiary": "#313030",
+                    "error": "#ffb4ab",
+                    "secondary-fixed": "#e2e2e2",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "primary": "#4cf479",
+                    "surface-dim": "#131313",
+                    "outline": "#859583",
+                    "on-surface": "#e5e2e1",
+                    "background": "#131313",
+                    "surface-container-lowest": "#0e0e0e",
+                    "error-container": "#93000a",
+                    "inverse-primary": "#006e2c",
+                    "surface-tint": "#34e36a",
+                    "surface": "#131313",
+                    "outline-variant": "#3c4a3c",
+                    "tertiary-container": "#bdbbba",
+                    "on-surface-variant": "#bbcbb8",
+                    "primary-fixed-dim": "#34e36a",
+                    "tertiary": "#d9d6d6",
+                    "on-secondary": "#2f3131",
+                    "on-secondary-container": "#b4b5b5",
+                    "secondary": "#c6c6c7",
+                    "on-primary-fixed": "#002108",
+                    "surface-container-low": "#1c1b1b",
+                    "on-error": "#690005",
+                    "on-primary-fixed-variant": "#00531f",
+                    "primary-container": "#1ed760",
+                    "on-tertiary-fixed-variant": "#474646",
+                    "surface-container": "#201f1f",
+                    "surface-container-highest": "#353535",
+                    "tertiary-fixed": "#e5e2e1",
+                    "secondary-container": "#454747",
+                    "on-primary": "#003913",
+                    "surface-container-high": "#2a2a2a",
+                    "on-primary-container": "#005721",
+                    "surface-variant": "#353535",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "on-background": "#e5e2e1",
+                    "inverse-on-surface": "#313030",
+                    "primary-fixed": "#69ff89",
+                    "surface-bright": "#393939",
+                    "on-tertiary-container": "#4c4b4b",
+                    "on-secondary-fixed-variant": "#454747",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "inverse-surface": "#e5e2e1",
+                    "on-error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "xl": "32px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "sm": "8px",
+                    "margin-desktop": "40px",
+                    "2xl": "48px",
+                    "xs": "4px",
+                    "base": "4px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-md": [
+                            "Inter"
+                    ],
+                    "display-lg": [
+                            "Inter"
+                    ],
+                    "body-sm": [
+                            "Inter"
+                    ],
+                    "label-caps": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "display-lg-mobile": [
+                            "Inter"
+                    ],
+                    "title-sm": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "display-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "1",
+                                    "letterSpacing": "0.1em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display-lg-mobile": [
+                            "28px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "title-sm": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #121212;
+            color: #e5e2e1;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glow-effect {
+            box-shadow: 0px 4px 20px rgba(30, 215, 96, 0.3);
+        }
+        .playlist-row {
+            height: 64px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md text-body-md pb-24 relative overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface text-primary dark:text-primary font-headline-md text-headline-md-mobile flex justify-between items-center px-margin-mobile h-16 w-full z-50 sticky top-0">
+<button class="hover:opacity-80 transition-opacity flex items-center justify-center p-sm rounded-full active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-on-surface dark:text-on-surface">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile font-bold text-on-surface dark:text-on-surface tracking-tight">Credit Book</h1>
+<button class="hover:opacity-80 transition-opacity flex items-center justify-center p-sm rounded-full active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-on-surface dark:text-on-surface">account_circle</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="flex-1 px-margin-mobile md:px-margin-desktop py-lg max-w-7xl mx-auto w-full flex flex-col gap-xl">
+<!-- Summary Card -->
+<section class="bg-surface-container-high rounded-xl p-lg flex flex-col gap-md relative overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+<!-- Decorative gradient -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+<div class="flex justify-between items-end">
+<div class="flex flex-col gap-xs">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Total Owed to You</span>
+<h2 class="font-display-lg-mobile text-display-lg-mobile md:font-display-lg md:text-display-lg text-primary tracking-tight">$1,420.50</h2>
+</div>
+<div class="flex flex-col gap-xs text-right">
+<span class="font-body-sm text-body-sm text-on-surface-variant">You Owe</span>
+<h2 class="font-title-sm text-title-sm text-error">$350.00</h2>
+</div>
+</div>
+</section>
+<!-- Search Bar -->
+<section class="w-full">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant z-10 pointer-events-none">search</span>
+<input class="w-full bg-[#282828] text-on-surface font-body-md text-body-md rounded-full py-sm pl-[48px] pr-md border-none focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-on-surface-variant transition-shadow duration-300 shadow-inner" placeholder="Search contacts..." type="text"/>
+</div>
+</section>
+<!-- Ledger List -->
+<section class="flex flex-col gap-sm">
+<h3 class="font-title-sm text-title-sm text-on-surface mb-xs px-xs">Active Balances</h3>
+<!-- Row 1: Owed to you -->
+<div class="playlist-row flex items-center justify-between px-xs hover:bg-surface-container-high/50 rounded-lg transition-colors cursor-pointer group">
+<div class="flex items-center gap-md">
+<img alt="Avatar" class="w-[48px] h-[48px] rounded-full object-cover shadow-sm" data-alt="A portrait photography of a young woman with a sleek modern haircut in a neon-lit studio environment. The lighting is cinematic, highlighting her features with a subtle green vaporwave-adjacent glow, matching a dark mode immersive UI aesthetic. She appears energetic and tech-savvy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbfL4_Y4TVVVQu5jnL-CQhXl-bUx8a-BIutamPo7hbnmfqw_O72bxn4osAhvl66gWyMiISpqVyS7WO-eX0v8eIkDMszTRx5JHU9TPxgXWmQ2Aw_QzjF5CDDmK9jGF0y8zAUV6JKR2zg5HAwwKm0YRScnKbjzyb9N6i6f8Lx5-tVV10KqhURaQ_dpM7R2Cqqr7WI74Mjzj5z-Tpe2CJBYaSiq4Iovu5ymPge6bvV80gPU-xF6YA5ECgwQ"/>
+<div class="flex flex-col justify-center">
+<span class="font-title-sm text-title-sm text-on-surface group-hover:text-primary transition-colors">Sarah Jenkins</span>
+<span class="font-body-sm text-body-sm text-primary">Owes you $450.00</span>
+</div>
+</div>
+<button class="bg-primary-container text-on-primary-fixed font-label-caps text-label-caps px-md py-xs rounded-full hover:bg-primary-fixed transition-colors glow-effect active:scale-95">SETTLE</button>
+</div>
+<!-- Row 2: You owe -->
+<div class="playlist-row flex items-center justify-between px-xs hover:bg-surface-container-high/50 rounded-lg transition-colors cursor-pointer group">
+<div class="flex items-center gap-md">
+<div class="w-[48px] h-[48px] rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div class="flex flex-col justify-center">
+<span class="font-title-sm text-title-sm text-on-surface group-hover:text-primary transition-colors">Marcus T.</span>
+<span class="font-body-sm text-body-sm text-error">You owe $120.00</span>
+</div>
+</div>
+<button class="bg-surface-container-highest text-on-surface font-label-caps text-label-caps px-md py-xs rounded-full hover:bg-surface-variant transition-colors active:scale-95 border border-outline-variant">PAY</button>
+</div>
+<!-- Row 3: Owed to you -->
+<div class="playlist-row flex items-center justify-between px-xs hover:bg-surface-container-high/50 rounded-lg transition-colors cursor-pointer group">
+<div class="flex items-center gap-md">
+<img alt="Avatar" class="w-[48px] h-[48px] rounded-full object-cover shadow-sm" data-alt="A portrait of a young man with a slight smile in a dark, atmospheric studio setting. The lighting is moody with high-contrast shadows and a subtle hint of neon green rim light. The overall aesthetic is clean, corporate modern fused with a tech-forward dark UI vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrOsyqYn8qZqGg3j_ImA8KtJ9jLyz4DBJdpI0bKOKnyFsituwHFFhtMXB64_oCrkAfXLW1oZudxrbQm2dKjimiAvSUqYWJJouidFz9ih6xgKLFKke8X_HL79sjFffvKIpBu3Jq2lk0XzhcwXK9qiewn8zbrgSexEn2ySOzYNddcPIE2DElVTPaSSLrMbwpDfz1VblHnRfVzqccYAedkGBJCNgf0OEz-Dh3OfvhjB8GZgR7veh91javfg"/>
+<div class="flex flex-col justify-center">
+<span class="font-title-sm text-title-sm text-on-surface group-hover:text-primary transition-colors">David Chen</span>
+<span class="font-body-sm text-body-sm text-primary">Owes you $970.50</span>
+</div>
+</div>
+<button class="bg-primary-container text-on-primary-fixed font-label-caps text-label-caps px-md py-xs rounded-full hover:bg-primary-fixed transition-colors glow-effect active:scale-95">SETTLE</button>
+</div>
+<!-- Row 4: Settled (Historical) -->
+<div class="playlist-row flex items-center justify-between px-xs hover:bg-surface-container-high/50 rounded-lg transition-colors cursor-pointer group opacity-60">
+<div class="flex items-center gap-md">
+<div class="w-[48px] h-[48px] rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div class="flex flex-col justify-center">
+<span class="font-title-sm text-title-sm text-on-surface line-through">Elena R.</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Settled 2 days ago</span>
+</div>
+</div>
+<div class="px-md py-xs flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+</div>
+</div>
+</section>
+</main>
+<!-- FAB for adding new credit entry - Contextually relevant for a ledger -->
+<button class="fixed bottom-24 right-margin-mobile md:right-margin-desktop w-14 h-14 rounded-full bg-primary-container text-on-primary-fixed flex items-center justify-center glow-effect hover:scale-105 active:scale-95 transition-all z-40 shadow-[0_4px_24px_rgba(30,215,96,0.3)]">
+<span class="material-symbols-outlined">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center pt-sm pb-lg px-md bg-surface/80 dark:bg-surface/80 backdrop-blur-lg">
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:text-primary transition-colors hover:opacity-100 p-xs group">
+<span class="material-symbols-outlined mb-xs group-active:scale-110 transition-transform duration-200">home</span>
+<span class="font-label-caps text-label-caps">HOME</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:text-primary transition-colors hover:opacity-100 p-xs group">
+<span class="material-symbols-outlined mb-xs group-active:scale-110 transition-transform duration-200">analytics</span>
+<span class="font-label-caps text-label-caps">TRENDS</span>
+</button>
+<!-- Wallet mapped to Credit Book intent -->
+<button class="flex flex-col items-center justify-center text-primary dark:text-primary font-bold p-xs group">
+<span class="material-symbols-outlined mb-xs scale-110 transition-transform duration-200" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-label-caps text-label-caps">WALLET</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:text-primary transition-colors hover:opacity-100 p-xs group">
+<span class="material-symbols-outlined mb-xs group-active:scale-110 transition-transform duration-200">smart_toy</span>
+<span class="font-label-caps text-label-caps">BOI</span>
+</button>
+</nav>
+</body></html>
