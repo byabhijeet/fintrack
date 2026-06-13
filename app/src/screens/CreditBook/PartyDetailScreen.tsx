@@ -37,10 +37,10 @@ export default function PartyDetailScreen() {
 
   // Fetch data
   const { data: parties = [] } = useCreditParties();
-  const { data: txns = [], isLoading } = usePartyTransactions(partyId ?? '');
-  const deleteTransactionMutation = useDeleteTransactionMutation();
-
   const party = parties.find((p) => p.id === partyId);
+
+  const { data: txns = [], isLoading } = usePartyTransactions(partyId ?? '', party?.mobile);
+  const deleteTransactionMutation = useDeleteTransactionMutation();
 
   // Net balance (positive = receivable, negative = payable)
   const net = useMemo(() => computeNetBalance(txns), [txns]);
@@ -102,9 +102,14 @@ export default function PartyDetailScreen() {
 
         {/* Details */}
         <View style={styles.txnDetails}>
-          <Text style={[styles.txnType, typography.label, { color: colors.textPrimary }]}>
-            {isGot ? 'You received' : 'You lent'}
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={[styles.txnType, { color: colors.textPrimary }]}>
+              {isGot ? 'You received' : 'You lent'}
+            </Text>
+            {item.is_b2b && (
+              <Text style={{ fontSize: 10, color: colors.primary, marginLeft: 6, fontWeight: 'bold' }}> • B2B SYNC</Text>
+            )}
+          </View>
           {item.note ? (
             <Text style={[styles.txnNote, typography.caption, { color: colors.textSecondary }]} numberOfLines={1}>
               {item.note}
@@ -121,16 +126,18 @@ export default function PartyDetailScreen() {
 
         {/* Amount + delete */}
         <View style={styles.txnRight}>
-          <Text style={[styles.txnAmount, typography.bodyMedium, { color: txnColor }]}>
+          <Text style={[styles.txnAmount, { color: txnColor }]}>
             {prefix} {fmt(item.amount)}
           </Text>
-          <TouchableOpacity
-            onPress={() => handleDeleteTransaction(item)}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            style={{ marginTop: 6 }}
-          >
-            <Trash2 size={15} color={colors.textSecondary} />
-          </TouchableOpacity>
+          {!item.is_b2b && (
+            <TouchableOpacity
+              onPress={() => handleDeleteTransaction(item)}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              style={{ marginTop: 6 }}
+            >
+              <Trash2 size={15} color={colors.textSecondary} />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     );

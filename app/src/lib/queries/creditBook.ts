@@ -29,6 +29,7 @@ export type PersonalCreditTransaction = {
   settled: boolean;
   settled_at: string | null;
   created_at: string;
+  is_b2b?: boolean;
 };
 
 // ---------------------------------------------------------------------------
@@ -72,8 +73,8 @@ export const useCreditParties = () => {
   });
 };
 
-/** Fetch all non-settled transactions for a specific party. */
-export const usePartyTransactions = (partyId: string) => {
+/** Fetch all non-settled transactions for a specific party, including B2B sync. */
+export const usePartyTransactions = (partyId: string, partyMobile?: string) => {
   const user = useAuthStore((s) => s.user);
 
   return useQuery({
@@ -81,14 +82,85 @@ export const usePartyTransactions = (partyId: string) => {
     queryFn: async () => {
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      // 1. Fetch P2P transactions
+      const { data: p2pData, error: p2pError } = await supabase
         .from('personal_credit_transactions')
         .select('*')
-        .eq('party_id', partyId)
-        .order('txn_date', { ascending: false });
+        .eq('party_id', partyId);
 
-      if (error) throw error;
-      return data as PersonalCreditTransaction[];
+      if (p2pError) throw p2pError;
+      
+      let allTxns: PersonalCreditTransaction[] = (p2pData || []).map(t => ({ ...t, is_b2b: false }));
+
+      // 2. Fetch B2B transactions if mobile is provided
+      if (partyMobile) {
+        try {
+          const cleanMobile = partyMobile.replace(/\D/g, '').slice(-10);
+          if (cleanMobile.length === 10) {
+            // Find if there are any orgs for this mobile
+            const searchTerms = [cleanMobile, `+91${cleanMobile}`, partyMobile];
+            const { data: matchedAccounts } = await supabase
+              .from('accounts')
+              .select('id')
+              .in('mobile', searchTerms);
+
+            if (matchedAccounts && matchedAccounts.length > 0) {
+              const matchedAccIds = matchedAccounts.map(a => a.id);
+              
+              // Find organizations corresponding to these accounts
+              const { data: orgs } = await supabase
+                .from('organizations')
+                .select('id')
+                .in('account_id', matchedAccIds);
+              
+              if (orgs && orgs.length > 0) {
+                const orgIds = orgs.map(o => o.id);
+                
+                // Get current user's account_id
+                const { data: userAcc } = await supabase
+                  .from('accounts')
+                  .select('id')
+                  .eq('auth_id', user.id)
+                  .single();
+                  
+                if (userAcc) {
+                  // Fetch B2B transactions
+                  const { data: b2bTxns } = await supabase
+                    .from('credit_transactions')
+                    .select('*')
+                    .in('organization_id', orgIds)
+                    .eq('party_id', userAcc.id);
+                    
+                  if (b2bTxns && b2bTxns.length > 0) {
+                    const mappedB2B: PersonalCreditTransaction[] = b2bTxns.map((t: any) => ({
+                      id: t.id,
+                      creator_id: t.organization_id, // Virtual creator
+                      party_id: partyId,
+                      counterparty_mob: partyMobile,
+                      txn_date: t.date,
+                      type: t.type === 'given' ? 'got' : 'gave',
+                      amount: Number(t.amount),
+                      note: t.description || 'Merchant Store Credit',
+                      settled: false,
+                      settled_at: null,
+                      created_at: t.created_at,
+                      is_b2b: true,
+                    }));
+                    allTxns = [...allTxns, ...mappedB2B];
+                  }
+                }
+              }
+            }
+          }
+        } catch (err) {
+          console.warn('Failed to sync B2B transactions:', err);
+        }
+      }
+
+      // Sort descending by date
+      allTxns.sort((a, b) => new Date(b.txn_date).getTime() - new Date(a.txn_date).getTime());
+
+      return allTxns;
     },
     enabled: !!user && !!partyId,
   });

@@ -32,7 +32,7 @@ function PartyRow({
 }) {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
   const { privacyMode } = useUIStore();
-  const { data: txns = [] } = usePartyTransactions(party.id);
+  const { data: txns = [] } = usePartyTransactions(party.id, party.mobile);
 
   const net = useMemo(() => computeNetBalance(txns), [txns]);
   const isReceivable = net > 0;

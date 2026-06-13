@@ -68,7 +68,7 @@
   - **Blocked by**: Slice 4
   - **Description**: Add Credit Parties (enforcing mobile uniqueness). Build the Add Transaction (gave/got) form and show net balances.
 
-- [ ] **Slice 13: Credit Book (B2B Merchant Sync)**
+- [x] **Slice 13: Credit Book (B2B Merchant Sync)**
   - **Type**: AFK
   - **Blocked by**: Slice 12
   - **Description**: Detect if a party mobile matches a BillZest org, fetch B2B transactions, and merge them as read-only into the ledger.
