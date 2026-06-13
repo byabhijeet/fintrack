@@ -8,10 +8,13 @@ import { useExpenseEntries } from '../../lib/queries/expenses';
 import { useAllBusinessIncome, useAllBusinessExpenses } from '../../lib/queries/business';
 import { processRecurringTransactions } from '../../lib/queries/bills';
 import { useAllCardSpends } from '../../lib/queries/creditCards';
+import { useLoans } from '../../lib/queries/loans';
+import { useCreditParties, usePartyTransactions, computeNetBalance } from '../../lib/queries/creditBook';
 import { useUIStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
 import { Banknote, History, CreditCard, Store, EyeOff, Eye } from 'lucide-react-native';
 import { BarChart } from 'react-native-gifted-charts';
+import { supabase } from '../../lib/supabase';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -22,10 +25,57 @@ export default function HomeScreen() {
   const { data: businessIncome } = useAllBusinessIncome();
   const { data: businessExpenses } = useAllBusinessExpenses();
   const { data: cardSpends } = useAllCardSpends();
+  const { data: loans } = useLoans();
+  const { data: creditParties } = useCreditParties();
   
   // UI state
   const { privacyMode, togglePrivacyMode } = useUIStore();
   const user = useAuthStore((state) => state.user);
+
+  // Fetch loan EMI payments and part payments
+  const [loanPayments, setLoanPayments] = React.useState<any[]>([]);
+  const [partPayments, setPartPayments] = React.useState<any[]>([]);
+  
+  useEffect(() => {
+    if (user?.id) {
+      // Fetch loan EMI payments
+      (async () => {
+        const { data } = await supabase
+          .from('loan_emi_payments')
+          .select('*')
+          .eq('user_id', user.id);
+        setLoanPayments(data || []);
+      })();
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (user?.id) {
+      // Fetch loan part payments
+      (async () => {
+        const { data } = await supabase
+          .from('loan_part_payments')
+          .select('*')
+          .eq('user_id', user.id);
+        setPartPayments(data || []);
+      })();
+    }
+  }, [user?.id]);
+
+  // Fetch credit book transactions for all parties
+  const [creditTransactions, setCreditTransactions] = React.useState<any[]>([]);
+  
+  useEffect(() => {
+    if (user?.id && creditParties && creditParties.length > 0) {
+      (async () => {
+        const { data } = await supabase
+          .from('personal_credit_transactions')
+          .select('*')
+          .eq('creator_id', user.id);
+        setCreditTransactions(data || []);
+      })();
+    }
+  }, [user?.id, creditParties]);
 
   useEffect(() => {
     if (user?.id) {
@@ -40,6 +90,10 @@ export default function HomeScreen() {
     let bizIn = 0;
     let bizOut = 0;
     let cardsOut = 0;
+    let loanEmiOut = 0;
+    let loanPartPaymentOut = 0;
+    let creditReceivables = 0;
+    let creditPayables = 0;
 
     const allTransactions: { id: string; date: string; amount: number; title: string; type: 'inflow' | 'outflow' }[] = [];
 
@@ -73,10 +127,42 @@ export default function HomeScreen() {
       allTransactions.push({ id: `card_${e.id}`, date: e.spend_date, amount: Number(e.amount), title: e.merchant || 'Card Spend', type: 'outflow' });
     });
 
+    // Loan EMI Payments
+    loanPayments?.forEach(e => {
+      loanEmiOut += Number(e.total_paid);
+      allTransactions.push({ id: `emi_${e.id}`, date: e.payment_date, amount: Number(e.total_paid), title: 'Loan EMI', type: 'outflow' });
+    });
+
+    // Loan Part Payments
+    partPayments?.forEach(e => {
+      loanPartPaymentOut += Number(e.amount);
+      allTransactions.push({ id: `part_${e.id}`, date: e.payment_date, amount: Number(e.amount), title: 'Loan Part Payment', type: 'outflow' });
+    });
+
+    // Credit Book: Calculate net for all parties
+    creditTransactions?.forEach(t => {
+      const amount = Number(t.amount);
+      if (t.type === 'got') {
+        creditReceivables += amount; // Money owed to me
+      } else if (t.type === 'gave') {
+        creditPayables += amount; // Money I owe
+      }
+      // Only add to transactions if not settled
+      if (!t.settled) {
+        allTransactions.push({
+          id: `credit_${t.id}`,
+          date: t.txn_date,
+          amount: amount,
+          title: t.type === 'got' ? 'Credit Receivable' : 'Credit Payable',
+          type: t.type === 'got' ? 'inflow' : 'outflow'
+        });
+      }
+    });
+
     // Ecosystem Net Formula
-    // Ecosystem Net = (Personal Income + Business Income + Credit Receivables) - (Personal Expenses + Card Spends + Business Expenses + Loan EMIs + Credit Payables)
-    const tIn = personalIn + bizIn;
-    const tOut = personalOut + bizOut + cardsOut;
+    // Ecosystem Net = (Personal Income + Business Income + Credit Receivables) - (Personal Expenses + Card Spends + Business Expenses + Loan EMIs + Loan Part Payments + Credit Payables)
+    const tIn = personalIn + bizIn + creditReceivables;
+    const tOut = personalOut + bizOut + cardsOut + loanEmiOut + loanPartPaymentOut + creditPayables;
     const net = tIn - tOut;
 
     // Monthly Chart Data (simplified for demo: just aggregate last 6 months)
@@ -120,7 +206,7 @@ export default function HomeScreen() {
       chartData: cData,
       recentActivity: allTransactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5)
     };
-  }, [incomeEntries, expenseEntries, businessIncome, businessExpenses, cardSpends]);
+  }, [incomeEntries, expenseEntries, businessIncome, businessExpenses, cardSpends, loanPayments, partPayments, creditTransactions]);
 
   const displayAmount = (amount: number) => {
     return privacyMode ? '***' : `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
