@@ -12,11 +12,13 @@ import {
   Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { useRewards, useFlashDeals, useUserPoints, useUserRedemptions, usePartnerReferrals, useRedeemRewardMutation, useCreateReferralMutation } from '../../lib/queries/hub';
-import { Gift, Zap, Users, Copy, Check } from 'lucide-react-native';
+import { Gift, Zap, Users, Copy, Check, User, Settings as SettingsIcon, Bell } from 'lucide-react-native';
 
 export default function HubScreen() {
+  const router = useRouter();
   const { data: rewards, isLoading: rewardsLoading } = useRewards();
   const { data: deals, isLoading: dealsLoading } = useFlashDeals();
   const { data: redemptions } = useUserRedemptions();
@@ -97,6 +99,31 @@ export default function HubScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Finance Hub</Text>
           <Text style={styles.subtitle}>Rewards, Deals & More</Text>
+        </View>
+
+
+        {/* Navigation Grid */}
+        <View style={styles.navGrid}>
+          <TouchableOpacity style={styles.navItem} onPress={() => router.push('/(app)/(hub)/profile')}>
+            <View style={[styles.navIcon, { backgroundColor: 'rgba(30, 215, 96, 0.1)' }]}>
+              <User color={theme.colors.primary} size={24} />
+            </View>
+            <Text style={styles.navLabel}>Profile</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navItem} onPress={() => router.push('/(app)/(hub)/settings')}>
+            <View style={[styles.navIcon, { backgroundColor: 'rgba(30, 215, 96, 0.1)' }]}>
+              <SettingsIcon color={theme.colors.primary} size={24} />
+            </View>
+            <Text style={styles.navLabel}>Settings</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navItem} onPress={() => router.push('/(app)/(hub)/activity')}>
+            <View style={[styles.navIcon, { backgroundColor: 'rgba(30, 215, 96, 0.1)' }]}>
+              <Bell color={theme.colors.primary} size={24} />
+            </View>
+            <Text style={styles.navLabel}>Activity</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Points Card */}
@@ -355,6 +382,28 @@ export default function HubScreen() {
 }
 
 const styles = StyleSheet.create({
+  navGrid: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    justifyContent: 'space-between',
+  },
+  navItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  navIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  navLabel: {
+    ...theme.typography.caption,
+    color: theme.colors.text,
+  },
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,

@@ -96,7 +96,7 @@
   - **Description**: Display Rewards (points/redemptions), active Flash Deals, and Partner Referral screens.
   - **Note**: Implemented rewards display, flash deals carousel, redemption system with points calculation, and partner referral invitations with email/phone tracking.
 
-- [ ] **Slice 18: Profile, Settings, & Realtime Notifications**
+- [x] **Slice 18: Profile, Settings, & Realtime Notifications**
   - **Type**: AFK
   - **Blocked by**: Slices 2, 6
   - **Description**: Edit user profile via RPC, implement the Privacy Mode toggle in `uiStore`, and add Realtime notifications to the Activity tab.
