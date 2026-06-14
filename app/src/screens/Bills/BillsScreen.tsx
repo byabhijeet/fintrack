@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator }
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/theme';
 import { useRouter } from 'expo-router';
-import { useBills, useMarkBillPaidMutation, RecurringTemplate } from '@/lib/queries/bills';
+import { useBills, useMarkBillPaidMutation, RecurringTransaction } from '@/lib/queries/bills';
 import { Plus, CheckCircle, Calendar, RefreshCw } from 'lucide-react-native';
 import { useUIStore } from '@/store/uiStore';
 
@@ -18,11 +18,11 @@ export default function BillsScreen() {
     return privacyMode ? '***' : `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  const handleMarkPaid = (bill: RecurringTemplate) => {
+  const handleMarkPaid = (bill: RecurringTransaction) => {
     markPaidMutation.mutate(bill);
   };
 
-  const renderBill = ({ item }: { item: RecurringTemplate }) => {
+  const renderBill = ({ item }: { item: RecurringTransaction }) => {
     const today = new Date().toISOString().split('T')[0];
     const isOverdue = item.next_due < today;
     const isDueToday = item.next_due === today;

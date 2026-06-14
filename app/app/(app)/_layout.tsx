@@ -5,7 +5,7 @@ import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { useAppTheme } from '@/theme';
 import Sidebar from '@/components/navigation/Sidebar';
 import AppHeader from '@/components/navigation/AppHeader';
-import { LayoutDashboard, Wallet, ArrowLeftRight, Settings } from 'lucide-react-native';
+import { LayoutDashboard, Wallet, ArrowLeftRight, Settings, Receipt } from 'lucide-react-native';
 import GlobalFAB from '@/components/boi/GlobalFAB';
 import BOIAssistant from '@/components/boi/BOIAssistant';
 
@@ -78,6 +78,13 @@ export default function AppLayout() {
         }}
       />
       <Tabs.Screen
+        name="bills"
+        options={{
+          title: 'Bills',
+          tabBarIcon: ({ color, size }) => <Receipt size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="(hub)"
         options={{
           title: 'Hub',
@@ -88,7 +95,6 @@ export default function AppLayout() {
       <Tabs.Screen name="credit-cards" options={{ href: null }} />
       <Tabs.Screen name="business" options={{ href: null }} />
       <Tabs.Screen name="loans" options={{ href: null }} />
-      <Tabs.Screen name="bills" options={{ href: null }} />
     </Tabs>
     <GlobalFAB />
     <BOIAssistant />
