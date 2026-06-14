@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { useSplitGroup, useGroupExpenses, useGroupBalances } from '../../lib/queries/splits';
-import { Plus } from 'lucide-react-native';
+import { Plus, Home, Plane, Briefcase, Heart, FileText } from 'lucide-react-native';
 
 export default function GroupDetailsScreen() {
   const router = useRouter();
@@ -43,14 +43,15 @@ export default function GroupDetailsScreen() {
   const totalAmount = expenses?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
 
   const getTypeIcon = (type: string) => {
-    const icons: Record<string, string> = {
-      trip: '✈️',
-      home: '🏠',
-      office: '🏢',
-      couple: '👫',
-      other: '📝',
+    const iconProps = { size: 32, color: 'white' };
+    const icons: Record<string, React.ReactNode> = {
+      trip: <Plane {...iconProps} />,
+      home: <Home {...iconProps} />,
+      office: <Briefcase {...iconProps} />,
+      couple: <Heart {...iconProps} />,
+      other: <FileText {...iconProps} />,
     };
-    return icons[type] || '📝';
+    return icons[type] || <FileText {...iconProps} />;
   };
 
   return (
@@ -58,7 +59,7 @@ export default function GroupDetailsScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Group Header */}
         <View style={[styles.groupHeader, { backgroundColor: group.cover_color || theme.colors.primary }]}>
-          <Text style={styles.groupTypeIcon}>{getTypeIcon(group.type)}</Text>
+          <View style={styles.groupTypeIcon}>{getTypeIcon(group.type)}</View>
           <Text style={styles.groupName}>{group.name}</Text>
           <Text style={styles.groupMemberCount}>
             {group.split_group_members?.length || 0} members
@@ -169,7 +170,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   groupTypeIcon: {
-    fontSize: 40,
+    width: 64,
+    height: 64,
+    borderRadius: theme.borderRadius.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: theme.spacing.md,
   },
   groupName: {

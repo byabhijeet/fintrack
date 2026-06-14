@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    borderRadius: theme.roundness.md,
+    borderRadius: theme.borderRadius.md,
     padding: 12,
   },
 });

@@ -128,11 +128,18 @@ export default function AddExpenseScreen() {
         description,
         category,
         expense_date: expenseDate,
-        participants: participants.map((p) => ({
-          friend_mob: p.mobile,
-          split_type: p.splitType,
-          value: p.value,
-        })),
+        participants: participants.map((p) => {
+          let backendSplitType: 'equal' | 'manual' | 'percent' | 'share' | 'itemized' = 'equal';
+          if (p.splitType === 'percent') backendSplitType = 'percent';
+          else if (p.splitType === 'exact') backendSplitType = 'manual';
+          else if (p.splitType === 'shares') backendSplitType = 'share';
+          
+          return {
+            friend_mob: p.mobile,
+            split_type: backendSplitType,
+            value: p.value,
+          };
+        }),
       });
 
       Alert.alert('Success', 'Expense added successfully', [
@@ -587,12 +594,6 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.lg,
     padding: theme.spacing.lg,
     marginBottom: theme.spacing.lg,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.md,
   },
   summaryRow: {
     flexDirection: 'row',

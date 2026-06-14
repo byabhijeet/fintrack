@@ -4,6 +4,7 @@ const sharedColors = {
   primary: '#1ED760',
   primaryLight: '#1ED760', // For backward compatibility
   error: '#FFB4AB',
+  success: '#1ED760',
   transparent: 'transparent',
 };
 
@@ -16,6 +17,7 @@ export const darkTheme = {
     textPrimary: '#E5E2E1',
     textSecondary: '#94A3B8', // Keeping a slate grey for secondary
     textMuted: '#64748B',
+    text: '#E5E2E1',
     border: '#2A354F',
     inputBackground: '#282828',
   },
@@ -30,6 +32,7 @@ export const lightTheme = {
     textPrimary: '#1C1B1B',
     textSecondary: '#474646',
     textMuted: '#64748B',
+    text: '#1C1B1B',
     border: '#D1D5DB',
     inputBackground: '#EAEAEA',
   },
@@ -52,6 +55,41 @@ export const typography = {
     fontFamily: 'PlayfairDisplay_600SemiBold',
     fontSize: 20,
     lineHeight: 28,
+  },
+  headline: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 20,
+    lineHeight: 28,
+  },
+  headlineSmall: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  title2: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 22,
+    lineHeight: 28,
+  },
+  title3: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 18,
+    lineHeight: 24,
+  },
+  displaySm: {
+    fontFamily: 'Inter_700Bold',
+    fontSize: 24,
+    lineHeight: 30,
+  },
+  displayMd: {
+    fontFamily: 'Inter_700Bold',
+    fontSize: 28,
+    lineHeight: 34,
+  },
+  button: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 16,
+    lineHeight: 24,
   },
   // UI & Body (Inter)
   body: {
@@ -127,6 +165,7 @@ export const typography = {
   weights: {
     light: '300' as const,
     regular: '400' as const,
+    medium: '500' as const,
     semibold: '600' as const,
     bold: '700' as const,
   },
@@ -147,6 +186,7 @@ export const borderRadius = {
   lg: 24,
   pill: 9999,
   round: 9999, // 50% usually achieved with width/2, but pill is 9999
+  full: 9999,
 };
 
 export type ThemeColors = typeof darkTheme.colors;

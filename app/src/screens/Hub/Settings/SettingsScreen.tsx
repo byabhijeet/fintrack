@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../../theme';
-import { useAccountConsents, useUpdateConsentsMutation } from '../../../lib/queries/settings';
+import { useAccountConsents, useUpdateConsentsMutation, UpdateConsentsInput } from '../../../lib/queries/settings';
 import { useAuthStore } from '../../../store/authStore';
 import { useUIStore } from '../../../store/uiStore';
 import { ArrowLeft, LogOut } from 'lucide-react-native';
@@ -17,7 +17,7 @@ export default function SettingsScreen() {
   const { privacyMode, togglePrivacyMode } = useUIStore();
   const { biometricEnabled, enableBiometric, signOut } = useAuthStore();
 
-  const handleConsentToggle = async (key: keyof typeof updateConsentsMutation.variables, value: boolean) => {
+  const handleConsentToggle = async (key: keyof UpdateConsentsInput, value: boolean) => {
     try {
       await updateConsentsMutation.mutateAsync({ [key]: value });
     } catch (error) {
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 40,
     paddingVertical: 16,
-    borderRadius: theme.roundness.md,
+    borderRadius: theme.borderRadius.md,
     backgroundColor: theme.colors.surface,
     borderWidth: 1,
     borderColor: theme.colors.error,

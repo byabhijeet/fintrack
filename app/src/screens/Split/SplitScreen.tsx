@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { useSplitGroups, useAddGroupMutation } from '../../lib/queries/splits';
-import { Plus } from 'lucide-react-native';
+import { Plus, Users, ChevronRight, Home, Plane, Briefcase, Heart, FileText } from 'lucide-react-native';
 
 export default function SplitScreen() {
   const router = useRouter();
@@ -25,13 +25,13 @@ export default function SplitScreen() {
   const [groupName, setGroupName] = useState('');
   const [groupType, setGroupType] = useState<'trip' | 'home' | 'office' | 'couple' | 'other'>('other');
 
-  const groupTypes: Array<{ label: string; value: typeof groupType }> = [
-    { label: '🏠 Home', value: 'home' },
-    { label: '✈️ Trip', value: 'trip' },
-    { label: '🏢 Office', value: 'office' },
-    { label: '👫 Couple', value: 'couple' },
-    { label: '📝 Other', value: 'other' },
-  ];
+  const groupTypes = [
+    { label: 'Home', value: 'home', icon: Home },
+    { label: 'Trip', value: 'trip', icon: Plane },
+    { label: 'Office', value: 'office', icon: Briefcase },
+    { label: 'Couple', value: 'couple', icon: Heart },
+    { label: 'Other', value: 'other', icon: FileText },
+  ] as const;
 
   const handleAddGroup = async () => {
     if (!groupName.trim()) return;
@@ -62,14 +62,15 @@ export default function SplitScreen() {
   };
 
   const getTypeIcon = (type: string) => {
-    const icons: Record<string, string> = {
-      trip: '✈️',
-      home: '🏠',
-      office: '🏢',
-      couple: '👫',
-      other: '📝',
+    const iconProps = { size: 24, color: theme.colors.textPrimary };
+    const icons: Record<string, React.ReactNode> = {
+      trip: <Plane {...iconProps} />,
+      home: <Home {...iconProps} />,
+      office: <Briefcase {...iconProps} />,
+      couple: <Heart {...iconProps} />,
+      other: <FileText {...iconProps} />,
     };
-    return icons[type] || '📝';
+    return icons[type] || <FileText {...iconProps} />;
   };
 
   if (isLoading) {
@@ -110,19 +111,19 @@ export default function SplitScreen() {
                 onPress={() => router.push(`/(app)/(split)/${group.id}`)}
               >
                 <View style={styles.groupCardContent}>
-                  <Text style={styles.groupIcon}>{getTypeIcon(group.type)}</Text>
+                  <View style={styles.groupIcon}>{getTypeIcon(group.type)}</View>
                   <View style={styles.groupInfo}>
                     <Text style={styles.groupName}>{group.name}</Text>
                     <Text style={styles.groupType}>{group.type.toUpperCase()}</Text>
                   </View>
                 </View>
-                <Text style={styles.groupArrow}>›</Text>
+                <ChevronRight color={theme.colors.textSecondary} size={24} style={{ marginLeft: theme.spacing.md }} />
               </TouchableOpacity>
             ))}
           </View>
         ) : (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>👥</Text>
+            <Users size={48} color={theme.colors.textSecondary} style={{ marginBottom: theme.spacing.md }} />
             <Text style={styles.emptyTitle}>No Groups Yet</Text>
             <Text style={styles.emptyText}>
               Create a group to start splitting expenses with friends
@@ -153,18 +154,27 @@ export default function SplitScreen() {
 
             <Text style={styles.label}>Type</Text>
             <View style={styles.typeGrid}>
-              {groupTypes.map((type) => (
-                <TouchableOpacity
-                  key={type.value}
-                  style={[
-                    styles.typeButton,
-                    groupType === type.value && styles.typeButtonActive,
-                  ]}
-                  onPress={() => setGroupType(type.value)}
-                >
-                  <Text style={styles.typeButtonText}>{type.label}</Text>
-                </TouchableOpacity>
-              ))}
+              {groupTypes.map((type) => {
+                const IconComponent = type.icon;
+                const isActive = groupType === type.value;
+                return (
+                  <TouchableOpacity
+                    key={type.value}
+                    style={[
+                      styles.typeButton,
+                      isActive && styles.typeButtonActive,
+                    ]}
+                    onPress={() => setGroupType(type.value)}
+                  >
+                    <IconComponent
+                      size={20}
+                      color={isActive ? '#000' : theme.colors.textPrimary}
+                      style={{ marginRight: 8 }}
+                    />
+                    <Text style={[styles.typeButtonText, isActive && { color: '#000' }]}>{type.label}</Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
 
             <View style={styles.modalButtons}>
@@ -251,7 +261,12 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
   },
   groupIcon: {
-    fontSize: 28,
+    width: 44,
+    height: 44,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.surfaceElevated,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   groupInfo: {
     flex: 1,
@@ -268,8 +283,6 @@ const styles = StyleSheet.create({
     fontWeight: theme.typography.weights.medium,
   },
   groupArrow: {
-    fontSize: 24,
-    color: theme.colors.textSecondary,
     marginLeft: theme.spacing.md,
   },
   emptyState: {
@@ -336,6 +349,7 @@ const styles = StyleSheet.create({
   },
   typeButton: {
     flex: 0.48,
+    flexDirection: 'row',
     paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.sm,
     backgroundColor: theme.colors.surface,
@@ -343,6 +357,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: theme.borderRadius.md,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   typeButtonActive: {
     backgroundColor: theme.colors.primary,
