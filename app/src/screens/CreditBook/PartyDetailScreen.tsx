@@ -1,15 +1,7 @@
 import { useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator,
-  Linking,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert } from '@/lib/alert';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import {
   ArrowLeft,

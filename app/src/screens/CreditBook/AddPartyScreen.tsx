@@ -1,19 +1,9 @@
 import { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { X, User, Phone, FileText } from 'lucide-react-native';
+import { Alert } from '@/lib/alert';
 import { useAppTheme } from '@/theme';
 import { useAddPartyMutation } from '@/lib/queries/creditBook';
 

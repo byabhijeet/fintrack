@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert } from '@/lib/alert';
 import { useAppTheme } from '../../theme';
 import { useIncomeCategories, useAddIncomeMutation } from '../../lib/queries/income';
 import { useRouter, useLocalSearchParams } from 'expo-router';

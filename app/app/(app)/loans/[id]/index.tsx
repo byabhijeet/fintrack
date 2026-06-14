@@ -1,7 +1,8 @@
 
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft, CheckCircle2, Circle } from 'lucide-react-native';
+import { Alert } from '@/lib/alert';
 import { useAppTheme } from '@/theme';
 import { useLoan, usePayEMI } from '@/lib/queries/loans';
 

@@ -1,3 +1,4 @@
+import { Alert } from '@/lib/alert';
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
@@ -391,7 +392,7 @@ function validatePassword(password: string): PasswordValidationResult {
 }
 
 const toast = (message: string, type: 'success' | 'error' | 'info') => {
-  alert(message);
+  Alert.alert(type.charAt(0).toUpperCase() + type.slice(1), message);
 };
 
 export default function LoginScreenWeb() {

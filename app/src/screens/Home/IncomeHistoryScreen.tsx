@@ -1,6 +1,7 @@
 
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert } from '@/lib/alert';
 import { useAppTheme } from '../../theme';
 import { useIncomeEntries, useDeleteIncomeMutation, IncomeEntry } from '../../lib/queries/income';
 

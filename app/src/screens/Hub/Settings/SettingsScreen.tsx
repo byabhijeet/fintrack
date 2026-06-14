@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView, ActivityIndicator, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../../theme';
 import { useAccountConsents, useUpdateConsentsMutation, UpdateConsentsInput } from '../../../lib/queries/settings';
 import { useAuthStore } from '../../../store/authStore';
 import { useUIStore } from '../../../store/uiStore';
 import { ArrowLeft, LogOut } from 'lucide-react-native';
+import { Alert } from '@/lib/alert';
 import { useRouter } from 'expo-router';
 
 export default function SettingsScreen() {

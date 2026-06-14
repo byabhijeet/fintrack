@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert } from '@/lib/alert';
 import { useAppTheme } from '../../theme';
 import { useAddCreditCardMutation } from '../../lib/queries/creditCards';
 import { useRouter } from 'expo-router';
