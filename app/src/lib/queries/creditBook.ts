@@ -229,6 +229,36 @@ export const useAddPartyMutation = () => {
   });
 };
 
+/** Batch import contacts into personal_credit_parties. */
+export const useImportContactsMutation = () => {
+  const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+
+  return useMutation({
+    mutationFn: async (contacts: { name: string; mobile: string }[]) => {
+      if (!user) throw new Error('Not authenticated');
+      if (!contacts.length) return [];
+
+      const payload = contacts.map((c) => ({
+        user_id: user.id,
+        name: c.name,
+        mobile: c.mobile,
+      }));
+
+      const { data, error } = await supabase
+        .from('personal_credit_parties')
+        .upsert(payload, { onConflict: 'user_id,mobile' })
+        .select();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['credit_parties'] });
+    },
+  });
+};
+
 export type AddTransactionInput = {
   party_id: string;
   counterparty_mob: string;
