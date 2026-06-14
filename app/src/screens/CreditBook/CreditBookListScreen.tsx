@@ -6,18 +6,21 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Plus, Users } from 'lucide-react-native';
+import { Plus, Users, RefreshCw } from 'lucide-react-native';
 import { useAppTheme } from '@/theme';
 import { useUIStore } from '@/store/uiStore';
 import {
   useCreditParties,
   usePartyTransactions,
+  useImportContactsMutation,
   PersonalCreditParty,
   computeNetBalance,
 } from '@/lib/queries/creditBook';
+import { getContacts } from '@/services/contacts';
 
 // ---------------------------------------------------------------------------
 // Sub-component: PartyRow — fetches its own transactions to compute net balance
@@ -96,6 +99,27 @@ export default function CreditBookListScreen() {
   const { colors, typography } = useAppTheme();
   const router = useRouter();
   const { data: parties = [], isLoading } = useCreditParties();
+  const { mutate: importContacts, isPending: isImporting } = useImportContactsMutation();
+
+  const handleSyncContacts = async () => {
+    const result = await getContacts();
+    if (result.success) {
+      if (result.contacts.length > 0) {
+        importContacts(result.contacts, {
+          onSuccess: (data) => {
+            Alert.alert('Success', `Imported ${data.length} contacts.`);
+          },
+          onError: (err: any) => {
+            Alert.alert('Error', `Failed to import contacts: ${err.message}`);
+          }
+        });
+      } else {
+        Alert.alert('No Contacts', 'No valid contacts found on your device.');
+      }
+    } else if (result.error) {
+      Alert.alert('Permission Denied', 'Please grant contacts permission in settings.');
+    }
+  };
 
   return (
     <SafeAreaView
@@ -104,10 +128,25 @@ export default function CreditBookListScreen() {
     >
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Text style={[styles.headerTitle, typography.display, { color: colors.textPrimary }]}>Credit Book</Text>
-        <Text style={[styles.headerSubtitle, typography.body, { color: colors.textSecondary }]}>
-          {parties.length} {parties.length === 1 ? 'contact' : 'contacts'}
-        </Text>
+        <View style={styles.headerTop}>
+          <View>
+            <Text style={[styles.headerTitle, typography.display, { color: colors.textPrimary }]}>Credit Book</Text>
+            <Text style={[styles.headerSubtitle, typography.body, { color: colors.textSecondary }]}>
+              {parties.length} {parties.length === 1 ? 'contact' : 'contacts'}
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={[styles.syncButton, { backgroundColor: colors.surfaceElevated }]}
+            onPress={handleSyncContacts}
+            disabled={isImporting}
+          >
+            {isImporting ? (
+              <ActivityIndicator size="small" color={colors.primary} />
+            ) : (
+              <RefreshCw size={20} color={colors.primary} />
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
 
       {isLoading ? (
@@ -167,10 +206,22 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderBottomWidth: 1,
   },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   headerTitle: {
   },
   headerSubtitle: {
     marginTop: 2,
+  },
+  syncButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   listContent: {
     padding: 16,
