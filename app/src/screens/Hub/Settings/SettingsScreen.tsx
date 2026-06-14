@@ -15,7 +15,7 @@ export default function SettingsScreen() {
   const updateConsentsMutation = useUpdateConsentsMutation();
 
   const { privacyMode, togglePrivacyMode } = useUIStore();
-  const { biometricEnabled, enableBiometric, signOut } = useAuthStore();
+  const { biometricEnabled, enableBiometric, disableBiometric, signOut } = useAuthStore();
 
   const handleConsentToggle = async (key: keyof UpdateConsentsInput, value: boolean) => {
     try {
@@ -41,7 +41,8 @@ export default function SettingsScreen() {
       await enableBiometric();
       Alert.alert('Biometrics Enabled', 'You can now use biometrics to unlock the app.');
     } else {
-      Alert.alert('Info', 'Biometrics cannot be disabled directly from here right now. Re-install app to reset.');
+      await disableBiometric();
+      Alert.alert('Biometrics Disabled', 'Biometric unlock has been disabled.');
     }
   };
 
