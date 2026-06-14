@@ -1,9 +1,10 @@
 
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useMemo, useCallback } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAppTheme } from '../../theme';
-import { useCreditCards, useCardSpends } from '../../lib/queries/creditCards';
+import { useCreditCards, useInfiniteCardSpends, useCardSpends } from '../../lib/queries/creditCards';
 import { Plus } from 'lucide-react-native';
 
 export default function CreditCardDetailsScreen() {
@@ -13,9 +14,25 @@ export default function CreditCardDetailsScreen() {
   const cardId = params.id as string;
 
   const { data: cards, isLoading: isCardsLoading } = useCreditCards();
-  const { data: spends, isLoading: isSpendsLoading } = useCardSpends(cardId);
+  const {
+    data,
+    isLoading: isSpendsLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+    isRefetching,
+  } = useInfiniteCardSpends(cardId);
+  // We still use useCardSpends for current cycle total calculation or maybe we should fetch all for stats
+  // For now let's just use the infinite one for the list and keep the other for stats if needed,
+  // or better, fetch all card spends in a separate query for summary stats.
+  const { data: allSpends } = useCardSpends(cardId);
 
   const card = cards?.find(c => c.id === cardId);
+
+  const spends = useMemo(() => {
+    return data?.pages.flatMap((page) => page) ?? [];
+  }, [data]);
 
   // Calculate current cycle dates
   const today = new Date();
@@ -24,8 +41,8 @@ export default function CreditCardDetailsScreen() {
     cycleStart.setMonth(cycleStart.getMonth() - 1);
   }
 
-  // Filter spends for the current cycle
-  const currentCycleSpends = spends?.filter(s => new Date(s.spend_date) >= cycleStart) || [];
+  // Filter spends for the current cycle using allSpends to ensure accuracy
+  const currentCycleSpends = allSpends?.filter(s => new Date(s.spend_date) >= cycleStart) || [];
   const currentCycleTotal = currentCycleSpends.reduce((sum, s) => sum + Number(s.amount), 0);
 
   const utilization = card?.credit_limit 
@@ -158,10 +175,29 @@ export default function CreditCardDetailsScreen() {
       color: colors.textSecondary,
       ...typography.bodyMd,
       marginTop: spacing.xl,
-    }
+    },
+    footerLoader: {
+      paddingVertical: 20,
+      alignItems: 'center',
+    },
   });
 
-  if (isCardsLoading || isSpendsLoading) {
+  const renderFooter = useCallback(() => {
+    if (!isFetchingNextPage) return null;
+    return (
+      <View style={styles.footerLoader}>
+        <ActivityIndicator size="small" color={colors.primary} />
+      </View>
+    );
+  }, [isFetchingNextPage, colors.primary]);
+
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  if (isCardsLoading || (isSpendsLoading && !isRefetching)) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color={colors.primary} />
@@ -208,6 +244,17 @@ export default function CreditCardDetailsScreen() {
         keyExtractor={(item) => item.id}
         renderItem={renderSpend}
         contentContainerStyle={styles.listContent}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
         ListEmptyComponent={
           <Text style={styles.emptyText}>No spends recorded yet.</Text>
         }

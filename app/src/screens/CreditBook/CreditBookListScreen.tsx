@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -13,7 +14,7 @@ import { Plus, Users } from 'lucide-react-native';
 import { useAppTheme } from '@/theme';
 import { useUIStore } from '@/store/uiStore';
 import {
-  useCreditParties,
+  useInfiniteCreditParties,
   usePartyTransactions,
   PersonalCreditParty,
   computeNetBalance,
@@ -95,7 +96,34 @@ function PartyRow({
 export default function CreditBookListScreen() {
   const { colors, typography } = useAppTheme();
   const router = useRouter();
-  const { data: parties = [], isLoading } = useCreditParties();
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+    isRefetching,
+  } = useInfiniteCreditParties();
+
+  const parties = useMemo(() => {
+    return data?.pages.flatMap((page) => page) ?? [];
+  }, [data]);
+
+  const renderFooter = useCallback(() => {
+    if (!isFetchingNextPage) return null;
+    return (
+      <View style={styles.footerLoader}>
+        <ActivityIndicator size="small" color={colors.primary} />
+      </View>
+    );
+  }, [isFetchingNextPage, colors.primary]);
+
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
     <SafeAreaView
@@ -110,7 +138,7 @@ export default function CreditBookListScreen() {
         </Text>
       </View>
 
-      {isLoading ? (
+      {isLoading && !isRefetching ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
@@ -126,6 +154,17 @@ export default function CreditBookListScreen() {
           )}
           contentContainerStyle={styles.listContent}
           ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderFooter}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={refetch}
+              tintColor={colors.primary}
+              colors={[colors.primary]}
+            />
+          }
           ListEmptyComponent={
             <View style={styles.center}>
               <Users size={56} color={colors.textSecondary} style={{ opacity: 0.35, marginBottom: 16 }} />
@@ -161,6 +200,10 @@ export default function CreditBookListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  footerLoader: {
+    paddingVertical: 20,
+    alignItems: 'center',
   },
   header: {
     paddingHorizontal: 16,

@@ -1,14 +1,27 @@
 
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { useMemo, useCallback } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../theme';
-import { useExpenseEntries, useDeleteExpenseMutation } from '../../lib/queries/expenses';
+import { useInfiniteExpenseEntries, useDeleteExpenseMutation } from '../../lib/queries/expenses';
 import { Trash2 } from 'lucide-react-native';
 
 export default function ExpenseHistoryScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
-  const { data: entries, isLoading } = useExpenseEntries();
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+    isRefetching,
+  } = useInfiniteExpenseEntries();
   const deleteExpenseMutation = useDeleteExpenseMutation();
+
+  const entries = useMemo(() => {
+    return data?.pages.flatMap((page) => page) ?? [];
+  }, [data]);
 
   const handleDelete = (id: string) => {
     Alert.alert('Delete Entry', 'Are you sure you want to delete this entry?', [
@@ -65,6 +78,10 @@ export default function ExpenseHistoryScreen() {
     container: {
       flex: 1,
       backgroundColor: colors.background,
+    },
+    footerLoader: {
+      paddingVertical: 20,
+      alignItems: 'center',
     },
     listContent: {
       padding: spacing.md,
@@ -144,17 +161,49 @@ export default function ExpenseHistoryScreen() {
     }
   });
 
+  const renderFooter = useCallback(() => {
+    if (!isFetchingNextPage) return null;
+    return (
+      <View style={styles.footerLoader}>
+        <ActivityIndicator size="small" color={colors.primary} />
+      </View>
+    );
+  }, [isFetchingNextPage, colors.primary, styles.footerLoader]);
+
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      <FlatList
-        data={entries}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          !isLoading ? <Text style={styles.emptyText}>No expenses or outflows found.</Text> : null
-        }
-      />
+      {isLoading && !isRefetching ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : (
+        <FlatList
+          data={entries}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContent}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderFooter}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={refetch}
+              tintColor={colors.primary}
+              colors={[colors.primary]}
+            />
+          }
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>No expenses or outflows found.</Text>
+          }
+        />
+      )}
     </SafeAreaView>
   );
 }

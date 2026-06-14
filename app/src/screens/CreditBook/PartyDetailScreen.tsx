@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Linking,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -24,6 +25,7 @@ import { useUIStore } from '@/store/uiStore';
 import {
   useCreditParties,
   usePartyTransactions,
+  useInfinitePartyTransactions,
   useDeleteTransactionMutation,
   PersonalCreditTransaction,
   computeNetBalance,
@@ -39,11 +41,40 @@ export default function PartyDetailScreen() {
   const { data: parties = [] } = useCreditParties();
   const party = parties.find((p) => p.id === partyId);
 
-  const { data: txns = [], isLoading } = usePartyTransactions(partyId ?? '', party?.mobile);
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+    isRefetching,
+  } = useInfinitePartyTransactions(partyId ?? '', party?.mobile);
+  // We use usePartyTransactions to get the FULL set of transactions for accurate net balance calculation.
+  const { data: fullTxns = [] } = usePartyTransactions(partyId ?? '', party?.mobile);
   const deleteTransactionMutation = useDeleteTransactionMutation();
 
+  const txns = useMemo(() => {
+    return data?.pages.flatMap((page) => page) ?? [];
+  }, [data]);
+
+  const renderFooter = useCallback(() => {
+    if (!isFetchingNextPage) return null;
+    return (
+      <View style={styles.footerLoader}>
+        <ActivityIndicator size="small" color={colors.primary} />
+      </View>
+    );
+  }, [isFetchingNextPage, colors.primary]);
+
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   // Net balance (positive = receivable, negative = payable)
-  const net = useMemo(() => computeNetBalance(txns), [txns]);
+  const net = useMemo(() => computeNetBalance(fullTxns), [fullTxns]);
   const isReceivable = net > 0;
   const isPayable = net < 0;
   const netColor = isReceivable ? '#1ED760' : isPayable ? '#FF4B4B' : colors.textSecondary;
@@ -203,7 +234,7 @@ export default function PartyDetailScreen() {
               Got:{' '}
               {privacyMode
                 ? '***'
-                : `₹${txns
+                : `₹${fullTxns
                     .filter((t) => t.type === 'got')
                     .reduce((s, t) => s + t.amount, 0)
                     .toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
@@ -215,7 +246,7 @@ export default function PartyDetailScreen() {
               Gave:{' '}
               {privacyMode
                 ? '***'
-                : `₹${txns
+                : `₹${fullTxns
                     .filter((t) => t.type === 'gave')
                     .reduce((s, t) => s + t.amount, 0)
                     .toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
@@ -225,7 +256,7 @@ export default function PartyDetailScreen() {
       </View>
 
       {/* Transaction list */}
-      {isLoading ? (
+      {isLoading && !isRefetching ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
@@ -236,6 +267,17 @@ export default function PartyDetailScreen() {
           renderItem={renderTxn}
           contentContainerStyle={styles.listContent}
           ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderFooter}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={refetch}
+              tintColor={colors.primary}
+              colors={[colors.primary]}
+            />
+          }
           ListEmptyComponent={
             <View style={styles.center}>
               <Text style={[styles.emptyTitle, typography.sectionTitle, { color: colors.textPrimary }]}>
@@ -274,6 +316,10 @@ export default function PartyDetailScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  footerLoader: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -1,13 +1,26 @@
 
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { useMemo, useCallback } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../theme';
-import { useIncomeEntries, useDeleteIncomeMutation, IncomeEntry } from '../../lib/queries/income';
+import { useInfiniteIncomeEntries, useDeleteIncomeMutation, IncomeEntry } from '../../lib/queries/income';
 
 export default function IncomeHistoryScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
-  const { data: entries, isLoading, refetch, isRefetching } = useIncomeEntries();
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+    isRefetching,
+  } = useInfiniteIncomeEntries();
   const deleteMutation = useDeleteIncomeMutation();
+
+  const entries = useMemo(() => {
+    return data?.pages.flatMap((page) => page) ?? [];
+  }, [data]);
 
   const handleDelete = (id: string) => {
     Alert.alert('Delete Income', 'Are you sure you want to delete this entry?', [
@@ -109,12 +122,31 @@ export default function IncomeHistoryScreen() {
     emptyText: {
       color: colors.textSecondary,
       ...typography.bodyMd,
-    }
+    },
+    footerLoader: {
+      paddingVertical: 20,
+      alignItems: 'center',
+    },
   });
+
+  const renderFooter = useCallback(() => {
+    if (!isFetchingNextPage) return null;
+    return (
+      <View style={styles.footerLoader}>
+        <ActivityIndicator size="small" color={colors.primary} />
+      </View>
+    );
+  }, [isFetchingNextPage, colors.primary, styles.footerLoader]);
+
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      {isLoading ? (
+      {isLoading && !isRefetching ? (
         <View style={styles.emptyState}>
           <ActivityIndicator color={colors.primary} />
         </View>
@@ -124,8 +156,17 @@ export default function IncomeHistoryScreen() {
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
           contentContainerStyle={styles.listContent}
-          refreshing={isRefetching}
-          onRefresh={refetch}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderFooter}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={refetch}
+              tintColor={colors.primary}
+              colors={[colors.primary]}
+            />
+          }
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Text style={styles.emptyText}>No income entries found.</Text>
