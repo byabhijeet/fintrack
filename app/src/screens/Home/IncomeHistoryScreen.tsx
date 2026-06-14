@@ -3,11 +3,25 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../theme';
 import { useIncomeEntries, useDeleteIncomeMutation, IncomeEntry } from '../../lib/queries/income';
+import { useRouter } from 'expo-router';
 
 export default function IncomeHistoryScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const router = useRouter();
   const { data: entries, isLoading, refetch, isRefetching } = useIncomeEntries();
   const deleteMutation = useDeleteIncomeMutation();
+
+  const handleEdit = (item: IncomeEntry) => {
+    router.push({
+      pathname: '/(app)/(home)/add-income',
+      params: {
+        id: item.id,
+        amount: item.amount.toString(),
+        notes: item.notes || '',
+        source_id: item.source_id,
+      }
+    });
+  };
 
   const handleDelete = (id: string) => {
     Alert.alert('Delete Income', 'Are you sure you want to delete this entry?', [
@@ -34,9 +48,14 @@ export default function IncomeHistoryScreen() {
           <Text style={styles.amountText}>+₹{item.amount.toLocaleString('en-IN')}</Text>
           {!!item.notes && <Text style={styles.notesText}>{item.notes}</Text>}
         </View>
-        <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteButton}>
-          <Text style={styles.deleteText}>Delete</Text>
-        </TouchableOpacity>
+        <View style={styles.actions}>
+          <TouchableOpacity onPress={() => handleEdit(item)} style={styles.actionButton}>
+            <Text style={styles.editText}>Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.actionButton}>
+            <Text style={styles.deleteText}>Delete</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -93,8 +112,16 @@ export default function IncomeHistoryScreen() {
       ...typography.bodySm,
       marginTop: spacing.xs,
     },
-    deleteButton: {
+    actions: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+    },
+    actionButton: {
       padding: spacing.xs,
+    },
+    editText: {
+      color: colors.primary,
+      ...typography.bodySm,
     },
     deleteText: {
       color: colors.error,
