@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   View,
   Text,
@@ -30,7 +30,7 @@ function PartyRow({
   party: PersonalCreditParty;
   onPress: () => void;
 }) {
-  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const { colors, typography } = useAppTheme();
   const { privacyMode } = useUIStore();
   const { data: txns = [] } = usePartyTransactions(party.id, party.mobile);
 
@@ -93,7 +93,7 @@ function PartyRow({
 // ---------------------------------------------------------------------------
 
 export default function CreditBookListScreen() {
-  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const { colors, typography } = useAppTheme();
   const router = useRouter();
   const { data: parties = [], isLoading } = useCreditParties();
 

@@ -15,7 +15,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { useGroupBalances, useGroupSettlements, useAddSettlementMutation } from '../../lib/queries/splits';
 import { useAuthStore } from '../../store/authStore';
-import { Send, Check } from 'lucide-react-native';
+import { Send } from 'lucide-react-native';
 
 export default function SettleUpScreen() {
   const router = useRouter();

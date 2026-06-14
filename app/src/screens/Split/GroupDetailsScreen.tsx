@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { useSplitGroup, useGroupExpenses, useGroupBalances } from '../../lib/queries/splits';
-import { Plus, ArrowRight } from 'lucide-react-native';
+import { Plus } from 'lucide-react-native';
 
 export default function GroupDetailsScreen() {
   const router = useRouter();

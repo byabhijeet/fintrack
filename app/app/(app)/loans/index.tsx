@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Plus, ArrowLeft, Building2 } from 'lucide-react-native';

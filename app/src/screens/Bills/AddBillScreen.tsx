@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, ActivityIndicator, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/theme';
@@ -7,7 +7,7 @@ import { useAddBillMutation } from '@/lib/queries/bills';
 import { useExpenseCategories } from '@/lib/queries/expenses';
 
 export default function AddBillScreen() {
-  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const { colors } = useAppTheme();
   const router = useRouter();
   
   const addBillMutation = useAddBillMutation();

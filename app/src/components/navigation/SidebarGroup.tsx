@@ -8,7 +8,7 @@ interface SidebarGroupProps {
 }
 
 export default function SidebarGroup({ title, children }: SidebarGroupProps) {
-  const { colors, typography, spacing } = useAppTheme();
+  const { colors, typography } = useAppTheme();
 
   return (
     <View style={styles.container}>

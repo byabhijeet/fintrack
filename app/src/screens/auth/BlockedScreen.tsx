@@ -1,11 +1,11 @@
-import React from 'react';
+
 import { View, Text, StyleSheet, Linking, TouchableOpacity } from 'react-native';
 import { useAuthStore } from '../../store/authStore';
 import { useAppTheme } from '../../theme';
 import { Lock } from 'lucide-react-native';
 
 export default function BlockedScreen() {
-  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const { colors, typography, borderRadius } = useAppTheme();
   const signOut = useAuthStore((state) => state.signOut);
 
   const handleOpenApp = () => {

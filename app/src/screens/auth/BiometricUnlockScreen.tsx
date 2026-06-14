@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useAuthStore } from '../../store/authStore';
 import { useAppTheme } from '../../theme';
@@ -6,7 +6,7 @@ import { authenticate } from '../../services/biometrics';
 import { Lock } from 'lucide-react-native';
 
 export default function BiometricUnlockScreen() {
-  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const { colors, typography, borderRadius } = useAppTheme();
   const unlockApp = useAuthStore((state) => state.unlockApp);
 
   const authenticateUser = async () => {

@@ -8,8 +8,7 @@ import { useExpenseEntries } from '../../lib/queries/expenses';
 import { useAllBusinessIncome, useAllBusinessExpenses } from '../../lib/queries/business';
 import { processRecurringTransactions } from '../../lib/queries/bills';
 import { useAllCardSpends } from '../../lib/queries/creditCards';
-import { useLoans } from '../../lib/queries/loans';
-import { useCreditParties, usePartyTransactions, computeNetBalance } from '../../lib/queries/creditBook';
+import { useCreditParties } from '../../lib/queries/creditBook';
 import { useUIStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
 import { Banknote, History, CreditCard, Store, EyeOff, Eye } from 'lucide-react-native';
@@ -25,7 +24,6 @@ export default function HomeScreen() {
   const { data: businessIncome } = useAllBusinessIncome();
   const { data: businessExpenses } = useAllBusinessExpenses();
   const { data: cardSpends } = useAllCardSpends();
-  const { data: loans } = useLoans();
   const { data: creditParties } = useCreditParties();
   
   // UI state

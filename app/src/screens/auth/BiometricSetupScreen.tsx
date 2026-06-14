@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useAuthStore } from '../../store/authStore';
 import { useAppTheme } from '../../theme';
@@ -6,7 +6,7 @@ import { checkAvailable, authenticate } from '../../services/biometrics';
 import { ShieldCheck } from 'lucide-react-native';
 
 export default function BiometricSetupScreen() {
-  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const { colors, typography, borderRadius } = useAppTheme();
   const { enableBiometric, skipBiometricSetup } = useAuthStore();
   const [isSupported, setIsSupported] = useState(false);
 
