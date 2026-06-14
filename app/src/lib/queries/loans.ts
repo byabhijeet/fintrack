@@ -83,6 +83,42 @@ export function useLoan(loanId: string) {
   });
 }
 
+export function useAllLoanEMIPayments() {
+  const { user } = useAuthStore();
+
+  return useQuery({
+    queryKey: ['loan_emi_payments', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('loan_emi_payments')
+        .select('*')
+        .eq('user_id', user?.id);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+}
+
+export function useAllLoanPartPayments() {
+  const { user } = useAuthStore();
+
+  return useQuery({
+    queryKey: ['loan_part_payments', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('loan_part_payments')
+        .select('*')
+        .eq('user_id', user?.id);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+}
+
 export function useAddLoan() {
   const queryClient = useQueryClient();
   const { user } = useAuthStore();

@@ -1,214 +1,41 @@
-import React, { useMemo, useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../theme';
 import { useRouter } from 'expo-router';
-import { useIncomeEntries } from '../../lib/queries/income';
-import { useExpenseEntries } from '../../lib/queries/expenses';
-import { useAllBusinessIncome, useAllBusinessExpenses } from '../../lib/queries/business';
-import { processRecurringTransactions } from '../../lib/queries/bills';
-import { useAllCardSpends } from '../../lib/queries/creditCards';
-import { useCreditParties } from '../../lib/queries/creditBook';
 import { useUIStore } from '../../store/uiStore';
-import { useAuthStore } from '../../store/authStore';
 import { Banknote, History, CreditCard, Store, EyeOff, Eye } from 'lucide-react-native';
 import { BarChart } from 'react-native-gifted-charts';
-import { supabase } from '../../lib/supabase';
+import { useDashboardData } from '../../hooks/useDashboardData';
+import DashboardSkeleton from '../../components/DashboardSkeleton';
 
 export default function HomeScreen() {
   const router = useRouter();
   
-  // Data queries
-  const { data: incomeEntries } = useIncomeEntries();
-  const { data: expenseEntries } = useExpenseEntries();
-  const { data: businessIncome } = useAllBusinessIncome();
-  const { data: businessExpenses } = useAllBusinessExpenses();
-  const { data: cardSpends } = useAllCardSpends();
-  const { data: creditParties } = useCreditParties();
+  // Data & Aggregations from custom hook
+  const {
+    totalIncome,
+    totalExpenses,
+    ecosystemNet,
+    chartData,
+    recentActivity,
+    isLoading
+  } = useDashboardData();
   
   // UI state
   const { privacyMode, togglePrivacyMode } = useUIStore();
-  const user = useAuthStore((state) => state.user);
-
-  // Fetch loan EMI payments and part payments
-  const [loanPayments, setLoanPayments] = React.useState<any[]>([]);
-  const [partPayments, setPartPayments] = React.useState<any[]>([]);
-  
-  useEffect(() => {
-    if (user?.id) {
-      // Fetch loan EMI payments
-      (async () => {
-        const { data } = await supabase
-          .from('loan_emi_payments')
-          .select('*')
-          .eq('user_id', user.id);
-        setLoanPayments(data || []);
-      })();
-    }
-  }, [user?.id]);
-
-  useEffect(() => {
-    if (user?.id) {
-      // Fetch loan part payments
-      (async () => {
-        const { data } = await supabase
-          .from('loan_part_payments')
-          .select('*')
-          .eq('user_id', user.id);
-        setPartPayments(data || []);
-      })();
-    }
-  }, [user?.id]);
-
-  // Fetch credit book transactions for all parties
-  const [creditTransactions, setCreditTransactions] = React.useState<any[]>([]);
-  
-  useEffect(() => {
-    if (user?.id && creditParties && creditParties.length > 0) {
-      (async () => {
-        const { data } = await supabase
-          .from('personal_credit_transactions')
-          .select('*')
-          .eq('creator_id', user.id);
-        setCreditTransactions(data || []);
-      })();
-    }
-  }, [user?.id, creditParties]);
-
-  useEffect(() => {
-    if (user?.id) {
-      processRecurringTransactions(user.id).catch(console.error);
-    }
-  }, [user?.id]);
-
-  // Aggregations
-  const { totalIncome, totalExpenses, ecosystemNet, chartData, recentActivity } = useMemo(() => {
-    let personalIn = 0;
-    let personalOut = 0;
-    let bizIn = 0;
-    let bizOut = 0;
-    let cardsOut = 0;
-    let loanEmiOut = 0;
-    let loanPartPaymentOut = 0;
-    let creditReceivables = 0;
-    let creditPayables = 0;
-
-    const allTransactions: { id: string; date: string; amount: number; title: string; type: 'inflow' | 'outflow' }[] = [];
-
-    // Personal Income
-    incomeEntries?.forEach(e => {
-      personalIn += Number(e.amount);
-      allTransactions.push({ id: `inc_${e.id}`, date: e.entry_date, amount: Number(e.amount), title: 'Income', type: 'inflow' });
-    });
-
-    // Personal Expenses
-    expenseEntries?.forEach(e => {
-      personalOut += Number(e.amount);
-      allTransactions.push({ id: `exp_${e.id}`, date: e.entry_date, amount: Number(e.amount), title: e.label || 'Expense', type: 'outflow' });
-    });
-
-    // Business Income
-    businessIncome?.forEach(e => {
-      bizIn += Number(e.amount);
-      allTransactions.push({ id: `biz_in_${e.id}`, date: e.entry_date, amount: Number(e.amount), title: 'Business Income', type: 'inflow' });
-    });
-
-    // Business Expenses
-    businessExpenses?.forEach(e => {
-      bizOut += Number(e.amount);
-      allTransactions.push({ id: `biz_out_${e.id}`, date: e.entry_date, amount: Number(e.amount), title: 'Business Expense', type: 'outflow' });
-    });
-
-    // Card Spends
-    cardSpends?.forEach(e => {
-      cardsOut += Number(e.amount);
-      allTransactions.push({ id: `card_${e.id}`, date: e.spend_date, amount: Number(e.amount), title: e.merchant || 'Card Spend', type: 'outflow' });
-    });
-
-    // Loan EMI Payments
-    loanPayments?.forEach(e => {
-      loanEmiOut += Number(e.total_paid);
-      allTransactions.push({ id: `emi_${e.id}`, date: e.payment_date, amount: Number(e.total_paid), title: 'Loan EMI', type: 'outflow' });
-    });
-
-    // Loan Part Payments
-    partPayments?.forEach(e => {
-      loanPartPaymentOut += Number(e.amount);
-      allTransactions.push({ id: `part_${e.id}`, date: e.payment_date, amount: Number(e.amount), title: 'Loan Part Payment', type: 'outflow' });
-    });
-
-    // Credit Book: Calculate net for all parties
-    creditTransactions?.forEach(t => {
-      const amount = Number(t.amount);
-      if (t.type === 'gave') {
-        creditReceivables += amount; // Money owed to me (I gave/lent)
-      } else if (t.type === 'got') {
-        creditPayables += amount; // Money I owe (I got/borrowed)
-      }
-      // Only add to transactions if not settled
-      if (!t.settled) {
-        allTransactions.push({
-          id: `credit_${t.id}`,
-          date: t.txn_date,
-          amount: amount,
-          title: t.type === 'gave' ? 'Credit Receivable' : 'Credit Payable',
-          type: t.type === 'gave' ? 'inflow' : 'outflow'
-        });
-      }
-    });
-
-    // Ecosystem Net Formula
-    // Ecosystem Net = (Personal Income + Business Income + Credit Receivables) - (Personal Expenses + Card Spends + Business Expenses + Loan EMIs + Loan Part Payments + Credit Payables)
-    const tIn = personalIn + bizIn + creditReceivables;
-    const tOut = personalOut + bizOut + cardsOut + loanEmiOut + loanPartPaymentOut + creditPayables;
-    const net = tIn - tOut;
-
-    // Monthly Chart Data (simplified for demo: just aggregate last 6 months)
-    const monthlyMap: Record<string, { inflow: number; outflow: number }> = {};
-    const d = new Date();
-    for(let i=5; i>=0; i--) {
-      const month = new Date(d.getFullYear(), d.getMonth() - i, 1);
-      const key = month.toISOString().substring(0, 7); // YYYY-MM
-      monthlyMap[key] = { inflow: 0, outflow: 0 };
-    }
-
-    allTransactions.forEach(t => {
-      const key = t.date.substring(0, 7);
-      if (monthlyMap[key]) {
-        if (t.type === 'inflow') monthlyMap[key].inflow += t.amount;
-        else monthlyMap[key].outflow += t.amount;
-      }
-    });
-
-    const cData: any[] = [];
-    Object.keys(monthlyMap).sort().forEach(k => {
-      const mName = new Date(k + '-01').toLocaleString('default', { month: 'short' });
-      cData.push({
-        value: monthlyMap[k].inflow,
-        label: mName,
-        spacing: 2,
-        labelWidth: 30,
-        labelTextStyle: {color: theme.colors.textSecondary},
-        frontColor: '#1ED760' // Neon Green
-      });
-      cData.push({
-        value: monthlyMap[k].outflow,
-        frontColor: '#FF4B4B'
-      });
-    });
-
-    return {
-      totalIncome: tIn,
-      totalExpenses: tOut,
-      ecosystemNet: net,
-      chartData: cData,
-      recentActivity: allTransactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5)
-    };
-  }, [incomeEntries, expenseEntries, businessIncome, businessExpenses, cardSpends, loanPayments, partPayments, creditTransactions]);
 
   const displayAmount = (amount: number) => {
     return privacyMode ? '***' : `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <DashboardSkeleton />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>

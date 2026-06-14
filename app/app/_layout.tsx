@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useAuthStore } from '@/store/authStore';
+import { useSubscriptionCheck } from '@/lib/queries/subscription';
 import { useAppTheme } from '@/theme';
 import { useFonts } from 'expo-font';
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
@@ -28,13 +29,13 @@ const queryClient = new QueryClient({
 function AuthGate() {
   const {
     session,
-    hasValidSubscription,
-    isCheckingSubscription,
     biometricEnabled,
     biometricSetupComplete,
     isUnlocked,
     init,
   } = useAuthStore();
+
+  const { data: hasValidSubscription, isLoading: isCheckingSubscription } = useSubscriptionCheck();
 
   const segments = useSegments();
   const router = useRouter();

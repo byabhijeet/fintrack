@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '../supabase';
 import { useAuthStore } from '../../store/authStore';
 import { FinanceCategory } from './income';
@@ -50,6 +50,43 @@ export const useExpenseCategories = () => {
 
       return data as FinanceCategory[];
     },
+    enabled: !!user,
+  });
+};
+
+const PAGE_SIZE = 10;
+
+export const useInfiniteExpenseEntries = () => {
+  const user = useAuthStore((state) => state.user);
+
+  return useInfiniteQuery({
+    queryKey: ['finance_entries_infinite', 'expense_outflow', user?.id],
+    queryFn: async ({ pageParam = 0 }) => {
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('finance_entries')
+        .select(`
+          *,
+          finance_categories (
+            id,
+            name,
+            context,
+            type,
+            is_active
+          )
+        `)
+        .in('context', ['expense', 'outflow'])
+        .order('entry_date', { ascending: false })
+        .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1);
+
+      if (error) throw error;
+      return data as FinanceEntry[];
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
+    },
+    initialPageParam: 0,
     enabled: !!user,
   });
 };
@@ -108,6 +145,7 @@ export const useAddExpenseMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['finance_entries', 'expense_outflow'] });
+      queryClient.invalidateQueries({ queryKey: ['finance_entries_infinite', 'expense_outflow'] });
     },
   });
 };

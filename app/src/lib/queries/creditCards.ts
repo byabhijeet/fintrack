@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '../supabase';
 import { useAuthStore } from '../../store/authStore';
 
@@ -93,6 +93,34 @@ export const useCardSpends = (cardId: string) => {
   });
 };
 
+const PAGE_SIZE = 10;
+
+export const useInfiniteCardSpends = (cardId: string) => {
+  const user = useAuthStore((state) => state.user);
+
+  return useInfiniteQuery({
+    queryKey: ['card_spends_infinite', cardId, user?.id],
+    queryFn: async ({ pageParam = 0 }) => {
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('card_spends')
+        .select('*')
+        .eq('card_id', cardId)
+        .order('spend_date', { ascending: false })
+        .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1);
+
+      if (error) throw error;
+      return data as CardSpend[];
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
+    },
+    initialPageParam: 0,
+    enabled: !!user && !!cardId,
+  });
+};
+
 export const useAllCardSpends = () => {
   const user = useAuthStore((state) => state.user);
 
@@ -135,6 +163,7 @@ export const useAddCardSpendMutation = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['card_spends', variables.card_id] });
+      queryClient.invalidateQueries({ queryKey: ['card_spends_infinite', variables.card_id] });
     },
   });
 };
