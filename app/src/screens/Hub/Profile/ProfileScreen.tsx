@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../../theme';
 import { useProfile, useAddress, useUpdateProfileMutation, useUpdateAddressMutation } from '../../../lib/queries/profile';
 import { ArrowLeft, Save } from 'lucide-react-native';
+import { Alert } from '@/lib/alert';
 import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {

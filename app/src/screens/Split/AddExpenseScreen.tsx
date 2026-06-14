@@ -1,22 +1,12 @@
 import { useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  ScrollView,
-  TextInput,
-  Modal,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput, Modal, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { useAddExpenseMutation, calculatePennyPerfectSplit } from '../../lib/queries/splits';
 import { useAuthStore } from '../../store/authStore';
 import { Trash2, Plus, ArrowLeft } from 'lucide-react-native';
+import { Alert } from '@/lib/alert';
 
 interface Participant {
   id: string;

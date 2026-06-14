@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView, ActivityIndicator, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../../theme';
 import { useAccountConsents, useUpdateConsentsMutation, UpdateConsentsInput } from '../../../lib/queries/settings';
 import { useAuthStore } from '../../../store/authStore';
 import { useUIStore } from '../../../store/uiStore';
 import { ArrowLeft, LogOut } from 'lucide-react-native';
+import { Alert } from '@/lib/alert';
 import { useRouter } from 'expo-router';
 
 export default function SettingsScreen() {
@@ -15,7 +16,7 @@ export default function SettingsScreen() {
   const updateConsentsMutation = useUpdateConsentsMutation();
 
   const { privacyMode, togglePrivacyMode } = useUIStore();
-  const { biometricEnabled, enableBiometric, signOut } = useAuthStore();
+  const { biometricEnabled, enableBiometric, disableBiometric, signOut } = useAuthStore();
 
   const handleConsentToggle = async (key: keyof UpdateConsentsInput, value: boolean) => {
     try {
@@ -41,7 +42,8 @@ export default function SettingsScreen() {
       await enableBiometric();
       Alert.alert('Biometrics Enabled', 'You can now use biometrics to unlock the app.');
     } else {
-      Alert.alert('Info', 'Biometrics cannot be disabled directly from here right now. Re-install app to reset.');
+      await disableBiometric();
+      Alert.alert('Biometrics Disabled', 'Biometric unlock has been disabled.');
     }
   };
 

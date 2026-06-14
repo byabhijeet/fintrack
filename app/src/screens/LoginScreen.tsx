@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert } from '@/lib/alert';
+import { Eye, EyeOff } from 'lucide-react-native';
 import { useAppTheme } from '../theme';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
@@ -19,6 +21,7 @@ export default function LoginScreen() {
   const [signupStep, setSignupStep] = useState<'details' | 'otp'>('details');
   const [signupOtp, setSignupOtp] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSendOtp = async () => {
     if (!phoneNumber || phoneNumber.length < 10) {
@@ -256,25 +259,37 @@ export default function LoginScreen() {
         onChangeText={setEmail}
       />
 
-      <TextInput
-        style={[
-          styles.input,
-          typography.bodyMd,
-          { 
-            backgroundColor: colors.inputBackground, 
-            color: colors.textPrimary,
-            borderRadius: borderRadius.pill,
-            paddingHorizontal: spacing.lg,
-            paddingVertical: spacing.md,
-            marginBottom: spacing.xl
-          }
-        ]}
-        placeholder="Password"
-        placeholderTextColor={colors.textMuted}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+      <View style={[styles.passwordContainer, { marginBottom: spacing.xl }]}>
+        <TextInput
+          style={[
+            styles.input,
+            typography.bodyMd,
+            {
+              backgroundColor: colors.inputBackground,
+              color: colors.textPrimary,
+              borderRadius: borderRadius.pill,
+              paddingLeft: spacing.lg,
+              paddingRight: 50,
+              paddingVertical: spacing.md,
+            }
+          ]}
+          placeholder="Password"
+          placeholderTextColor={colors.textMuted}
+          secureTextEntry={!showPassword}
+          value={password}
+          onChangeText={setPassword}
+        />
+        <TouchableOpacity
+          style={styles.eyeIcon}
+          onPress={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? (
+            <EyeOff size={20} color={colors.textSecondary} />
+          ) : (
+            <Eye size={20} color={colors.textSecondary} />
+          )}
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity 
         style={[
@@ -381,25 +396,37 @@ export default function LoginScreen() {
             onChangeText={setPhoneNumber}
             maxLength={10}
           />
-          <TextInput
-            style={[
-              styles.input,
-              typography.bodyMd,
-              { 
-                backgroundColor: colors.inputBackground, 
-                color: colors.textPrimary,
-                borderRadius: borderRadius.pill,
-                paddingHorizontal: spacing.lg,
-                paddingVertical: spacing.md,
-                marginBottom: spacing.xl
-              }
-            ]}
-            placeholder="Password"
-            placeholderTextColor={colors.textMuted}
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
+          <View style={[styles.passwordContainer, { marginBottom: spacing.xl }]}>
+            <TextInput
+              style={[
+                styles.input,
+                typography.bodyMd,
+                {
+                  backgroundColor: colors.inputBackground,
+                  color: colors.textPrimary,
+                  borderRadius: borderRadius.pill,
+                  paddingLeft: spacing.lg,
+                  paddingRight: 50,
+                  paddingVertical: spacing.md,
+                }
+              ]}
+              placeholder="Password"
+              placeholderTextColor={colors.textMuted}
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
+            />
+            <TouchableOpacity
+              style={styles.eyeIcon}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeOff size={20} color={colors.textSecondary} />
+              ) : (
+                <Eye size={20} color={colors.textSecondary} />
+              )}
+            </TouchableOpacity>
+          </View>
         </>
       ) : (
         <TextInput
@@ -497,6 +524,16 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
+  },
+  passwordContainer: {
+    width: '100%',
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 20,
+    zIndex: 1,
   },
   button: {
     width: '100%',

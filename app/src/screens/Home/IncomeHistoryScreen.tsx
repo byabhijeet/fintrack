@@ -1,26 +1,28 @@
 
-import { useMemo, useCallback } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert } from '@/lib/alert';
 import { useAppTheme } from '../../theme';
-import { useInfiniteIncomeEntries, useDeleteIncomeMutation, IncomeEntry } from '../../lib/queries/income';
+import { useIncomeEntries, useDeleteIncomeMutation, IncomeEntry } from '../../lib/queries/income';
+import { useRouter } from 'expo-router';
 
 export default function IncomeHistoryScreen() {
-  const { colors } = useAppTheme();
-  const {
-    data,
-    isLoading,
-    isFetchingNextPage,
-    fetchNextPage,
-    hasNextPage,
-    refetch,
-    isRefetching,
-  } = useInfiniteIncomeEntries();
+  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const router = useRouter();
+  const { data: entries, isLoading, refetch, isRefetching } = useIncomeEntries();
   const deleteMutation = useDeleteIncomeMutation();
 
-  const entries = useMemo(() => {
-    return data?.pages.flatMap((page) => page) ?? [];
-  }, [data]);
+  const handleEdit = (item: IncomeEntry) => {
+    router.push({
+      pathname: '/(app)/(home)/add-income',
+      params: {
+        id: item.id,
+        amount: item.amount.toString(),
+        notes: item.notes || '',
+        source_id: item.source_id,
+      }
+    });
+  };
 
   const handleDelete = (id: string) => {
     Alert.alert('Delete Income', 'Are you sure you want to delete this entry?', [
@@ -47,25 +49,94 @@ export default function IncomeHistoryScreen() {
           <Text style={styles.amountText}>+₹{item.amount.toLocaleString('en-IN')}</Text>
           {!!item.notes && <Text style={styles.notesText}>{item.notes}</Text>}
         </View>
-        <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteButton}>
-          <Text style={styles.deleteText}>Delete</Text>
-        </TouchableOpacity>
+        <View style={styles.actions}>
+          <TouchableOpacity onPress={() => handleEdit(item)} style={styles.actionButton}>
+            <Text style={styles.editText}>Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.actionButton}>
+            <Text style={styles.deleteText}>Delete</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 
-  const renderFooter = useCallback(() => {
-    if (!isFetchingNextPage) return null;
-    return (
-      <View style={themedStyles.footerLoader}>
-        <ActivityIndicator size="small" color={colors.primary} />
-      </View>
-    );
-  }, [isFetchingNextPage, colors.primary, themedStyles.footerLoader]);
-
-  const handleEndReached = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    listContent: {
+      padding: spacing.md,
+      gap: spacing.md,
+    },
+    card: {
+      backgroundColor: colors.surfaceElevated,
+      borderRadius: borderRadius.md,
+      padding: spacing.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    cardHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: spacing.sm,
+    },
+    badge: {
+      backgroundColor: colors.primary + '20', // 20% opacity
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 2,
+      borderRadius: borderRadius.sm,
+    },
+    badgeText: {
+      color: colors.primary,
+      ...typography.labelCaps,
+    },
+    dateText: {
+      color: colors.textMuted,
+      ...typography.bodySm,
+    },
+    cardBody: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-end',
+    },
+    amountText: {
+      ...typography.displayLg,
+      fontSize: 24,
+      color: colors.primary,
+      lineHeight: 28,
+    },
+    notesText: {
+      color: colors.textSecondary,
+      ...typography.bodySm,
+      marginTop: spacing.xs,
+    },
+    actions: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+    },
+    actionButton: {
+      padding: spacing.xs,
+    },
+    editText: {
+      color: colors.primary,
+      ...typography.bodySm,
+    },
+    deleteText: {
+      color: colors.error,
+      ...typography.bodySm,
+    },
+    emptyState: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: spacing.xxl * 2,
+    },
+    emptyText: {
+      color: colors.textSecondary,
+      ...typography.bodyMd,
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
@@ -104,78 +175,3 @@ export default function IncomeHistoryScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = ({ colors, typography, spacing, borderRadius }: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  listContent: {
-    padding: spacing.md,
-    gap: spacing.md,
-  },
-  card: {
-    backgroundColor: colors.surfaceElevated,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  badge: {
-    backgroundColor: colors.primary + '20', // 20% opacity
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  badgeText: {
-    color: colors.primary,
-    ...typography.labelCaps,
-  },
-  dateText: {
-    color: colors.textMuted,
-    ...typography.bodySm,
-  },
-  cardBody: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-  },
-  amountText: {
-    ...typography.displayLg,
-    fontSize: 24,
-    color: colors.primary,
-    lineHeight: 28,
-  },
-  notesText: {
-    color: colors.textSecondary,
-    ...typography.bodySm,
-    marginTop: spacing.xs,
-  },
-  deleteButton: {
-    padding: spacing.xs,
-  },
-  deleteText: {
-    color: colors.error,
-    ...typography.bodySm,
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: spacing.xxl * 2,
-  },
-  emptyText: {
-    color: colors.textSecondary,
-    ...typography.bodyMd,
-  },
-  footerLoader: {
-    paddingVertical: 20,
-    alignItems: 'center',
-  },
-});

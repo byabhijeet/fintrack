@@ -105,3 +105,84 @@
   - **Type**: HITL
   - **Blocked by**: Slices 5, 7, 12
   - **Description**: Build the Global FAB Bottom Sheet, integrate STT (`expo-speech`), and map intents to pre-fill various module forms.
+
+- [ ] **Slice 20: Fix Credit Book Math Bug [jules]**
+  - **Type**: AFK
+  - **Blocked by**: None
+  - **What to build**: Invert the net balance calculation logic in the Credit Book queries/UI. Currently, money you `got` adds to a positive net balance which the UI calls a Receivable ("You get back"). It should be inverted: money you `gave` is a Receivable (they owe you), and money you `got` is a Payable (you owe them).
+  - **Acceptance criteria**:
+    - [ ] `computeNetBalance` logic accurately reflects that `gave` is a receivable and `got` is a payable.
+    - [ ] The UI correctly updates the text colors and labels ("You owe" vs "You'll get") based on the inverted math.
+
+- [ ] **Slice 21: Show/Hide Password Toggle [jules]**
+  - **Type**: AFK
+  - **Blocked by**: None
+  - **What to build**: Add an eye-icon toggle to the password input field on the login screen (web and mobile).
+  - **Acceptance criteria**:
+    - [ ] Tapping the eye icon toggles the `secureTextEntry` state of the password field.
+    - [ ] The icon visually changes between open-eye and closed-eye states.
+
+- [ ] **Slice 22: Disable Biometric Login Setting [jules]**
+  - **Type**: AFK
+  - **Blocked by**: None
+  - **What to build**: Add a preference toggle in the Settings screen to bypass the biometric prompt on app startup.
+  - **Acceptance criteria**:
+    - [ ] The state is persisted locally (e.g., in AsyncStorage or UI store).
+    - [ ] If disabled, the app skips `expo-local-authentication` during the subscription/auth gate flow and proceeds straight to the dashboard.
+
+- [ ] **Slice 23: Standardize "Add Items" Button Placement [jules]**
+  - **Type**: AFK
+  - **Blocked by**: None
+  - **What to build**: Move the primary "Add Item" button (e.g., adding an expense, income, party) from inconsistent bottom-screen placements to the Top Right of the screen header.
+  - **Acceptance criteria**:
+    - [ ] The action button is placed in the navigation header (using `headerRight`).
+    - [ ] The layout looks consistent on both Web and Mobile without overlapping the bottom edge.
+
+- [ ] **Slice 24: Infinite Scroll & Pull-to-Refresh [jules]**
+  - **Type**: AFK
+  - **Blocked by**: None
+  - **What to build**: Add `onEndReached` (infinite scrolling) and `refreshControl` (pull-to-refresh) to primary long lists such as Transactions and Credit Book Parties.
+  - **Acceptance criteria**:
+    - [ ] Swiping down triggers a manual refresh of the React Query data.
+    - [ ] Reaching the bottom of the list attempts to fetch the next page (assuming backend support or simply handles standard UX).
+
+- [ ] **Slice 25: Web Alert Modal Fallback [jules]**
+  - **Type**: AFK
+  - **Blocked by**: None
+  - **What to build**: Replace native `Alert.alert` calls with a custom cross-platform modal (or a web polyfill) because `Alert.alert` silently fails on the web platform.
+  - **Acceptance criteria**:
+    - [ ] Alerts display correctly with their title, message, and buttons when running via `npm run web`.
+
+- [ ] **Slice 26: Edit Salary Entries [jules]**
+  - **Type**: AFK
+  - **Blocked by**: None
+  - **What to build**: Add an update flow (modal or form) to modify existing salary records alongside the current delete option.
+  - **Acceptance criteria**:
+    - [ ] Users can trigger an "Edit" action on a salary entry.
+    - [ ] The edit modal correctly populates existing data and updates the DB via a TanStack mutation.
+
+- [ ] **Slice 27: Import Contacts to Supabase [jules]**
+  - **Type**: AFK
+  - **Blocked by**: None
+  - **What to build**: Use `expo-contacts` to fetch the device's address book and create a mechanism to sync those contacts to Supabase (e.g., the `parties` or a new `contacts` table) for cross-device support.
+  - **Acceptance criteria**:
+    - [ ] Requests contact permissions gracefully.
+    - [ ] Batch inserts/upserts imported contacts to Supabase.
+    - [ ] The imported contacts are selectable when adding a new Credit Book party.
+
+- [ ] **Slice 28: Recurring Transactions Core & Schema [jules]**
+  - **Type**: AFK
+  - **Blocked by**: None
+  - **What to build**: Set up the `recurring_transactions` Supabase schema, pg_cron daily evaluation script, and scaffold an empty "Bills/Recurring" tab in the app's navigation.
+  - **Acceptance criteria**:
+    - [ ] `recurring_transactions` table exists in Supabase.
+    - [ ] `pg_cron` function is written to automatically insert records into `transactions` when due.
+    - [ ] A new navigation tab is visible on mobile and web.
+
+- [ ] **Slice 29: Recurring Transactions Management UI [jules]**
+  - **Type**: AFK
+  - **Blocked by**: Slice 28
+  - **What to build**: Implement the UI to manage the recurrences. Allow users to add, edit, or pause recurring bills.
+  - **Acceptance criteria**:
+    - [ ] The "Bills" tab displays all active/paused recurring templates.
+    - [ ] The Add/Edit form correctly submits frequency, amount, and category to the Supabase table.

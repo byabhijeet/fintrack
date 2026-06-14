@@ -1,10 +1,10 @@
-
 import { useMemo, useCallback } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../theme';
 import { useInfiniteExpenseEntries, useDeleteExpenseMutation } from '../../lib/queries/expenses';
 import { Trash2 } from 'lucide-react-native';
+import { Alert } from '@/lib/alert';
 
 export default function ExpenseHistoryScreen() {
   const { colors } = useAppTheme();
@@ -209,3 +209,4 @@ const styles = ({ colors, typography, spacing, borderRadius }: any) => StyleShee
     marginTop: spacing.xl,
   }
 });
+}

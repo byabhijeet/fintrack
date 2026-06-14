@@ -1,10 +1,10 @@
 
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAppTheme } from '../../theme';
 import { useCreditCards } from '../../lib/queries/creditCards';
 import { CreditCard as CreditCardIcon, Plus } from 'lucide-react-native';
+import AppHeader from '@/components/navigation/AppHeader';
 
 export default function CreditCardListScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
@@ -38,6 +38,7 @@ export default function CreditCardListScreen() {
     },
     listContent: {
       padding: spacing.md,
+      paddingBottom: 100,
     },
     cardItem: {
       backgroundColor: colors.surfaceElevated,
@@ -88,22 +89,6 @@ export default function CreditCardListScreen() {
       color: colors.textSecondary,
       ...typography.bodySm,
     },
-    fab: {
-      position: 'absolute',
-      bottom: spacing.xl,
-      right: spacing.xl,
-      backgroundColor: colors.primary,
-      width: 56,
-      height: 56,
-      borderRadius: 28,
-      alignItems: 'center',
-      justifyContent: 'center',
-      elevation: 4,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-    },
     emptyContainer: {
       padding: spacing.xl,
       alignItems: 'center',
@@ -118,7 +103,13 @@ export default function CreditCardListScreen() {
   });
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <View style={styles.container}>
+      <AppHeader
+        title="Credit Cards"
+        onRightPress={() => router.push('/(app)/credit-cards/add')}
+        rightIcon={<Plus color={colors.primary} size={24} />}
+      />
+
       {isLoading ? (
         <View style={styles.emptyContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
@@ -136,12 +127,6 @@ export default function CreditCardListScreen() {
           }
         />
       )}
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => router.push('/(app)/credit-cards/add')}
-      >
-        <Plus color="#000" size={24} />
-      </TouchableOpacity>
-    </SafeAreaView>
+    </View>
   );
 }

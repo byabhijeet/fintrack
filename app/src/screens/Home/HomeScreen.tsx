@@ -140,10 +140,10 @@ export default function HomeScreen() {
     // Credit Book: Calculate net for all parties
     creditTransactions?.forEach(t => {
       const amount = Number(t.amount);
-      if (t.type === 'got') {
-        creditReceivables += amount; // Money owed to me
-      } else if (t.type === 'gave') {
-        creditPayables += amount; // Money I owe
+      if (t.type === 'gave') {
+        creditReceivables += amount; // Money owed to me (I gave/lent)
+      } else if (t.type === 'got') {
+        creditPayables += amount; // Money I owe (I got/borrowed)
       }
       // Only add to transactions if not settled
       if (!t.settled) {
@@ -151,8 +151,8 @@ export default function HomeScreen() {
           id: `credit_${t.id}`,
           date: t.txn_date,
           amount: amount,
-          title: t.type === 'got' ? 'Credit Receivable' : 'Credit Payable',
-          type: t.type === 'got' ? 'inflow' : 'outflow'
+          title: t.type === 'gave' ? 'Credit Receivable' : 'Credit Payable',
+          type: t.type === 'gave' ? 'inflow' : 'outflow'
         });
       }
     });

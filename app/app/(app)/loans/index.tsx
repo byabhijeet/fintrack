@@ -1,9 +1,10 @@
 
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Plus, ArrowLeft, Building2 } from 'lucide-react-native';
+import { Plus, Building2 } from 'lucide-react-native';
 import { useAppTheme } from '@/theme';
 import { useLoans } from '@/lib/queries/loans';
+import AppHeader from '@/components/navigation/AppHeader';
 
 export default function LoansScreen() {
   const router = useRouter();
@@ -18,15 +19,13 @@ export default function LoansScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ArrowLeft color={colors.text} size={24} />
-        </TouchableOpacity>
-        <Text style={[typography.title2, { color: colors.text }]}>Loans</Text>
-        <TouchableOpacity onPress={() => router.push('/loans/add')} style={styles.addButton}>
-          <Plus color={colors.primary} size={24} />
-        </TouchableOpacity>
-      </View>
+      <AppHeader
+        title="Loans"
+        showBack={true}
+        onBackPress={() => router.back()}
+        onRightPress={() => router.push('/loans/add')}
+        rightIcon={<Plus color={colors.primary} size={24} />}
+      />
 
       <View style={[styles.summaryCard, { backgroundColor: colors.surfaceElevated }]}>
         <Text style={[typography.labelCaps, { color: colors.textSecondary }]}>Total Active Principal</Text>
@@ -46,6 +45,7 @@ export default function LoansScreen() {
             <TouchableOpacity 
               style={[styles.loanCard, { backgroundColor: colors.surface }]}
               onPress={() => router.push(`/loans/${item.id}`)}
+              activeOpacity={0.7}
             >
               <View style={styles.loanCardHeader}>
                 <View style={styles.lenderInfo}>
@@ -93,17 +93,6 @@ export default function LoansScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 60,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-  },
-  backButton: { padding: 8, marginLeft: -8 },
-  addButton: { padding: 8, marginRight: -8 },
   summaryCard: {
     margin: 16,
     padding: 24,
