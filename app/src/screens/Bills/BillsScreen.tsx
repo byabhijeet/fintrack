@@ -6,13 +6,36 @@ import { useBills, useMarkBillPaidMutation, RecurringTransaction } from '@/lib/q
 import { Plus, CheckCircle, Calendar, RefreshCw } from 'lucide-react-native';
 import { useUIStore } from '@/store/uiStore';
 import AppHeader from '@/components/navigation/AppHeader';
+import { useHeaderStore } from '@/store/headerStore';
+import { useBreakpoint } from '@/hooks/useBreakpoint';
+import React, { useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
 
 export default function BillsScreen() {
   const { colors } = useAppTheme();
   const router = useRouter();
+  const breakpoint = useBreakpoint();
+  const { setHeader, resetHeader } = useHeaderStore();
   const { data: bills, isLoading } = useBills();
   const { privacyMode } = useUIStore();
   const markPaidMutation = useMarkBillPaidMutation();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (breakpoint === 'desktop') {
+        setHeader({
+          title: 'My Bills',
+          rightIcon: <Plus color={colors.primary} size={24} />,
+          onRightPress: () => router.push('/(app)/bills/add'),
+        });
+      }
+      return () => {
+        if (breakpoint === 'desktop') {
+          resetHeader();
+        }
+      };
+    }, [breakpoint, colors.primary, router, setHeader, resetHeader])
+  );
 
   const displayAmount = (amount: number) => {
     return privacyMode ? '***' : `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -89,11 +112,13 @@ export default function BillsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AppHeader
-        title="My Bills"
-        onRightPress={() => router.push('/(app)/bills/add')}
-        rightIcon={<Plus color={colors.primary} size={24} />}
-      />
+      {breakpoint !== 'desktop' && (
+        <AppHeader
+          title="My Bills"
+          onRightPress={() => router.push('/(app)/bills/add')}
+          rightIcon={<Plus color={colors.primary} size={24} />}
+        />
+      )}
 
       {isLoading ? (
         <View style={styles.center}>

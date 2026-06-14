@@ -7,17 +7,20 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Plus, Users } from 'lucide-react-native';
+import { Plus, Users, RefreshCw } from 'lucide-react-native';
 import { useAppTheme } from '@/theme';
 import { useUIStore } from '@/store/uiStore';
 import {
   useInfiniteCreditParties,
   usePartyTransactions,
+  useImportContactsMutation,
   PersonalCreditParty,
   computeNetBalance,
 } from '@/lib/queries/creditBook';
+import { getContacts } from '@/services/contacts';
 import AppHeader from '@/components/navigation/AppHeader';
 
 // ---------------------------------------------------------------------------
@@ -124,8 +127,35 @@ export default function CreditBookListScreen() {
       fetchNextPage();
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  const { data: parties = [], isLoading } = useCreditParties();
+  const { mutate: importContacts, isPending: isImporting } = useImportContactsMutation();
+
+  const handleSyncContacts = async () => {
+    const result = await getContacts();
+    if (result.success) {
+      if (result.contacts.length > 0) {
+        importContacts(result.contacts, {
+          onSuccess: (data) => {
+            Alert.alert('Success', `Imported ${data.length} contacts.`);
+          },
+          onError: (err: any) => {
+            Alert.alert('Error', `Failed to import contacts: ${err.message}`);
+          }
+        });
+      } else {
+        Alert.alert('No Contacts', 'No valid contacts found on your device.');
+      }
+    } else if (result.error) {
+      Alert.alert('Permission Denied', 'Please grant contacts permission in settings.');
+    }
+  };
 
   return (
+
+    <SafeAreaView
+      edges={['top', 'bottom']}
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <AppHeader
         title="Credit Book"
@@ -200,10 +230,26 @@ const styles = StyleSheet.create({
   header: {
   summaryInfo: {
     paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerTitle: {
     paddingVertical: 8,
   },
   headerSubtitle: {
     marginTop: 2,
+  },
+  syncButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   listContent: {
     padding: 16,
