@@ -118,6 +118,28 @@ export const useAddIncomeMutation = () => {
   });
 };
 
+// Update income entry
+export const useUpdateIncomeMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: Partial<Omit<IncomeEntry, 'id' | 'user_id' | 'created_at' | 'finance_categories'>> & { id: string }) => {
+      const { data, error } = await supabase
+        .from('income_entries')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as IncomeEntry;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['income_entries'] });
+    },
+  });
+};
+
 // Delete income entry
 export const useDeleteIncomeMutation = () => {
   const queryClient = useQueryClient();
