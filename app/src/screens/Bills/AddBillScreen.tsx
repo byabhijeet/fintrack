@@ -1,16 +1,21 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, ActivityIndicator, Switch } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, ActivityIndicator, Switch, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/theme';
-import { useRouter } from 'expo-router';
-import { useAddBillMutation } from '@/lib/queries/bills';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useAddBillMutation, useBill, useUpdateBillMutation, useDeleteBillMutation } from '@/lib/queries/bills';
 import { useExpenseCategories } from '@/lib/queries/expenses';
+import { Trash2 } from 'lucide-react-native';
 
 export default function AddBillScreen() {
   const { colors } = useAppTheme();
   const router = useRouter();
+  const { id } = useLocalSearchParams<{ id: string }>();
   
+  const { data: bill, isLoading: isLoadingBill } = useBill(id);
   const addBillMutation = useAddBillMutation();
+  const updateBillMutation = useUpdateBillMutation();
+  const deleteBillMutation = useDeleteBillMutation();
   const { data: categories } = useExpenseCategories();
 
   const [title, setTitle] = useState('');
@@ -19,30 +24,95 @@ export default function AddBillScreen() {
   const [categoryId, setCategoryId] = useState('');
   const [nextDue, setNextDue] = useState(new Date().toISOString().split('T')[0]);
   const [isActive, setIsActive] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    if (bill && !isInitialized) {
+      setTitle(bill.title);
+      setAmount(bill.amount.toString());
+      setFrequency(bill.frequency);
+      setCategoryId(bill.category_id || '');
+      setNextDue(bill.next_due);
+      setIsActive(bill.is_active);
+      setIsInitialized(true);
+    }
+  }, [bill, isInitialized]);
 
   const handleSubmit = () => {
     if (!title || !amount || !frequency || !nextDue) {
-      alert('Please fill all required fields');
+      Alert.alert('Error', 'Please fill all required fields');
       return;
     }
 
-    addBillMutation.mutate({
+    const payload = {
       title,
       amount: parseFloat(amount),
       frequency,
       category_id: categoryId || null,
       next_due: nextDue,
-      last_run: null,
       is_active: isActive,
-    }, {
-      onSuccess: () => {
-        router.back();
-      },
-      onError: (error) => {
-        alert(error.message);
-      }
-    });
+    };
+
+    if (id) {
+      updateBillMutation.mutate({
+        ...payload,
+        id,
+      }, {
+        onSuccess: () => {
+          router.back();
+        },
+        onError: (error) => {
+          Alert.alert('Error', error.message);
+        }
+      });
+    } else {
+      addBillMutation.mutate({
+        ...payload,
+        last_run: null,
+      }, {
+        onSuccess: () => {
+          router.back();
+        },
+        onError: (error) => {
+          Alert.alert('Error', error.message);
+        }
+      });
+    }
   };
+
+  const handleDelete = () => {
+    if (!id) return;
+
+    Alert.alert(
+      'Delete Bill',
+      'Are you sure you want to delete this recurring bill?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            deleteBillMutation.mutate(id, {
+              onSuccess: () => {
+                router.back();
+              },
+              onError: (error) => {
+                Alert.alert('Error', error.message);
+              }
+            });
+          }
+        }
+      ]
+    );
+  };
+
+  if (id && isLoadingBill) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background, justifyContent: 'center' }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView edges={['bottom']} style={[styles.container, { backgroundColor: colors.background }]}>
@@ -150,17 +220,32 @@ export default function AddBillScreen() {
       </ScrollView>
 
       <View style={[styles.footer, { borderTopColor: colors.border, backgroundColor: colors.surfaceElevated }]}>
-        <TouchableOpacity 
-          style={[styles.button, { backgroundColor: colors.primary }]}
-          onPress={handleSubmit}
-          disabled={addBillMutation.isPending}
-        >
-          {addBillMutation.isPending ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Save Bill</Text>
+        <View style={styles.buttonRow}>
+          {id && (
+            <TouchableOpacity
+              style={[styles.deleteButton, { borderColor: '#FF4B4B' }]}
+              onPress={handleDelete}
+              disabled={deleteBillMutation.isPending}
+            >
+              {deleteBillMutation.isPending ? (
+                <ActivityIndicator color="#FF4B4B" />
+              ) : (
+                <Trash2 color="#FF4B4B" size={20} />
+              )}
+            </TouchableOpacity>
           )}
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: colors.primary, flex: 1 }]}
+            onPress={handleSubmit}
+            disabled={addBillMutation.isPending || updateBillMutation.isPending}
+          >
+            {addBillMutation.isPending || updateBillMutation.isPending ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>{id ? 'Update Bill' : 'Save Bill'}</Text>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -228,10 +313,22 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopWidth: 1,
   },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
   button: {
     borderRadius: 8,
     padding: 16,
     alignItems: 'center',
+  },
+  deleteButton: {
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    width: 56,
   },
   buttonText: {
     color: '#fff',

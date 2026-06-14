@@ -1,21 +1,12 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-  Modal,
-  FlatList,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, FlatList, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { useGroupBalances, useGroupSettlements, useAddSettlementMutation } from '../../lib/queries/splits';
 import { useAuthStore } from '../../store/authStore';
 import { Send } from 'lucide-react-native';
+import { Alert } from '@/lib/alert';
 
 export default function SettleUpScreen() {
   const router = useRouter();

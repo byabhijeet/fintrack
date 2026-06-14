@@ -3,7 +3,7 @@ import { supabase } from '../supabase';
 import { useAuthStore } from '../../store/authStore';
 import { FinanceCategory } from './income';
 
-export type RecurringTemplate = {
+export type RecurringTransaction = {
   id: string;
   user_id: string;
   title: string;
@@ -17,17 +17,17 @@ export type RecurringTemplate = {
   finance_categories?: FinanceCategory;
 };
 
-// Fetch all bills (recurring templates)
+// Fetch all bills (recurring transactions)
 export const useBills = () => {
   const user = useAuthStore((state) => state.user);
 
   return useQuery({
-    queryKey: ['recurring_templates', user?.id],
+    queryKey: ['recurring_transactions', user?.id],
     queryFn: async () => {
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
-        .from('recurring_templates')
+        .from('recurring_transactions')
         .select(`
           *,
           finance_categories (
@@ -41,9 +41,38 @@ export const useBills = () => {
         .order('next_due', { ascending: true });
 
       if (error) throw error;
-      return data as RecurringTemplate[];
+      return data as RecurringTransaction[];
     },
     enabled: !!user,
+  });
+};
+
+// Fetch a single bill
+export const useBill = (id: string | undefined) => {
+  return useQuery({
+    queryKey: ['recurring_templates', id],
+    queryFn: async () => {
+      if (!id) throw new Error('No bill ID provided');
+
+      const { data, error } = await supabase
+        .from('recurring_templates')
+        .select(`
+          *,
+          finance_categories (
+            id,
+            name,
+            context,
+            type,
+            is_active
+          )
+        `)
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      return data as RecurringTemplate;
+    },
+    enabled: !!id,
   });
 };
 
@@ -53,11 +82,11 @@ export const useAddBillMutation = () => {
   const user = useAuthStore((state) => state.user);
 
   return useMutation({
-    mutationFn: async (newBill: Omit<RecurringTemplate, 'id' | 'user_id' | 'created_at' | 'finance_categories'>) => {
+    mutationFn: async (newBill: Omit<RecurringTransaction, 'id' | 'user_id' | 'created_at' | 'finance_categories'>) => {
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
-        .from('recurring_templates')
+        .from('recurring_transactions')
         .insert([{
           ...newBill,
           user_id: user.id
@@ -66,10 +95,10 @@ export const useAddBillMutation = () => {
         .single();
 
       if (error) throw error;
-      return data as RecurringTemplate;
+      return data as RecurringTransaction;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['recurring_templates'] });
+      queryClient.invalidateQueries({ queryKey: ['recurring_transactions'] });
     },
   });
 };
@@ -79,17 +108,36 @@ export const useUpdateBillMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (updates: Partial<RecurringTemplate> & { id: string }) => {
+    mutationFn: async (updates: Partial<RecurringTransaction> & { id: string }) => {
       const { id, finance_categories, created_at, user_id, ...rest } = updates;
       const { data, error } = await supabase
-        .from('recurring_templates')
+        .from('recurring_transactions')
         .update(rest)
         .eq('id', id)
         .select()
         .single();
 
       if (error) throw error;
-      return data as RecurringTemplate;
+      return data as RecurringTransaction;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recurring_transactions'] });
+    },
+  });
+};
+
+// Delete a bill
+export const useDeleteBillMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('recurring_templates')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recurring_templates'] });
@@ -102,7 +150,7 @@ export const useMarkBillPaidMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (bill: RecurringTemplate) => {
+    mutationFn: async (bill: RecurringTransaction) => {
       // 1. Insert into finance_entries
       const { error: pErr } = await supabase.from('finance_entries').insert({
         user_id: bill.user_id,
@@ -124,9 +172,9 @@ export const useMarkBillPaidMutation = () => {
 
       const todayStr = new Date().toISOString().split('T')[0];
 
-      // 3. Update the recurring template
+      // 3. Update the recurring transaction
       const { data, error } = await supabase
-        .from('recurring_templates')
+        .from('recurring_transactions')
         .update({
           last_run: todayStr,
           next_due: nextDue.toISOString().split('T')[0]
@@ -136,21 +184,21 @@ export const useMarkBillPaidMutation = () => {
         .single();
 
       if (error) throw error;
-      return data as RecurringTemplate;
+      return data as RecurringTransaction;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['recurring_templates'] });
+      queryClient.invalidateQueries({ queryKey: ['recurring_transactions'] });
       queryClient.invalidateQueries({ queryKey: ['finance_entries'] });
     },
   });
 };
 
-// Auto process due bills
+// Auto process due bills (This remains for backward compatibility or app-side fallback)
 export const processRecurringTransactions = async (userId: string) => {
   const todayStr = new Date().toISOString().split('T')[0];
   
   const { data: templates, error: tErr } = await supabase
-    .from('recurring_templates')
+    .from('recurring_transactions')
     .select('*')
     .eq('user_id', userId)
     .eq('is_active', true)
@@ -178,7 +226,7 @@ export const processRecurringTransactions = async (userId: string) => {
       else if (t.frequency === 'monthly') nextDue.setMonth(nextDue.getMonth() + 1);
       else if (t.frequency === 'yearly') nextDue.setFullYear(nextDue.getFullYear() + 1);
 
-      await supabase.from('recurring_templates').update({
+      await supabase.from('recurring_transactions').update({
         last_run: t.next_due,
         next_due: nextDue.toISOString().split('T')[0]
       }).eq('id', t.id);

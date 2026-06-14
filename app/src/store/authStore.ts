@@ -23,6 +23,7 @@ interface AuthState {
   init: () => void;
   checkSubscription: (userId: string) => Promise<boolean>;
   enableBiometric: () => Promise<void>;
+  disableBiometric: () => Promise<void>;
   skipBiometricSetup: () => Promise<void>;
   unlockApp: () => void;
   signUp: (phone: string, fullName: string, email: string) => Promise<{ error: any }>;
@@ -154,6 +155,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     await setItem('biometric_enabled', 'true');
     await setItem('biometric_setup_complete', 'true');
     set({ biometricEnabled: true, biometricSetupComplete: true });
+  },
+
+  disableBiometric: async () => {
+    await setItem('biometric_enabled', 'false');
+    set({ biometricEnabled: false, isUnlocked: true });
   },
 
   skipBiometricSetup: async () => {

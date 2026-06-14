@@ -1,1 +1,1 @@
-@FinanceTrackerContext.md
+To understand the project context, you MUST first read the FinanceTrackerContext.md file.

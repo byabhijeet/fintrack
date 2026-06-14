@@ -1,20 +1,12 @@
+import { Alert } from '@/lib/alert';
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Users, Sparkles, Wrench, CheckCircle2, AlertCircle, Lock,
-  Printer, Smartphone, Laptop, ScanLine, ShoppingCart, 
-  Barcode, Calculator, Package, ReceiptText, Store, 
-  Banknote, Truck, Bike, Receipt, DollarSign, Wallet,
-  Tag, Gift, ShoppingBag
+  Users, Sparkles, Wrench, CheckCircle2, AlertCircle, Eye, EyeOff,
+  Laptop, Calculator, Package, Store, Tag, ShoppingBag
 } from 'lucide-react';
-
-const iconPool = [
-  Printer, Smartphone, Laptop, ScanLine, ShoppingCart, 
-  Barcode, Calculator, Package, ReceiptText, Store, 
-  Banknote, Truck, Bike, Receipt, DollarSign, Wallet
-];
 
 type ModuleNode = {
   name: string;
@@ -391,7 +383,7 @@ function validatePassword(password: string): PasswordValidationResult {
 }
 
 const toast = (message: string, type: 'success' | 'error' | 'info') => {
-  alert(message);
+  Alert.alert(type.charAt(0).toUpperCase() + type.slice(1), message);
 };
 
 export default function LoginScreenWeb() {
@@ -411,6 +403,7 @@ export default function LoginScreenWeb() {
   
   const [signupOtpSent, setSignupOtpSent] = useState<boolean>(false);
   const [signupOtp, setSignupOtp] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const [activeTab, setActiveTab] = useState<string>("signin");
   const [showSplash, setShowSplash] = useState<boolean>(true);
@@ -434,6 +427,7 @@ export default function LoginScreenWeb() {
     setOtpSent(false);
     setOtp("");
     setSignupOtp("");
+    setShowPassword(false);
   }, [activeTab]);
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -831,14 +825,23 @@ export default function LoginScreenWeb() {
                         Forgot password?
                       </button>
                     </div>
-                    <input
-                      type="password"
-                      placeholder="••••••••"
-                      className="auth-input"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
+                    <div className="password-input-wrapper">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        className="auth-input"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="password-toggle-btn"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    </div>
                   </div>
                   <button type="submit" className="auth-submit-btn" disabled={loading}>
                     {loading ? <BillingLoader size="sm" /> : "LOG IN"}
@@ -973,14 +976,23 @@ export default function LoginScreenWeb() {
                         
                         <div className="auth-form-group" style={{ marginBottom: '20px' }}>
                           <label className="auth-label">Password</label>
-                          <input 
-                            type="password" 
-                            placeholder="••••••••" 
-                            className="auth-input" 
-                            value={password} 
-                            onChange={(e) => setPassword(e.target.value)} 
-                            required 
-                          />
+                          <div className="password-input-wrapper">
+                            <input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="••••••••"
+                              className="auth-input"
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              required
+                            />
+                            <button
+                              type="button"
+                              className="password-toggle-btn"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                          </div>
                         </div>
 
                         <div className="signup-terms-check">
@@ -1337,6 +1349,36 @@ export default function LoginScreenWeb() {
           border-color: #10b981;
           box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
           background-color: #ffffff;
+        }
+
+        .password-input-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+          width: 100%;
+        }
+
+        .password-input-wrapper .auth-input {
+          width: 100%;
+          padding-right: 48px;
+        }
+
+        .password-toggle-btn {
+          position: absolute;
+          right: 12px;
+          background: transparent;
+          border: none;
+          color: #64748b;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 4px;
+          transition: color 0.2s;
+        }
+
+        .password-toggle-btn:hover {
+          color: #10b981;
         }
 
         .phone-container {

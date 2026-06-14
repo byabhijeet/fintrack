@@ -9,6 +9,7 @@ import { useAppTheme } from '@/theme';
 import { useFonts } from 'expo-font';
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { PlayfairDisplay_600SemiBold } from '@expo-google-fonts/playfair-display';
+import AlertModal from '@/components/AlertModal';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -89,6 +90,7 @@ function AuthGate() {
   return (
     <>
       <Slot />
+      <AlertModal />
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </>
   );

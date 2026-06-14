@@ -1,9 +1,10 @@
 
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../theme';
 import { useExpenseEntries, useDeleteExpenseMutation } from '../../lib/queries/expenses';
 import { Trash2 } from 'lucide-react-native';
+import { Alert } from '@/lib/alert';
 
 export default function ExpenseHistoryScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();

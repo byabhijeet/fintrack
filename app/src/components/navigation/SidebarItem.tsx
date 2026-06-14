@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Pressable, Text, StyleSheet, View, Alert } from 'react-native';
+import { Pressable, Text, StyleSheet, View } from 'react-native';
+import { Alert } from '@/lib/alert';
 import { Link } from 'expo-router';
 import { useAppTheme } from '@/theme';
 

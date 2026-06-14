@@ -1,21 +1,11 @@
 import { useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-  Modal,
-  TextInput,
-  Alert,
-  Linking,
-} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Modal, TextInput, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { useRewards, useFlashDeals, useUserPoints, useUserRedemptions, usePartnerReferrals, useRedeemRewardMutation, useCreateReferralMutation } from '../../lib/queries/hub';
 import { Gift, Zap, Users, Copy, Check, User, Settings as SettingsIcon, Bell } from 'lucide-react-native';
+import { Alert } from '@/lib/alert';
 
 export default function HubScreen() {
   const router = useRouter();

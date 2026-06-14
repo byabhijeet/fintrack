@@ -1,0 +1,39 @@
+import { create } from 'zustand';
+
+export interface AlertButton {
+  text: string;
+  onPress?: () => void;
+  style?: 'default' | 'cancel' | 'destructive';
+}
+
+export interface AlertOptions {
+  cancelable?: boolean;
+  onDismiss?: () => void;
+}
+
+interface AlertState {
+  visible: boolean;
+  title: string;
+  message: string;
+  buttons: AlertButton[];
+  options: AlertOptions;
+  showAlert: (title: string, message?: string, buttons?: AlertButton[], options?: AlertOptions) => void;
+  hideAlert: () => void;
+}
+
+export const useAlertStore = create<AlertState>((set) => ({
+  visible: false,
+  title: '',
+  message: '',
+  buttons: [],
+  options: {},
+  showAlert: (title, message = '', buttons = [], options = {}) =>
+    set({
+      visible: true,
+      title,
+      message,
+      buttons: buttons.length > 0 ? buttons : [{ text: 'OK' }],
+      options
+    }),
+  hideAlert: () => set({ visible: false }),
+}));

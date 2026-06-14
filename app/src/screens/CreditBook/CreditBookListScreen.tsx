@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Plus, Users, RefreshCw } from 'lucide-react-native';
 import { useAppTheme } from '@/theme';
@@ -21,6 +20,7 @@ import {
   computeNetBalance,
 } from '@/lib/queries/creditBook';
 import { getContacts } from '@/services/contacts';
+import AppHeader from '@/components/navigation/AppHeader';
 
 // ---------------------------------------------------------------------------
 // Sub-component: PartyRow — fetches its own transactions to compute net balance
@@ -122,31 +122,22 @@ export default function CreditBookListScreen() {
   };
 
   return (
+
     <SafeAreaView
       edges={['top', 'bottom']}
       style={[styles.container, { backgroundColor: colors.background }]}
     >
-      {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <View style={styles.headerTop}>
-          <View>
-            <Text style={[styles.headerTitle, typography.display, { color: colors.textPrimary }]}>Credit Book</Text>
-            <Text style={[styles.headerSubtitle, typography.body, { color: colors.textSecondary }]}>
-              {parties.length} {parties.length === 1 ? 'contact' : 'contacts'}
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={[styles.syncButton, { backgroundColor: colors.surfaceElevated }]}
-            onPress={handleSyncContacts}
-            disabled={isImporting}
-          >
-            {isImporting ? (
-              <ActivityIndicator size="small" color={colors.primary} />
-            ) : (
-              <RefreshCw size={20} color={colors.primary} />
-            )}
-          </TouchableOpacity>
-        </View>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <AppHeader
+        title="Credit Book"
+        onRightPress={() => router.push('/(app)/(credit-book)/party/add')}
+        rightIcon={<Plus color={colors.primary} size={24} />}
+      />
+
+      <View style={styles.summaryInfo}>
+        <Text style={[styles.headerSubtitle, typography.body, { color: colors.textSecondary }]}>
+          {parties.length} {parties.length === 1 ? 'contact' : 'contacts'}
+        </Text>
       </View>
 
       {isLoading ? (
@@ -180,16 +171,7 @@ export default function CreditBookListScreen() {
           }
         />
       )}
-
-      {/* FAB */}
-      <TouchableOpacity
-        style={[styles.fab, { backgroundColor: colors.primary, shadowColor: colors.primary }]}
-        onPress={() => router.push('/(app)/(credit-book)/party/add')}
-        activeOpacity={0.85}
-      >
-        <Plus color="#000" size={24} />
-      </TouchableOpacity>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -201,7 +183,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
+  summaryInfo: {
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
@@ -212,6 +194,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
+    paddingVertical: 8,
   },
   headerSubtitle: {
     marginTop: 2,
@@ -274,19 +257,5 @@ const styles = StyleSheet.create({
   },
   emptySubtitle: {
     textAlign: 'center',
-  },
-  fab: {
-    position: 'absolute',
-    bottom: 24,
-    right: 24,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 6,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
   },
 });

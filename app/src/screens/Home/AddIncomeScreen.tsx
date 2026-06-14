@@ -1,20 +1,32 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Alert } from '@/lib/alert';
 import { useAppTheme } from '../../theme';
-import { useIncomeCategories, useAddIncomeMutation } from '../../lib/queries/income';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useIncomeCategories, useAddIncomeMutation, useUpdateIncomeMutation } from '../../lib/queries/income';
+import { useRouter, useLocalSearchParams, useNavigation } from 'expo-router';
+import { useEffect } from 'react';
 
 export default function AddIncomeScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
   const router = useRouter();
-  const params = useLocalSearchParams();
+  const navigation = useNavigation();
+  const params = useLocalSearchParams<{ id?: string, amount?: string, notes?: string, source_id?: string }>();
+  const isEditing = !!params.id;
+
   const [amount, setAmount] = useState(params.amount ? String(params.amount) : '');
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(params.source_id || null);
   const [notes, setNotes] = useState(params.notes ? String(params.notes) : '');
+
+  useEffect(() => {
+    if (isEditing) {
+      navigation.setOptions({ title: 'Edit Income' });
+    }
+  }, [isEditing, navigation]);
 
   const { data: categories, isLoading: isCategoriesLoading } = useIncomeCategories();
   const addIncomeMutation = useAddIncomeMutation();
+  const updateIncomeMutation = useUpdateIncomeMutation();
 
   const handleSave = () => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
@@ -26,24 +38,44 @@ export default function AddIncomeScreen() {
       return;
     }
 
-    addIncomeMutation.mutate(
-      {
-        amount: Number(amount),
-        source_id: selectedCategoryId,
-        entry_date: new Date().toISOString().split('T')[0],
-        notes: notes || null,
-        meta: {},
-      },
-      {
-        onSuccess: () => {
-          Alert.alert('Success', 'Income added successfully!');
-          router.back();
+    if (isEditing && params.id) {
+      updateIncomeMutation.mutate(
+        {
+          id: params.id,
+          amount: Number(amount),
+          source_id: selectedCategoryId,
+          notes: notes || null,
         },
-        onError: (err) => {
-          Alert.alert('Error', err.message);
+        {
+          onSuccess: () => {
+            Alert.alert('Success', 'Income updated successfully!');
+            router.back();
+          },
+          onError: (err) => {
+            Alert.alert('Error', err.message);
+          },
+        }
+      );
+    } else {
+      addIncomeMutation.mutate(
+        {
+          amount: Number(amount),
+          source_id: selectedCategoryId,
+          entry_date: new Date().toISOString().split('T')[0],
+          notes: notes || null,
+          meta: {},
         },
-      }
-    );
+        {
+          onSuccess: () => {
+            Alert.alert('Success', 'Income added successfully!');
+            router.back();
+          },
+          onError: (err) => {
+            Alert.alert('Error', err.message);
+          },
+        }
+      );
+    }
   };
 
   const styles = StyleSheet.create({
@@ -170,12 +202,12 @@ export default function AddIncomeScreen() {
         <TouchableOpacity 
           style={styles.saveButton} 
           onPress={handleSave}
-          disabled={addIncomeMutation.isPending}
+          disabled={addIncomeMutation.isPending || updateIncomeMutation.isPending}
         >
-          {addIncomeMutation.isPending ? (
+          {addIncomeMutation.isPending || updateIncomeMutation.isPending ? (
             <ActivityIndicator color="#000" />
           ) : (
-            <Text style={styles.saveButtonText}>Save Income</Text>
+            <Text style={styles.saveButtonText}>{isEditing ? 'Update Income' : 'Save Income'}</Text>
           )}
         </TouchableOpacity>
       </ScrollView>

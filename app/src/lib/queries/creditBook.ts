@@ -37,13 +37,13 @@ export type PersonalCreditTransaction = {
 // ---------------------------------------------------------------------------
 
 /** Compute net balance from a list of transactions.
- *  Positive = you are owed money (receivable / got > gave)
- *  Negative = you owe money (payable / gave > got)
+ *  Positive = you are owed money (receivable / gave > got)
+ *  Negative = you owe money (payable / got > gave)
  */
 export function computeNetBalance(txns: PersonalCreditTransaction[]): number {
   return txns.reduce((acc, t) => {
-    if (t.type === 'got') return acc + t.amount;
-    if (t.type === 'gave') return acc - t.amount;
+    if (t.type === 'gave') return acc + t.amount;
+    if (t.type === 'got') return acc - t.amount;
     return acc;
   }, 0);
 }
