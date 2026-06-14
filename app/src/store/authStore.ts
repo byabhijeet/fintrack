@@ -10,8 +10,6 @@ interface AuthState {
   session: Session | null;
   user: User | null;
   profile: any | null;
-  hasValidSubscription: boolean;
-  isCheckingSubscription: boolean;
   biometricEnabled: boolean;
   biometricSetupComplete: boolean;
   isUnlocked: boolean;
@@ -21,7 +19,6 @@ interface AuthState {
   verifyOtp: (phone: string, token: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   init: () => void;
-  checkSubscription: (userId: string) => Promise<boolean>;
   enableBiometric: () => Promise<void>;
   disableBiometric: () => Promise<void>;
   skipBiometricSetup: () => Promise<void>;
@@ -33,85 +30,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   session: null,
   user: null,
   profile: null,
-  hasValidSubscription: false,
-  isCheckingSubscription: true,
   biometricEnabled: false,
   biometricSetupComplete: false,
   isUnlocked: false,
 
   setSession: (session) => {
-    const currentUser = get().user;
     set({ session, user: session?.user || null });
-    
-    if (session?.user) {
-      // Only show the loading screen if this is a new login or first load
-      if (!currentUser || currentUser.id !== session.user.id) {
-        set({ isCheckingSubscription: true });
-      }
-      get().checkSubscription(session.user.id);
-    } else {
-      set({ isCheckingSubscription: false, hasValidSubscription: false });
-    }
-  },
-
-  checkSubscription: async (userId: string) => {
-    try {
-      // Check 1: Personal User Plan
-      const { data: accountData, error: accountError } = await supabase
-        .from('accounts')
-        .select(`
-          plan_status,
-          plans ( level, name )
-        `)
-        .eq('auth_id', userId)
-        .single();
-
-      if (!accountError && accountData) {
-        const { plan_status, plans } = accountData as any;
-        if ((plan_status === 'active' || plan_status === 'trialing') && plans) {
-          if (plans.level >= 1 || plans.name.toLowerCase().includes('premium') || plans.name.toLowerCase().includes('level')) {
-            set({ hasValidSubscription: true, isCheckingSubscription: false });
-            return true;
-          }
-        }
-      }
-
-      // Check 2: Merchant User Plan via org membership
-      const { data: orgMembers, error: orgError } = await supabase
-        .from('organization_members')
-        .select('organization_id')
-        .eq('user_id', userId)
-        .eq('is_active', true);
-
-      if (!orgError && orgMembers && orgMembers.length > 0) {
-        for (const member of orgMembers) {
-          const { data: subData, error: subError } = await supabase
-            .from('subscriptions')
-            .select(`
-              status,
-              plans ( level, name )
-            `)
-            .eq('organization_id', member.organization_id)
-            .in('status', ['active', 'trialing']);
-
-          if (!subError && subData && subData.length > 0) {
-            for (const sub of subData as any[]) {
-              if (sub.plans && (sub.plans.level >= 1 || sub.plans.name.toLowerCase().includes('premium') || sub.plans.name.toLowerCase().includes('level'))) {
-                set({ hasValidSubscription: true, isCheckingSubscription: false });
-                return true;
-              }
-            }
-          }
-        }
-      }
-
-      set({ hasValidSubscription: false, isCheckingSubscription: false });
-      return false;
-    } catch (error) {
-      console.error('Subscription check error:', error);
-      set({ hasValidSubscription: false, isCheckingSubscription: false });
-      return false;
-    }
   },
 
   signIn: async (phone) => {
@@ -148,7 +72,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   signOut: async () => {
     await supabase.auth.signOut();
-    set({ session: null, user: null, profile: null, hasValidSubscription: false });
+    set({ session: null, user: null, profile: null });
   },
 
   enableBiometric: async () => {
