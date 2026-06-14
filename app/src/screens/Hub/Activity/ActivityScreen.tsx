@@ -1,8 +1,13 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useEffect, useMemo, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../../theme';
-import { useNotifications, useMarkAsReadMutation, Notification } from '../../../lib/queries/notifications';
+import {
+  useInfiniteNotifications,
+  useMarkAsReadMutation,
+  useUnreadNotificationCount,
+  Notification
+} from '../../../lib/queries/notifications';
 import { useNotificationStore } from '../../../store/notificationStore';
 import { useAuthStore } from '../../../store/authStore';
 import { supabase } from '../../../lib/supabase';
@@ -15,16 +20,26 @@ export default function ActivityScreen() {
   const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
 
-  const { data: notifications, isLoading } = useNotifications();
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+    isRefetching,
+  } = useInfiniteNotifications();
+  const { data: unreadCount = 0 } = useUnreadNotificationCount();
   const markAsReadMutation = useMarkAsReadMutation();
   const { setUnreadCount, incrementUnread, decrementUnread } = useNotificationStore();
 
+  const notifications = useMemo(() => {
+    return data?.pages.flatMap((page) => page) ?? [];
+  }, [data]);
+
   useEffect(() => {
-    if (notifications) {
-      const unread = notifications.filter(n => !n.is_read).length;
-      setUnreadCount(unread);
-    }
-  }, [notifications, setUnreadCount]);
+    setUnreadCount(unreadCount);
+  }, [unreadCount, setUnreadCount]);
 
   useEffect(() => {
     if (!user) return;
@@ -44,6 +59,8 @@ export default function ActivityScreen() {
         (payload) => {
           console.log('New notification:', payload);
           queryClient.invalidateQueries({ queryKey: ['notifications', user.id] });
+          queryClient.invalidateQueries({ queryKey: ['notifications_unread_count', user.id] });
+          queryClient.invalidateQueries({ queryKey: ['notifications_infinite', user.id] });
           incrementUnread();
         }
       )
@@ -84,7 +101,22 @@ export default function ActivityScreen() {
     </TouchableOpacity>
   );
 
-  if (isLoading) {
+  const renderFooter = useCallback(() => {
+    if (!isFetchingNextPage) return null;
+    return (
+      <View style={styles.footerLoader}>
+        <ActivityIndicator size="small" color={theme.colors.primary} />
+      </View>
+    );
+  }, [isFetchingNextPage]);
+
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  if (isLoading && !isRefetching) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centerContent}>
@@ -109,6 +141,17 @@ export default function ActivityScreen() {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            tintColor={theme.colors.primary}
+            colors={[theme.colors.primary]}
+          />
+        }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Bell size={48} color={theme.colors.textSecondary} style={{ opacity: 0.5 }} />
@@ -147,6 +190,10 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 20,
+  },
+  footerLoader: {
+    paddingVertical: 20,
+    alignItems: 'center',
   },
   notificationCard: {
     flexDirection: 'row',

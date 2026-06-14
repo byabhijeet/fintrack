@@ -138,12 +138,14 @@ export default function IncomeHistoryScreen() {
       color: colors.textSecondary,
       ...typography.bodyMd,
     }
-  });
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const themedStyles = styles(useAppTheme());
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
-      {isLoading ? (
-        <View style={styles.emptyState}>
+    <SafeAreaView style={themedStyles.container} edges={['bottom']}>
+      {isLoading && !isRefetching ? (
+        <View style={themedStyles.emptyState}>
           <ActivityIndicator color={colors.primary} />
         </View>
       ) : (
@@ -151,12 +153,21 @@ export default function IncomeHistoryScreen() {
           data={entries}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          contentContainerStyle={styles.listContent}
-          refreshing={isRefetching}
-          onRefresh={refetch}
+          contentContainerStyle={themedStyles.listContent}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderFooter}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={refetch}
+              tintColor={colors.primary}
+              colors={[colors.primary]}
+            />
+          }
           ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>No income entries found.</Text>
+            <View style={themedStyles.emptyState}>
+              <Text style={themedStyles.emptyText}>No income entries found.</Text>
             </View>
           }
         />
