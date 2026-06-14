@@ -73,6 +73,27 @@ export const useCreditParties = () => {
   });
 };
 
+/** Fetch all credit transactions where the user is the creator. */
+export const useAllCreditTransactions = () => {
+  const user = useAuthStore((s) => s.user);
+
+  return useQuery({
+    queryKey: ['credit_transactions_all', user?.id],
+    queryFn: async () => {
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('personal_credit_transactions')
+        .select('*')
+        .eq('creator_id', user.id);
+
+      if (error) throw error;
+      return data as PersonalCreditTransaction[];
+    },
+    enabled: !!user,
+  });
+};
+
 /** Fetch all non-settled transactions for a specific party, including B2B sync. */
 export const usePartyTransactions = (partyId: string, partyMobile?: string) => {
   const user = useAuthStore((s) => s.user);

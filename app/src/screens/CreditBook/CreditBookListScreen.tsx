@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Plus, Users, RefreshCw } from 'lucide-react-native';
 import { useAppTheme } from '@/theme';
@@ -122,12 +123,10 @@ export default function CreditBookListScreen() {
   };
 
   return (
-
     <SafeAreaView
       edges={['top', 'bottom']}
       style={[styles.container, { backgroundColor: colors.background }]}
     >
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <AppHeader
         title="Credit Book"
         onRightPress={() => router.push('/(app)/(credit-book)/party/add')}
@@ -171,7 +170,7 @@ export default function CreditBookListScreen() {
           }
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
