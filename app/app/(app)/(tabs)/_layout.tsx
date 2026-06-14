@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { useAppTheme } from '@/theme';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
-import { LayoutDashboard, Wallet, ArrowLeftRight, Settings, Receipt } from 'lucide-react-native';
+import { LayoutDashboard, Wallet, ArrowLeftRight, Menu, Receipt } from 'lucide-react-native';
 import GlobalFAB from '@/components/boi/GlobalFAB';
 import BOIAssistant from '@/components/boi/BOIAssistant';
 import { View } from 'react-native';
@@ -64,8 +64,8 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="hub"
           options={{
-            title: 'Hub',
-            tabBarIcon: ({ color, size }) => <Settings size={size} color={color} />,
+            title: 'More',
+            tabBarIcon: ({ color, size }) => <Menu size={size} color={color} />,
           }}
         />
       </Tabs>

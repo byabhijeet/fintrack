@@ -141,7 +141,7 @@ export default function Sidebar({ activeSegments }: SidebarProps) {
             isActive={isSplitActive()}
           />
           <SidebarItem 
-            href="/(app)/(tabs)/hub" 
+            href="/(app)/(tabs)/hub/finance-hub"
             icon={<Gift size={20} color={isHubExtrasActive() ? colors.primary : colors.textSecondary} />} 
             label="Refer & Earn" 
             isActive={isHubExtrasActive()}
@@ -156,13 +156,13 @@ export default function Sidebar({ activeSegments }: SidebarProps) {
             isActive={false}
           />
           <SidebarItem 
-            href="/(app)/(tabs)/hub" 
+            href="/(app)/(tabs)/hub/finance-hub"
             icon={<Gift size={20} color={isHubExtrasActive() ? colors.primary : colors.textSecondary} />} 
             label="Rewards & Offers" 
             isActive={isHubExtrasActive()}
           />
           <SidebarItem 
-            href="/(app)/(tabs)/hub" 
+            href="/(app)/(tabs)/hub/finance-hub"
             icon={<Zap size={20} color={isHubExtrasActive() ? colors.primary : colors.textSecondary} />} 
             label="Flash Deals" 
             isActive={isHubExtrasActive()}

@@ -13,7 +13,11 @@ export default function HubStackLayout() {
       headerTintColor: colors.textPrimary,
       contentStyle: { backgroundColor: colors.background } 
     }}>
-      <Stack.Screen name="index" options={{ title: 'Hub' }} />
+      <Stack.Screen name="index" options={{ title: 'More' }} />
+      <Stack.Screen name="finance-hub" options={{ title: 'Finance Hub' }} />
+      <Stack.Screen name="profile" options={{ title: 'Profile' }} />
+      <Stack.Screen name="settings" options={{ title: 'Settings' }} />
+      <Stack.Screen name="activity" options={{ title: 'Activity' }} />
       <Stack.Screen name="credit-cards" options={{ headerShown: false }} />
       <Stack.Screen name="loans" options={{ headerShown: false }} />
       <Stack.Screen name="business" options={{ headerShown: false }} />
