@@ -36,7 +36,14 @@ export default function BillsScreen() {
     }
 
     return (
-      <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <TouchableOpacity
+        style={[
+          styles.card,
+          { backgroundColor: colors.surface, borderColor: colors.border },
+          !isActive && { opacity: 0.6 }
+        ]}
+        onPress={() => router.push(`/(app)/bills/${item.id}`)}
+      >
         <View style={styles.cardHeader}>
           <View>
             <Text style={[styles.title, { color: colors.textPrimary }]}>{item.title}</Text>
@@ -76,7 +83,7 @@ export default function BillsScreen() {
             </TouchableOpacity>
           )}
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
