@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Plus, TrendingUp, TrendingDown, Store } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { useBusinesses, useBusinessIncome, useBusinessExpenses } from '../../lib/queries/business';
+import AppHeader from '@/components/navigation/AppHeader';
 
 export default function BusinessScreen() {
   const router = useRouter();
@@ -30,19 +30,13 @@ export default function BusinessScreen() {
   const selectedBusiness = businesses?.find(b => b.id === selectedBusinessId);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <AppHeader
+        title="Business Ledger"
+        onRightPress={() => router.push('/(app)/business/add')}
+        rightIcon={<Plus color={theme.colors.primary} size={24} />}
+      />
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Business Ledger</Text>
-          <TouchableOpacity 
-            style={styles.addButton}
-            onPress={() => router.push('/(app)/business/add')}
-          >
-            <Plus color={theme.colors.background} size={20} />
-            <Text style={styles.addButtonText}>Add</Text>
-          </TouchableOpacity>
-        </View>
-
         {loadingBusinesses ? (
           <ActivityIndicator size="large" color={theme.colors.primary} />
         ) : businesses && businesses.length > 0 ? (
@@ -125,7 +119,7 @@ export default function BusinessScreen() {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -136,30 +130,6 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: theme.spacing.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.lg,
-  },
-  title: {
-    fontSize: theme.typography.sizes.xxl,
-    fontWeight: theme.typography.weights.bold,
-    color: theme.colors.textPrimary,
-  },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.primary,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    borderRadius: theme.borderRadius.pill,
-    gap: theme.spacing.xs,
-  },
-  addButtonText: {
-    color: theme.colors.background,
-    fontWeight: theme.typography.weights.semibold,
   },
   switcherContainer: {
     marginBottom: theme.spacing.xl,
@@ -176,7 +146,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surfaceElevated,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    gap: theme.spacing.xs,
+    gap: theme.spacing.sm,
   },
   switcherTabActive: {
     backgroundColor: theme.colors.textPrimary,
