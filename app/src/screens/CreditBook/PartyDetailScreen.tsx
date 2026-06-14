@@ -248,7 +248,7 @@ export default function PartyDetailScreen() {
         style={[styles.fab, { backgroundColor: colors.primary, shadowColor: colors.primary }]}
         onPress={() =>
           router.push({
-            pathname: '/(app)/(credit-book)/party/[id]/add-transaction',
+            pathname: '/(app)/(tabs)/credit-book/party/[id]/add-transaction',
             params: { id: partyId, mobile: party?.mobile ?? '' },
           })
         }

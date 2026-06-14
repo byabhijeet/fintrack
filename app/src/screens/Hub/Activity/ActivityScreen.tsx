@@ -8,7 +8,7 @@ import { useAuthStore } from '../../../store/authStore';
 import { supabase } from '../../../lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Bell, BellDot } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 
 export default function ActivityScreen() {
   const router = useRouter();
@@ -96,13 +96,7 @@ export default function ActivityScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ArrowLeft size={24} color={theme.colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Activity & Alerts</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <Stack.Screen options={{ title: 'Activity & Alerts' }} />
 
       <FlatList
         data={notifications}

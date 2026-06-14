@@ -1,6 +1,6 @@
 
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { ArrowLeft, CheckCircle2, Circle } from 'lucide-react-native';
 import { Alert } from '@/lib/alert';
 import { useAppTheme } from '@/theme';
@@ -51,13 +51,7 @@ export default function LoanDetailScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ArrowLeft color={colors.text} size={24} />
-        </TouchableOpacity>
-        <Text style={[typography.title2, { color: colors.text }]}>{loan.lender_name}</Text>
-        <View style={{ width: 40 }} />
-      </View>
+      <Stack.Screen options={{ title: loan.lender_name }} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={[styles.card, { backgroundColor: colors.surfaceElevated }]}>
@@ -95,14 +89,14 @@ export default function LoanDetailScreen() {
             <View style={styles.actionButtonsRow}>
               <TouchableOpacity 
                 style={[styles.actionBtn, { backgroundColor: colors.background, borderColor: colors.border }]}
-                onPress={() => router.push(`/loans/${loan.id}/part-payment`)}
+                onPress={() => router.push(`/(app)/(tabs)/hub/loans/${loan.id}/part-payment` as any)}
               >
                 <Text style={[typography.labelCaps, { color: colors.primary }]}>Part Payment</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
                 style={[styles.actionBtn, { backgroundColor: colors.background, borderColor: colors.border }]}
-                onPress={() => router.push(`/loans/${loan.id}/foreclose`)}
+                onPress={() => router.push(`/(app)/(tabs)/hub/loans/${loan.id}/foreclose` as any)}
               >
                 <Text style={[typography.labelCaps, { color: colors.error }]}>Foreclose</Text>
               </TouchableOpacity>

@@ -14,7 +14,7 @@ export default function IncomeHistoryScreen() {
 
   const handleEdit = (item: IncomeEntry) => {
     router.push({
-      pathname: '/(app)/(home)/add-income',
+      pathname: '/(app)/(tabs)/home/add-income',
       params: {
         id: item.id,
         amount: item.amount.toString(),

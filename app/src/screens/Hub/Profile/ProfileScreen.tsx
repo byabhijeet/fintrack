@@ -5,7 +5,7 @@ import { theme } from '../../../theme';
 import { useProfile, useAddress, useUpdateProfileMutation, useUpdateAddressMutation } from '../../../lib/queries/profile';
 import { ArrowLeft, Save } from 'lucide-react-native';
 import { Alert } from '@/lib/alert';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -75,22 +75,23 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ArrowLeft size={24} color={theme.colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit Profile</Text>
-        <TouchableOpacity
-          onPress={handleSave}
-          disabled={updateProfileMutation.isPending || updateAddressMutation.isPending}
-        >
-          {updateProfileMutation.isPending || updateAddressMutation.isPending ? (
-            <ActivityIndicator color={theme.colors.primary} />
-          ) : (
-            <Save size={24} color={theme.colors.primary} />
-          )}
-        </TouchableOpacity>
-      </View>
+      <Stack.Screen 
+        options={{ 
+          title: 'Edit Profile',
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={handleSave}
+              disabled={updateProfileMutation.isPending || updateAddressMutation.isPending}
+            >
+              {updateProfileMutation.isPending || updateAddressMutation.isPending ? (
+                <ActivityIndicator color={theme.colors.primary} />
+              ) : (
+                <Save size={24} color={theme.colors.primary} />
+              )}
+            </TouchableOpacity>
+          )
+        }} 
+      />
 
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         <Text style={styles.sectionTitle}>Personal Info</Text>

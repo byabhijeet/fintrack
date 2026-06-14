@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import { Plus, TrendingUp, TrendingDown, Store } from 'lucide-react-native';
 import { theme } from '../../theme';
 import { useBusinesses, useBusinessIncome, useBusinessExpenses } from '../../lib/queries/business';
@@ -31,10 +31,14 @@ export default function BusinessScreen() {
 
   return (
     <View style={styles.container}>
-      <AppHeader
-        title="Business Ledger"
-        onRightPress={() => router.push('/(app)/business/add')}
-        rightIcon={<Plus color={theme.colors.primary} size={24} />}
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <TouchableOpacity onPress={() => router.push('/(app)/(tabs)/hub/business/add')} style={{ marginRight: theme.spacing.md }}>
+              <Plus color={theme.colors.primary} size={24} />
+            </TouchableOpacity>
+          ),
+        }}
       />
       <ScrollView contentContainerStyle={styles.content}>
         {loadingBusinesses ? (
@@ -89,14 +93,14 @@ export default function BusinessScreen() {
                 <View style={styles.grid}>
                   <TouchableOpacity 
                     style={styles.gridButton}
-                    onPress={() => router.push({ pathname: '/(app)/business/[id]/add-income', params: { id: selectedBusinessId } })}
+                    onPress={() => router.push({ pathname: '/(app)/(tabs)/hub/business/[id]/add-income', params: { id: selectedBusinessId } })}
                   >
                     <TrendingUp color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
                     <Text style={styles.gridButtonText}>Add Income</Text>
                   </TouchableOpacity>
                   <TouchableOpacity 
                     style={styles.gridButton}
-                    onPress={() => router.push({ pathname: '/(app)/business/[id]/add-expense', params: { id: selectedBusinessId } })}
+                    onPress={() => router.push({ pathname: '/(app)/(tabs)/hub/business/[id]/add-expense', params: { id: selectedBusinessId } })}
                   >
                     <TrendingDown color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
                     <Text style={styles.gridButtonText}>Add Expense</Text>
@@ -112,7 +116,7 @@ export default function BusinessScreen() {
             <Text style={styles.emptyStateSub}>Add a business to start tracking its income and expenses.</Text>
             <TouchableOpacity 
               style={styles.primaryButton}
-              onPress={() => router.push('/(app)/business/add')}
+              onPress={() => router.push('/(app)/(tabs)/hub/business/add')}
             >
               <Text style={styles.primaryButtonText}>Add Business</Text>
             </TouchableOpacity>

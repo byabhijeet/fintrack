@@ -1,4 +1,4 @@
-import * as Contacts from 'expo-contacts';
+import * as Contacts from 'expo-contacts/legacy';
 import { ContactsResult } from './contacts';
 
 export const requestPermissions = async (): Promise<boolean> => {
@@ -19,8 +19,8 @@ export const getContacts = async (): Promise<ContactsResult> => {
 
     if (data.length > 0) {
       const contacts = data
-        .filter(c => c.phoneNumbers && c.phoneNumbers.length > 0)
-        .map(c => {
+        .filter((c: any) => c.phoneNumbers && c.phoneNumbers.length > 0)
+        .map((c: any) => {
           const rawMobile = c.phoneNumbers![0].number || '';
           const cleanMobile = rawMobile.replace(/\D/g, '').slice(-10);
           return {
@@ -28,7 +28,7 @@ export const getContacts = async (): Promise<ContactsResult> => {
             mobile: cleanMobile,
           };
         })
-        .filter(c => c.mobile.length === 10);
+        .filter((c: any) => c.mobile.length === 10);
 
       return { success: true, contacts };
     }

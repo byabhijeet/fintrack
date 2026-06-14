@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import { Plus, Users, RefreshCw } from 'lucide-react-native';
 import { useAppTheme } from '@/theme';
 import { useUIStore } from '@/store/uiStore';
@@ -122,22 +122,32 @@ export default function CreditBookListScreen() {
   };
 
   return (
-
-    <SafeAreaView
-      edges={['top', 'bottom']}
-      style={[styles.container, { backgroundColor: colors.background }]}
-    >
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AppHeader
-        title="Credit Book"
-        onRightPress={() => router.push('/(app)/(credit-book)/party/add')}
-        rightIcon={<Plus color={colors.primary} size={24} />}
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <TouchableOpacity onPress={() => router.push('/(app)/(tabs)/credit-book/party/add')}>
+              <Plus color={colors.primary} size={24} />
+            </TouchableOpacity>
+          ),
+        }}
       />
 
-      <View style={styles.summaryInfo}>
+      <View style={[styles.summaryInfo, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomColor: colors.border }]}>
         <Text style={[styles.headerSubtitle, typography.body, { color: colors.textSecondary }]}>
           {parties.length} {parties.length === 1 ? 'contact' : 'contacts'}
         </Text>
+        <TouchableOpacity
+          style={[styles.syncButton, { backgroundColor: colors.surfaceElevated }]}
+          onPress={handleSyncContacts}
+          disabled={isImporting}
+        >
+          {isImporting ? (
+            <ActivityIndicator size="small" color={colors.primary} />
+          ) : (
+            <RefreshCw size={20} color={colors.primary} />
+          )}
+        </TouchableOpacity>
       </View>
 
       {isLoading ? (
@@ -151,7 +161,7 @@ export default function CreditBookListScreen() {
           renderItem={({ item }) => (
             <PartyRow
               party={item}
-              onPress={() => router.push(`/(app)/(credit-book)/party/${item.id}`)}
+              onPress={() => router.push(`/(app)/(tabs)/credit-book/party/${item.id}`)}
             />
           )}
           contentContainerStyle={styles.listContent}

@@ -199,12 +199,13 @@ export const theme = {
 };
 
 export function useAppTheme() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark' || colorScheme === null; // Default to dark
+  // We enforce the 'Spotify for Finance' dark mode branding uniformly
+  // across all devices, ignoring the system light/dark preference.
+  const isDark = true;
 
   return {
     isDark,
-    colors: isDark ? darkTheme.colors : lightTheme.colors,
+    colors: darkTheme.colors,
     typography,
     spacing,
     borderRadius,

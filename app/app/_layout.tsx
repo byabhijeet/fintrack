@@ -66,7 +66,7 @@ function AuthGate() {
       router.replace('/(auth)/biometric-unlock');
     } else if (inAuthGroup) {
       // All checks passed and still on auth screen → go to app
-      router.replace('/(app)/(home)/');
+      router.replace('/(app)/(tabs)/home');
     }
   }, [
     session,

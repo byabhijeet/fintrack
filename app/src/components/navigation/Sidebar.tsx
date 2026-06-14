@@ -69,13 +69,13 @@ export default function Sidebar({ activeSegments }: SidebarProps) {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <SidebarGroup title="DASHBOARD">
           <SidebarItem 
-            href="/(app)/(home)" 
+            href="/(app)/(tabs)/home" 
             icon={<LayoutDashboard size={20} color={isOverviewActive() ? colors.primary : colors.textSecondary} />} 
             label="Overview" 
             isActive={isOverviewActive()}
           />
           <SidebarItem 
-            href="/(app)/(hub)/activity" 
+            href="/(app)/(tabs)/hub/activity" 
             icon={<Bell size={20} color={isActivityActive() ? colors.primary : colors.textSecondary} />} 
             label="Activity" 
             isActive={isActivityActive()}
@@ -84,19 +84,19 @@ export default function Sidebar({ activeSegments }: SidebarProps) {
 
         <SidebarGroup title="PERSONAL">
           <SidebarItem 
-            href="/(app)/(home)/income-history" 
+            href="/(app)/(tabs)/home/income-history" 
             icon={<TrendingUp size={20} color={isIncomeActive() ? colors.primary : colors.textSecondary} />} 
             label="Income" 
             isActive={isIncomeActive()}
           />
           <SidebarItem 
-            href="/(app)/(home)/expense-history" 
+            href="/(app)/(tabs)/home/expense-history" 
             icon={<TrendingDown size={20} color={isExpensesActive() ? colors.primary : colors.textSecondary} />} 
             label="Expenses" 
             isActive={isExpensesActive()}
           />
           <SidebarItem 
-            href="/(app)/bills" 
+            href="/(app)/(tabs)/bills" 
             icon={<Receipt size={20} color={isBillsActive() ? colors.primary : colors.textSecondary} />} 
             label="My Bills" 
             isActive={isBillsActive()}
@@ -105,13 +105,13 @@ export default function Sidebar({ activeSegments }: SidebarProps) {
 
         <SidebarGroup title="BUSINESS">
           <SidebarItem 
-            href="/(app)/business" 
+            href="/(app)/(tabs)/hub/business" 
             icon={<Building2 size={20} color={isBusinessActive() ? colors.primary : colors.textSecondary} />} 
             label="Business" 
             isActive={isBusinessActive()}
           />
           <SidebarItem 
-            href="/(app)/credit-cards" 
+            href="/(app)/(tabs)/hub/credit-cards" 
             icon={<CreditCard size={20} color={isCardsActive() ? colors.primary : colors.textSecondary} />} 
             label="Credit Cards" 
             isActive={isCardsActive()}
@@ -120,7 +120,7 @@ export default function Sidebar({ activeSegments }: SidebarProps) {
 
         <SidebarGroup title="LENDING">
           <SidebarItem 
-            href="/(app)/loans" 
+            href="/(app)/(tabs)/hub/loans" 
             icon={<Landmark size={20} color={isLoansActive() ? colors.primary : colors.textSecondary} />} 
             label="Loan Tracker" 
             isActive={isLoansActive()}
@@ -129,19 +129,19 @@ export default function Sidebar({ activeSegments }: SidebarProps) {
 
         <SidebarGroup title="NETWORK">
           <SidebarItem 
-            href="/(app)/(credit-book)" 
+            href="/(app)/(tabs)/credit-book" 
             icon={<BookOpen size={20} color={isCreditBookActive() ? colors.primary : colors.textSecondary} />} 
             label="Credit Book" 
             isActive={isCreditBookActive()}
           />
           <SidebarItem 
-            href="/(app)/(split)" 
+            href="/(app)/(tabs)/split" 
             icon={<Users size={20} color={isSplitActive() ? colors.primary : colors.textSecondary} />} 
             label="Expense Split" 
             isActive={isSplitActive()}
           />
           <SidebarItem 
-            href="/(app)/(hub)" 
+            href="/(app)/(tabs)/hub" 
             icon={<Gift size={20} color={isHubExtrasActive() ? colors.primary : colors.textSecondary} />} 
             label="Refer & Earn" 
             isActive={isHubExtrasActive()}
@@ -156,19 +156,19 @@ export default function Sidebar({ activeSegments }: SidebarProps) {
             isActive={false}
           />
           <SidebarItem 
-            href="/(app)/(hub)" 
+            href="/(app)/(tabs)/hub" 
             icon={<Gift size={20} color={isHubExtrasActive() ? colors.primary : colors.textSecondary} />} 
             label="Rewards & Offers" 
             isActive={isHubExtrasActive()}
           />
           <SidebarItem 
-            href="/(app)/(hub)" 
+            href="/(app)/(tabs)/hub" 
             icon={<Zap size={20} color={isHubExtrasActive() ? colors.primary : colors.textSecondary} />} 
             label="Flash Deals" 
             isActive={isHubExtrasActive()}
           />
           <SidebarItem 
-            href="/(app)/(hub)/settings" 
+            href="/(app)/(tabs)/hub/settings" 
             icon={<Settings size={20} color={isSettingsActive() ? colors.primary : colors.textSecondary} />} 
             label="Settings" 
             isActive={isSettingsActive()}

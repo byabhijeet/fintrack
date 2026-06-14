@@ -33,28 +33,28 @@ export default function BOIAssistant() {
     switch (intent) {
       case 'add_expense':
         router.push({
-          pathname: '/(app)/(home)/add-expense',
+          pathname: '/(app)/(tabs)/home/add-expense',
           params: { amount: params.amount, description: params.description }
         });
         break;
       case 'add_income':
         router.push({
-          pathname: '/(app)/(home)/add-income',
+          pathname: '/(app)/(tabs)/home/add-income',
           params: { amount: params.amount, notes: params.notes }
         });
         break;
       case 'add_credit_got':
       case 'add_credit_gave':
         // Navigating to credit-book root as adding requires picking a party first
-        router.push('/(app)/(credit-book)');
+        router.push('/(app)/(tabs)/credit-book');
         break;
       case 'add_card_spend':
         // Navigating to credit cards root
-        router.push('/(app)/credit-cards');
+        router.push('/(app)/(tabs)/hub/credit-cards');
         break;
       case 'navigate':
         if (params.target && params.target.toLowerCase() === 'loans') {
-          router.push('/(app)/loans');
+          router.push('/(app)/(tabs)/hub/loans');
         }
         break;
       default:
@@ -137,10 +137,7 @@ const styles = StyleSheet.create({
   bottomSheet: {
     padding: 24,
     paddingBottom: Platform.OS === 'ios' ? 40 : 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
     elevation: 20,
   },
   header: {

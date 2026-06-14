@@ -257,33 +257,7 @@ export default function HomeScreen() {
           />
         </View>
 
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <View style={styles.actionsGrid}>
-          <TouchableOpacity style={styles.gridButton} onPress={() => router.push('/(app)/(home)/add-income')}>
-            <Banknote color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
-            <Text style={styles.gridButtonText}>Add Income</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.gridButton} onPress={() => router.push('/(app)/(home)/add-expense')}>
-            <CreditCard color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
-            <Text style={styles.gridButtonText}>Add Expense</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.gridButton} onPress={() => router.push('/(app)/credit-cards')}>
-            <CreditCard color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
-            <Text style={styles.gridButtonText}>Credit Cards</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.gridButton} onPress={() => router.push('/(app)/business')}>
-            <Store color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
-            <Text style={styles.gridButtonText}>Business Ledger</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.gridButton} onPress={() => router.push('/(app)/loans')}>
-            <Banknote color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
-            <Text style={styles.gridButtonText}>Loan Tracker</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.gridButton} onPress={() => router.push('/(app)/bills')}>
-            <History color={theme.colors.textPrimary} size={24} style={styles.gridButtonIcon} />
-            <Text style={styles.gridButtonText}>My Bills</Text>
-          </TouchableOpacity>
-        </View>
+
 
         <Text style={[styles.sectionTitle, { marginTop: theme.spacing.xl }]}>Recent Transactions</Text>
         <View style={styles.activityList}>

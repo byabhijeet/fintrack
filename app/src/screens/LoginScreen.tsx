@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
-    shadowColor: '#1ED760',
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
     shadowOffset: {
       width: 0,
       height: 4,

@@ -82,7 +82,7 @@ export default function GroupDetailsScreen() {
         <TouchableOpacity
           style={styles.addExpenseButton}
           onPress={() => router.push({
-            pathname: '/(app)/(split)/add-expense',
+            pathname: '/(app)/(tabs)/split/add-expense',
             params: { groupId: id }
           })}
         >

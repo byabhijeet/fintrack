@@ -9,7 +9,7 @@ import AppHeader from '@/components/navigation/AppHeader';
 import { useHeaderStore } from '@/store/headerStore';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import React, { useCallback } from 'react';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, Stack } from 'expo-router';
 
 export default function BillsScreen() {
   const { colors } = useAppTheme();
@@ -26,7 +26,7 @@ export default function BillsScreen() {
         setHeader({
           title: 'My Bills',
           rightIcon: <Plus color={colors.primary} size={24} />,
-          onRightPress: () => router.push('/(app)/bills/add'),
+          onRightPress: () => router.push('/(app)/(tabs)/bills/add'),
         });
       }
       return () => {
@@ -65,7 +65,7 @@ export default function BillsScreen() {
           { backgroundColor: colors.surface, borderColor: colors.border },
           !isActive && { opacity: 0.6 }
         ]}
-        onPress={() => router.push(`/(app)/bills/${item.id}`)}
+        onPress={() => router.push(`/(app)/(tabs)/bills/${item.id}`)}
       >
         <View style={styles.cardHeader}>
           <View>
@@ -112,13 +112,15 @@ export default function BillsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {breakpoint !== 'desktop' && (
-        <AppHeader
-          title="My Bills"
-          onRightPress={() => router.push('/(app)/bills/add')}
-          rightIcon={<Plus color={colors.primary} size={24} />}
-        />
-      )}
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <TouchableOpacity onPress={() => router.push('/(app)/(tabs)/bills/add')}>
+              <Plus color={colors.primary} size={24} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
 
       {isLoading ? (
         <View style={styles.center}>

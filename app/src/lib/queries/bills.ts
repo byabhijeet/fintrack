@@ -50,12 +50,12 @@ export const useBills = () => {
 // Fetch a single bill
 export const useBill = (id: string | undefined) => {
   return useQuery({
-    queryKey: ['recurring_templates', id],
+    queryKey: ['recurring_transactions', id],
     queryFn: async () => {
       if (!id) throw new Error('No bill ID provided');
 
       const { data, error } = await supabase
-        .from('recurring_templates')
+        .from('recurring_transactions')
         .select(`
           *,
           finance_categories (
@@ -70,7 +70,7 @@ export const useBill = (id: string | undefined) => {
         .single();
 
       if (error) throw error;
-      return data as RecurringTemplate;
+      return data as RecurringTransaction;
     },
     enabled: !!id,
   });

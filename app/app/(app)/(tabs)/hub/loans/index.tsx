@@ -1,6 +1,6 @@
 
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import { Plus, Building2 } from 'lucide-react-native';
 import { useAppTheme } from '@/theme';
 import { useLoans } from '@/lib/queries/loans';
@@ -19,12 +19,14 @@ export default function LoansScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AppHeader
-        title="Loans"
-        showBack={true}
-        onBackPress={() => router.back()}
-        onRightPress={() => router.push('/loans/add')}
-        rightIcon={<Plus color={colors.primary} size={24} />}
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <TouchableOpacity onPress={() => router.push('/(app)/(tabs)/hub/loans/add')}>
+              <Plus color={colors.primary} size={24} />
+            </TouchableOpacity>
+          ),
+        }}
       />
 
       <View style={[styles.summaryCard, { backgroundColor: colors.surfaceElevated }]}>
@@ -44,7 +46,7 @@ export default function LoansScreen() {
           renderItem={({ item }) => (
             <TouchableOpacity 
               style={[styles.loanCard, { backgroundColor: colors.surface }]}
-              onPress={() => router.push(`/loans/${item.id}`)}
+              onPress={() => router.push(`/(app)/(tabs)/hub/loans/${item.id}` as any)}
               activeOpacity={0.7}
             >
               <View style={styles.loanCardHeader}>

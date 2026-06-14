@@ -148,10 +148,7 @@ export default function CreditCardDetailsScreen() {
       alignItems: 'center',
       justifyContent: 'center',
       elevation: 4,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
     },
     emptyText: {
       textAlign: 'center',
@@ -215,7 +212,7 @@ export default function CreditCardDetailsScreen() {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => router.push({ pathname: '/(app)/credit-cards/[id]/add-spend', params: { id: cardId } })}
+        onPress={() => router.push({ pathname: '/(app)/(tabs)/hub/credit-cards/[id]/add-spend', params: { id: cardId } })}
       >
         <Plus color="#000" size={24} />
       </TouchableOpacity>

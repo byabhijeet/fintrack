@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { useRewards, useFlashDeals, useUserPoints, useUserRedemptions, usePartnerReferrals, useRedeemRewardMutation, useCreateReferralMutation } from '../../lib/queries/hub';
-import { Gift, Zap, Users, Copy, Check, User, Settings as SettingsIcon, Bell } from 'lucide-react-native';
+import { Gift, Zap, Users, Copy, Check, User, Settings as SettingsIcon, Bell, CreditCard, Banknote, Store, Receipt } from 'lucide-react-native';
 import { Alert } from '@/lib/alert';
 
 export default function HubScreen() {
@@ -92,28 +92,51 @@ export default function HubScreen() {
         </View>
 
 
-        {/* Navigation Grid */}
+        {/* Navigation Grid (Preferences & Activity) */}
         <View style={styles.navGrid}>
-          <TouchableOpacity style={styles.navItem} onPress={() => router.push('/(app)/(hub)/profile')}>
+          <TouchableOpacity style={styles.navItem} onPress={() => router.push('/(app)/(tabs)/hub/profile')}>
             <View style={[styles.navIcon, { backgroundColor: 'rgba(30, 215, 96, 0.1)' }]}>
               <User color={theme.colors.primary} size={24} />
             </View>
             <Text style={styles.navLabel}>Profile</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.navItem} onPress={() => router.push('/(app)/(hub)/settings')}>
+          <TouchableOpacity style={styles.navItem} onPress={() => router.push('/(app)/(tabs)/hub/settings')}>
             <View style={[styles.navIcon, { backgroundColor: 'rgba(30, 215, 96, 0.1)' }]}>
               <SettingsIcon color={theme.colors.primary} size={24} />
             </View>
             <Text style={styles.navLabel}>Settings</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.navItem} onPress={() => router.push('/(app)/(hub)/activity')}>
+          <TouchableOpacity style={styles.navItem} onPress={() => router.push('/(app)/(tabs)/hub/activity')}>
             <View style={[styles.navIcon, { backgroundColor: 'rgba(30, 215, 96, 0.1)' }]}>
               <Bell color={theme.colors.primary} size={24} />
             </View>
             <Text style={styles.navLabel}>Activity</Text>
           </TouchableOpacity>
+        </View>
+
+        {/* Financial Instruments */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Financial Instruments</Text>
+          <View style={styles.instrumentsGrid}>
+            <TouchableOpacity style={styles.instrumentCard} onPress={() => router.push('/(app)/(tabs)/hub/credit-cards')}>
+              <CreditCard color={theme.colors.primary} size={28} />
+              <Text style={styles.instrumentLabel}>Credit Cards</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.instrumentCard} onPress={() => router.push('/(app)/(tabs)/hub/loans')}>
+              <Banknote color={theme.colors.primary} size={28} />
+              <Text style={styles.instrumentLabel}>Loans</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.instrumentCard} onPress={() => router.push('/(app)/(tabs)/hub/business')}>
+              <Store color={theme.colors.primary} size={28} />
+              <Text style={styles.instrumentLabel}>Business Ledger</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.instrumentCard} onPress={() => router.push('/(app)/(tabs)/hub/vault' as any)}>
+              <Receipt color={theme.colors.primary} size={28} />
+              <Text style={styles.instrumentLabel}>Receipt Vault</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Points Card */}
@@ -393,6 +416,29 @@ const styles = StyleSheet.create({
   navLabel: {
     ...theme.typography.caption,
     color: theme.colors.text,
+  },
+  instrumentsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.md,
+    marginTop: theme.spacing.md,
+  },
+  instrumentCard: {
+    width: '47%',
+    backgroundColor: theme.colors.surfaceElevated,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.lg,
+    borderColor: theme.colors.border,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing.sm,
+  },
+  instrumentLabel: {
+    fontSize: theme.typography.sizes.sm,
+    fontWeight: theme.typography.weights.semibold,
+    color: theme.colors.textPrimary,
+    textAlign: 'center',
   },
   container: {
     flex: 1,

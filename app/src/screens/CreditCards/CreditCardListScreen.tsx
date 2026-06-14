@@ -1,6 +1,6 @@
 
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import { useAppTheme } from '../../theme';
 import { useCreditCards } from '../../lib/queries/creditCards';
 import { CreditCard as CreditCardIcon, Plus } from 'lucide-react-native';
@@ -14,7 +14,7 @@ export default function CreditCardListScreen() {
   const renderCard = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={styles.cardItem}
-      onPress={() => router.push({ pathname: '/(app)/credit-cards/[id]', params: { id: item.id } })}
+      onPress={() => router.push(`/(app)/(tabs)/hub/credit-cards/${item.id}` as any)}
     >
       <View style={styles.cardHeader}>
         <View style={styles.cardBank}>
@@ -104,10 +104,14 @@ export default function CreditCardListScreen() {
 
   return (
     <View style={styles.container}>
-      <AppHeader
-        title="Credit Cards"
-        onRightPress={() => router.push('/(app)/credit-cards/add')}
-        rightIcon={<Plus color={colors.primary} size={24} />}
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <TouchableOpacity onPress={() => router.push('/(app)/(tabs)/hub/credit-cards/add')} style={{ marginRight: spacing.md }}>
+              <Plus color={colors.primary} size={24} />
+            </TouchableOpacity>
+          ),
+        }}
       />
 
       {isLoading ? (

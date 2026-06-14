@@ -46,14 +46,14 @@ export default function AddPartyScreen() {
                 {
                   text: 'View Contact',
                   onPress: () => {
-                    router.replace(`/(app)/(credit-book)/party/${party.id}`);
+                    router.replace(`/(app)/(tabs)/credit-book/party/${party.id}`);
                   },
                 },
                 { text: 'OK', style: 'cancel' },
               ]
             );
           } else {
-            router.replace(`/(app)/(credit-book)/party/${party.id}`);
+            router.replace(`/(app)/(tabs)/credit-book/party/${party.id}`);
           }
         },
         onError: (err: any) => {

@@ -140,10 +140,7 @@ const styles = StyleSheet.create({
   },
   alertContainer: {
     width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
     elevation: 10,
   },
   buttonContainer: {

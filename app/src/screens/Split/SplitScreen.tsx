@@ -9,7 +9,7 @@ import {
   TextInput,
   ActivityIndicator,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import { theme } from '../../theme';
 import { useSplitGroups, useAddGroupMutation } from '../../lib/queries/splits';
 import { Plus, Users, ChevronRight, Home, Plane, Briefcase, Heart, FileText } from 'lucide-react-native';
@@ -75,7 +75,7 @@ export default function SplitScreen() {
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <AppHeader title="Split Bill" />
+        <Stack.Screen options={{ headerRight: () => null }} />
         <View style={styles.centerContent}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
@@ -85,10 +85,14 @@ export default function SplitScreen() {
 
   return (
     <View style={styles.container}>
-      <AppHeader
-        title="Split Bill"
-        onRightPress={() => setShowAddModal(true)}
-        rightIcon={<Plus color={theme.colors.primary} size={24} />}
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <TouchableOpacity onPress={() => setShowAddModal(true)} style={{ marginRight: theme.spacing.md }}>
+              <Plus color={theme.colors.primary} size={24} />
+            </TouchableOpacity>
+          ),
+        }}
       />
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.headerInfo}>
@@ -104,7 +108,7 @@ export default function SplitScreen() {
                   styles.groupCard,
                   { borderLeftColor: group.cover_color || theme.colors.primary, borderLeftWidth: 4 },
                 ]}
-                onPress={() => router.push(`/(app)/(split)/${group.id}`)}
+                onPress={() => router.push(`/(app)/(tabs)/split/${group.id}`)}
               >
                 <View style={styles.groupCardContent}>
                   <View style={styles.groupIcon}>{getTypeIcon(group.type)}</View>

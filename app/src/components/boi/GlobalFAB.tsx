@@ -1,23 +1,27 @@
 import React from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TouchableOpacity, StyleSheet, View } from 'react-native';
 import { Mic } from 'lucide-react-native';
 import { useAppTheme } from '@/theme';
 import { useUIStore } from '@/store/uiStore';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function GlobalFAB() {
   const { colors, spacing, borderRadius } = useAppTheme();
   const openBOI = useUIStore((state) => state.openBOI);
+  
+  // In Expo Router v3/SDK 56, we can't use @react-navigation/bottom-tabs.
+  // We use the safe area inset + the standard tab bar height (usually ~64px).
   const insets = useSafeAreaInsets();
+  const tabBarHeight = insets.bottom + 64;
 
   return (
-    <View style={[styles.container, { bottom: insets.bottom + 80 }]}>
+    <View style={[styles.container, { bottom: tabBarHeight + 16 }]}>
       <TouchableOpacity
         style={[styles.fab, { backgroundColor: colors.primary, borderRadius: borderRadius.round }]}
         onPress={openBOI}
         activeOpacity={0.8}
       >
-        <Mic size={24} color="#000000" />
+        <Mic color="white" size={24} />
       </TouchableOpacity>
     </View>
   );
@@ -26,21 +30,15 @@ export default function GlobalFAB() {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    right: 24,
-    zIndex: 9999,
+    right: 16,
+    zIndex: 999,
   },
   fab: {
     width: 56,
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
+    elevation: 4,
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
   },
 });
