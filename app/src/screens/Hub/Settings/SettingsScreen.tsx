@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../../theme';
 import { useAccountConsents, useUpdateConsentsMutation, UpdateConsentsInput } from '../../../lib/queries/settings';
@@ -80,18 +80,20 @@ export default function SettingsScreen() {
           />
         </View>
 
-        <View style={styles.settingItem}>
-          <View>
-            <Text style={styles.settingLabel}>Biometric Unlock</Text>
-            <Text style={styles.settingDescription}>Require Touch/Face ID to open app</Text>
+        {Platform.OS !== 'web' && (
+          <View style={styles.settingItem}>
+            <View>
+              <Text style={styles.settingLabel}>Biometric Unlock</Text>
+              <Text style={styles.settingDescription}>Require Touch/Face ID to open app</Text>
+            </View>
+            <Switch
+              value={biometricEnabled}
+              onValueChange={handleBiometricToggle}
+              trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+              thumbColor={'#fff'}
+            />
           </View>
-          <Switch
-            value={biometricEnabled}
-            onValueChange={handleBiometricToggle}
-            trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
-            thumbColor={'#fff'}
-          />
-        </View>
+        )}
 
         <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Communications & Privacy</Text>
 

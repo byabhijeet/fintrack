@@ -3,17 +3,21 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingVi
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../theme';
 import { useAuthStore } from '../store/authStore';
+import { supabase } from '../lib/supabase';
 
 export default function LoginScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
-  const { signIn, verifyOtp, signInWithPassword } = useAuthStore();
+  const { signIn, verifyOtp, signInWithPassword, signUp } = useAuthStore();
   
-  const [loginMode, setLoginMode] = useState<'otp' | 'password'>('password');
+  const [loginMode, setLoginMode] = useState<'otp' | 'password' | 'signup'>('password');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
+  const [signupStep, setSignupStep] = useState<'details' | 'otp'>('details');
+  const [signupOtp, setSignupOtp] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSendOtp = async () => {
@@ -60,6 +64,67 @@ export default function LoginScreen() {
     if (error) {
       Alert.alert('Error', error.message);
     }
+  };
+
+  const handleSignupSendOtp = async () => {
+    if (!email || !password || !fullName || !phoneNumber) {
+      Alert.alert('Error', 'Please fill all fields');
+      return;
+    }
+    setLoading(true);
+    const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+91${phoneNumber}`;
+    const { error } = await signUp(formattedPhone, fullName, email);
+    setLoading(false);
+
+    if (error) {
+      Alert.alert('Error', error.message);
+    } else {
+      setSignupStep('otp');
+    }
+  };
+
+  const handleSignupVerifyOtp = async () => {
+    if (!signupOtp || signupOtp.length < 6) {
+      Alert.alert('Error', 'Please enter a valid 6-digit OTP');
+      return;
+    }
+    setLoading(true);
+    const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+91${phoneNumber}`;
+    const { error: verifyError } = await verifyOtp(formattedPhone, signupOtp);
+
+    if (verifyError) {
+      Alert.alert('Error', verifyError.message);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: password,
+        data: {
+          full_name: fullName,
+          email_confirmed: true,
+        },
+      });
+
+      if (updateError) {
+        Alert.alert('Error', 'Verified, but could not set password: ' + updateError.message);
+        setLoading(false);
+        return;
+      }
+
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
+        await supabase
+          .from('accounts')
+          .update({ email, full_name: fullName })
+          .eq('auth_id', currentUser.id);
+      }
+    } catch (err) {
+      Alert.alert('Error', 'Verified, but failed to finalize account.');
+    }
+
+    setLoading(false);
   };
 
   const renderOtpForm = () => (
@@ -148,16 +213,19 @@ export default function LoginScreen() {
         </TouchableOpacity>
       )}
 
-      {step === 'phone' && (
-        <TouchableOpacity 
-          style={{ marginTop: spacing.lg }} 
-          onPress={() => setLoginMode('password')}
-        >
-          <Text style={[typography.bodySm, { color: colors.textSecondary, textAlign: 'center' }]}>
-            Login with Email & Password
+      <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: spacing.lg }}>
+        <TouchableOpacity onPress={() => setLoginMode('password')} style={{ marginRight: spacing.md }}>
+          <Text style={[typography.bodySm, { color: colors.textSecondary }]}>
+            Use Email
           </Text>
         </TouchableOpacity>
-      )}
+        <Text style={[typography.bodySm, { color: colors.textMuted }]}>|</Text>
+        <TouchableOpacity onPress={() => setLoginMode('signup')} style={{ marginLeft: spacing.md }}>
+          <Text style={[typography.bodySm, { color: colors.primary }]}>
+            Join Now
+          </Text>
+        </TouchableOpacity>
+      </View>
     </>
   );
 
@@ -229,14 +297,166 @@ export default function LoginScreen() {
         )}
       </TouchableOpacity>
 
+      <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: spacing.lg }}>
+        <TouchableOpacity onPress={() => setLoginMode('otp')} style={{ marginRight: spacing.md }}>
+          <Text style={[typography.bodySm, { color: colors.textSecondary }]}>
+            Use OTP
+          </Text>
+        </TouchableOpacity>
+        <Text style={[typography.bodySm, { color: colors.textMuted }]}>|</Text>
+        <TouchableOpacity onPress={() => setLoginMode('signup')} style={{ marginLeft: spacing.md }}>
+          <Text style={[typography.bodySm, { color: colors.primary }]}>
+            Join Now
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </>
+  );
+
+  const renderSignupForm = () => (
+    <>
+      <Text style={[typography.bodyMd, { color: colors.textSecondary, marginBottom: spacing.xl }]}>
+        {signupStep === 'details' 
+          ? 'Create a new account to get started.' 
+          : `We sent a 6-digit code to +91 ${phoneNumber}`}
+      </Text>
+
+      {signupStep === 'details' ? (
+        <>
+          <TextInput
+            style={[
+              styles.input,
+              typography.bodyMd,
+              { 
+                backgroundColor: colors.inputBackground, 
+                color: colors.textPrimary,
+                borderRadius: borderRadius.pill,
+                paddingHorizontal: spacing.lg,
+                paddingVertical: spacing.md,
+                marginBottom: spacing.md
+              }
+            ]}
+            placeholder="Full Name"
+            placeholderTextColor={colors.textMuted}
+            value={fullName}
+            onChangeText={setFullName}
+          />
+          <TextInput
+            style={[
+              styles.input,
+              typography.bodyMd,
+              { 
+                backgroundColor: colors.inputBackground, 
+                color: colors.textPrimary,
+                borderRadius: borderRadius.pill,
+                paddingHorizontal: spacing.lg,
+                paddingVertical: spacing.md,
+                marginBottom: spacing.md
+              }
+            ]}
+            placeholder="Email Address"
+            placeholderTextColor={colors.textMuted}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TextInput
+            style={[
+              styles.input,
+              typography.bodyMd,
+              { 
+                backgroundColor: colors.inputBackground, 
+                color: colors.textPrimary,
+                borderRadius: borderRadius.pill,
+                paddingHorizontal: spacing.lg,
+                paddingVertical: spacing.md,
+                marginBottom: spacing.md
+              }
+            ]}
+            placeholder="Mobile Number"
+            placeholderTextColor={colors.textMuted}
+            keyboardType="phone-pad"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            maxLength={10}
+          />
+          <TextInput
+            style={[
+              styles.input,
+              typography.bodyMd,
+              { 
+                backgroundColor: colors.inputBackground, 
+                color: colors.textPrimary,
+                borderRadius: borderRadius.pill,
+                paddingHorizontal: spacing.lg,
+                paddingVertical: spacing.md,
+                marginBottom: spacing.xl
+              }
+            ]}
+            placeholder="Password"
+            placeholderTextColor={colors.textMuted}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+        </>
+      ) : (
+        <TextInput
+          style={[
+            styles.input,
+            typography.bodyMd,
+            { 
+              backgroundColor: colors.inputBackground, 
+              color: colors.textPrimary,
+              borderRadius: borderRadius.pill,
+              paddingHorizontal: spacing.lg,
+              paddingVertical: spacing.md,
+              marginBottom: spacing.xl,
+              textAlign: 'center',
+              letterSpacing: 4
+            }
+          ]}
+          placeholder="000000"
+          placeholderTextColor={colors.textMuted}
+          keyboardType="number-pad"
+          value={signupOtp}
+          onChangeText={setSignupOtp}
+          maxLength={6}
+        />
+      )}
+
       <TouchableOpacity 
-        style={{ marginTop: spacing.lg }} 
-        onPress={() => setLoginMode('otp')}
+        style={[
+          styles.button, 
+          { 
+            backgroundColor: colors.primary,
+            borderRadius: borderRadius.pill,
+            paddingVertical: spacing.md,
+          }
+        ]}
+        onPress={signupStep === 'details' ? handleSignupSendOtp : handleSignupVerifyOtp}
+        disabled={loading}
       >
-        <Text style={[typography.bodySm, { color: colors.textSecondary, textAlign: 'center' }]}>
-          Login with Phone OTP
-        </Text>
+        {loading ? (
+          <ActivityIndicator color="#000000" />
+        ) : (
+          <Text style={[typography.labelCaps, { color: '#000000', textAlign: 'center' }]}>
+            {signupStep === 'details' ? 'Sign Up' : 'Verify & Complete'}
+          </Text>
+        )}
       </TouchableOpacity>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: spacing.lg }}>
+        <Text style={[typography.bodySm, { color: colors.textSecondary }]}>
+          Already have an account?{' '}
+        </Text>
+        <TouchableOpacity onPress={() => setLoginMode('password')}>
+          <Text style={[typography.bodySm, { color: colors.primary }]}>
+            Log In
+          </Text>
+        </TouchableOpacity>
+      </View>
     </>
   );
 
@@ -248,10 +468,16 @@ export default function LoginScreen() {
       >
         <View style={[styles.content, { padding: spacing.lg }]}>
           <Text style={[typography.displayLg, { color: colors.textPrimary, marginBottom: spacing.md }]}>
-            {loginMode === 'otp' && step === 'otp' ? 'Enter OTP' : 'Welcome to BillZest'}
+            {loginMode === 'otp' && step === 'otp' 
+              ? 'Enter OTP' 
+              : loginMode === 'signup' 
+                ? 'Join BillZest' 
+                : 'Welcome to BillZest'}
           </Text>
 
-          {loginMode === 'otp' ? renderOtpForm() : renderPasswordForm()}
+          {loginMode === 'otp' && renderOtpForm()}
+          {loginMode === 'password' && renderPasswordForm()}
+          {loginMode === 'signup' && renderSignupForm()}
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

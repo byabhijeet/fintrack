@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, Text, StyleSheet, View } from 'react-native';
+import { Pressable, Text, StyleSheet, View, Alert } from 'react-native';
 import { Link } from 'expo-router';
 import { useAppTheme } from '@/theme';
 
@@ -14,37 +14,50 @@ export default function SidebarItem({ href, icon, label, isActive }: SidebarItem
   const { colors, typography, borderRadius } = useAppTheme();
   const [isHovered, setIsHovered] = useState(false);
 
+  const handlePress = () => {
+    Alert.alert('Coming Soon', `${label} feature is coming soon!`);
+  };
+
+  const renderPressable = () => (
+    <Pressable
+      onHoverIn={() => setIsHovered(true)}
+      onHoverOut={() => setIsHovered(false)}
+      onPress={href === '#' ? handlePress : undefined}
+      style={StyleSheet.flatten([
+        styles.container,
+        { borderRadius: borderRadius.md },
+        isActive && { backgroundColor: colors.primary + '1A' }, // 10% opacity primary
+        !isActive && isHovered && { backgroundColor: colors.surfaceElevated },
+      ])}
+    >
+      <View style={styles.content}>
+        <View style={[styles.iconContainer, isActive && { opacity: 1 }]}>
+          {icon}
+        </View>
+        <Text
+          style={[
+            styles.label,
+            typography.bodyMd,
+            { color: isActive ? colors.primary : colors.textSecondary },
+            isActive && { fontWeight: '600' }
+          ]}
+        >
+          {label}
+        </Text>
+      </View>
+      {isActive && (
+        <View style={[styles.activeIndicator, { backgroundColor: colors.primary, borderTopLeftRadius: borderRadius.sm, borderBottomLeftRadius: borderRadius.sm }]} />
+      )}
+    </Pressable>
+  );
+
+  if (href === '#') {
+    return renderPressable();
+  }
+
   return (
     <Link href={href} asChild>
-      <Pressable
-        onHoverIn={() => setIsHovered(true)}
-        onHoverOut={() => setIsHovered(false)}
-        style={StyleSheet.flatten([
-          styles.container,
-          { borderRadius: borderRadius.md },
-          isActive && { backgroundColor: colors.primary + '1A' }, // 10% opacity primary
-          !isActive && isHovered && { backgroundColor: colors.surfaceElevated },
-        ])}
-      >
-        <View style={styles.content}>
-          <View style={[styles.iconContainer, isActive && { opacity: 1 }]}>
-            {icon}
-          </View>
-          <Text
-            style={[
-              styles.label,
-              typography.bodyMd,
-              { color: isActive ? colors.primary : colors.textSecondary },
-              isActive && { fontWeight: '600' }
-            ]}
-          >
-            {label}
-          </Text>
-        </View>
-        {isActive && (
-          <View style={[styles.activeIndicator, { backgroundColor: colors.primary, borderTopLeftRadius: borderRadius.sm, borderBottomLeftRadius: borderRadius.sm }]} />
-        )}
-      </Pressable>
+      {renderPressable()}
     </Link>
   );
 }

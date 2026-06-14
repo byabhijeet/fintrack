@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Session, User } from '@supabase/supabase-js';
+import { Platform } from 'react-native';
 import { supabase } from '../lib/supabase';
 // Platform-agnostic storage: Metro resolves storage.native.ts on mobile,
 // storage.web.ts on web. No Platform.OS checks needed here.
@@ -24,6 +25,7 @@ interface AuthState {
   enableBiometric: () => Promise<void>;
   skipBiometricSetup: () => Promise<void>;
   unlockApp: () => void;
+  signUp: (phone: string, fullName: string, email: string) => Promise<{ error: any }>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -115,6 +117,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     return await supabase.auth.signInWithOtp({ phone });
   },
 
+  signUp: async (phone, fullName, email) => {
+    return await supabase.auth.signInWithOtp({ 
+      phone,
+      options: {
+        data: {
+          full_name: fullName,
+          email,
+        }
+      }
+    });
+  },
+
   signInWithPassword: async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (data.session) {
@@ -153,13 +167,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   init: async () => {
     // Load biometric preference from platform-agnostic storage.
     // On native: reads from SecureStore. On web: reads from localStorage.
-    const bioEnabled = await getItem('biometric_enabled');
-    const bioSetup = await getItem('biometric_setup_complete');
+    const isWeb = Platform.OS === 'web';
+    const bioEnabled = isWeb ? 'false' : await getItem('biometric_enabled');
+    const bioSetup = isWeb ? 'true' : await getItem('biometric_setup_complete');
 
     set({
-      biometricEnabled: bioEnabled === 'true',
-      biometricSetupComplete: bioSetup === 'true',
-      isUnlocked: bioEnabled !== 'true', // if biometrics not enabled, app is unlocked by default
+      biometricEnabled: !isWeb && bioEnabled === 'true',
+      biometricSetupComplete: isWeb ? true : bioSetup === 'true',
+      isUnlocked: isWeb ? true : bioEnabled !== 'true', // if biometrics not enabled, app is unlocked by default
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {

@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useAppTheme } from '@/theme';
 import SidebarGroup from './SidebarGroup';
@@ -13,7 +14,15 @@ import {
   Users,
   Settings,
   LogOut,
-
+  Bell,
+  TrendingUp,
+  TrendingDown,
+  Receipt,
+  Landmark,
+  BookOpen,
+  Gift,
+  Shield,
+  Zap
 } from 'lucide-react-native';
 
 interface SidebarProps {
@@ -26,9 +35,21 @@ export default function Sidebar({ activeSegments }: SidebarProps) {
 
   const isActive = (segment: string) => activeSegments.includes(segment);
 
+  const isOverviewActive = () => isActive('(home)') && !isActive('income-history') && !isActive('expense-history') && !isActive('add-income') && !isActive('add-expense');
+  const isIncomeActive = () => isActive('income-history') || isActive('add-income');
+  const isExpensesActive = () => isActive('expense-history') || isActive('add-expense');
+  const isActivityActive = () => isActive('activity');
+  const isBillsActive = () => isActive('bills');
+  const isBusinessActive = () => isActive('business');
+  const isCardsActive = () => isActive('credit-cards');
+  const isLoansActive = () => isActive('loans');
+  const isCreditBookActive = () => isActive('(credit-book)');
+  const isSplitActive = () => isActive('(split)');
+  const isSettingsActive = () => isActive('settings');
+  const isHubExtrasActive = () => isActive('(hub)') && !isActive('settings') && !isActive('activity') && !isActive('profile');
+
   const getPhoneString = () => {
     if (!user || !user.phone) return 'Unknown';
-    // Format if possible or just return
     return user.phone;
   };
 
@@ -36,11 +57,12 @@ export default function Sidebar({ activeSegments }: SidebarProps) {
     <View style={[styles.container, { backgroundColor: colors.surfaceElevated, borderRightColor: colors.border }]}>
       {/* Header Logo Area */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <View style={[styles.logoPlaceholder, { backgroundColor: colors.primary }]}>
-          <Text style={[styles.logoText, { color: '#000' }]}>BZ</Text>
+        <View style={styles.logoPlaceholder}>
+          <Text style={[styles.logoTextB, { color: '#1DB954' }]}>B</Text>
+          <Text style={[styles.logoTextZ, { color: '#FFFFFF' }]}>Z</Text>
         </View>
         <Text style={[styles.brandName, typography.displayLgMobile, { color: colors.textPrimary }]}>
-          BillZest
+          Bill<Text style={{ color: colors.primary }}>Zest</Text>
         </Text>
       </View>
 
@@ -48,55 +70,110 @@ export default function Sidebar({ activeSegments }: SidebarProps) {
         <SidebarGroup title="DASHBOARD">
           <SidebarItem 
             href="/(app)/(home)" 
-            icon={<LayoutDashboard size={20} color={isActive('(home)') ? colors.primary : colors.textSecondary} />} 
+            icon={<LayoutDashboard size={20} color={isOverviewActive() ? colors.primary : colors.textSecondary} />} 
             label="Overview" 
-            isActive={isActive('(home)')}
+            isActive={isOverviewActive()}
           />
           <SidebarItem 
-            href="/(app)/(hub)" 
-            icon={<Settings size={20} color={isActive('(hub)') ? colors.primary : colors.textSecondary} />} 
-            label="Hub" 
-            isActive={isActive('(hub)')}
+            href="/(app)/(hub)/activity" 
+            icon={<Bell size={20} color={isActivityActive() ? colors.primary : colors.textSecondary} />} 
+            label="Activity" 
+            isActive={isActivityActive()}
           />
         </SidebarGroup>
 
         <SidebarGroup title="PERSONAL">
           <SidebarItem 
-            href="/(app)/(credit-book)" 
-            icon={<Wallet size={20} color={isActive('(credit-book)') ? colors.primary : colors.textSecondary} />} 
-            label="Credit Book" 
-            isActive={isActive('(credit-book)')}
+            href="/(app)/(home)/income-history" 
+            icon={<TrendingUp size={20} color={isIncomeActive() ? colors.primary : colors.textSecondary} />} 
+            label="Income" 
+            isActive={isIncomeActive()}
           />
           <SidebarItem 
-            href="/(app)/(split)" 
-            icon={<ArrowLeftRight size={20} color={isActive('(split)') ? colors.primary : colors.textSecondary} />} 
-            label="Split Expenses" 
-            isActive={isActive('(split)')}
+            href="/(app)/(home)/expense-history" 
+            icon={<TrendingDown size={20} color={isExpensesActive() ? colors.primary : colors.textSecondary} />} 
+            label="Expenses" 
+            isActive={isExpensesActive()}
           />
           <SidebarItem 
-            href="/(app)/credit-cards" 
-            icon={<CreditCard size={20} color={isActive('credit-cards') ? colors.primary : colors.textSecondary} />} 
-            label="Credit Cards" 
-            isActive={isActive('credit-cards')}
+            href="/(app)/bills" 
+            icon={<Receipt size={20} color={isBillsActive() ? colors.primary : colors.textSecondary} />} 
+            label="My Bills" 
+            isActive={isBillsActive()}
           />
         </SidebarGroup>
 
         <SidebarGroup title="BUSINESS">
           <SidebarItem 
             href="/(app)/business" 
-            icon={<Building2 size={20} color={isActive('business') ? colors.primary : colors.textSecondary} />} 
-            label="Businesses" 
-            isActive={isActive('business')}
+            icon={<Building2 size={20} color={isBusinessActive() ? colors.primary : colors.textSecondary} />} 
+            label="Business" 
+            isActive={isBusinessActive()}
           />
           <SidebarItem 
-            href="#" 
-            icon={<Users size={20} color={colors.textSecondary} />} 
-            label="Customers" 
-            isActive={false}
+            href="/(app)/credit-cards" 
+            icon={<CreditCard size={20} color={isCardsActive() ? colors.primary : colors.textSecondary} />} 
+            label="Credit Cards" 
+            isActive={isCardsActive()}
           />
         </SidebarGroup>
 
-        {/* Can add more groups as app grows */}
+        <SidebarGroup title="LENDING">
+          <SidebarItem 
+            href="/(app)/loans" 
+            icon={<Landmark size={20} color={isLoansActive() ? colors.primary : colors.textSecondary} />} 
+            label="Loan Tracker" 
+            isActive={isLoansActive()}
+          />
+        </SidebarGroup>
+
+        <SidebarGroup title="NETWORK">
+          <SidebarItem 
+            href="/(app)/(credit-book)" 
+            icon={<BookOpen size={20} color={isCreditBookActive() ? colors.primary : colors.textSecondary} />} 
+            label="Credit Book" 
+            isActive={isCreditBookActive()}
+          />
+          <SidebarItem 
+            href="/(app)/(split)" 
+            icon={<Users size={20} color={isSplitActive() ? colors.primary : colors.textSecondary} />} 
+            label="Expense Split" 
+            isActive={isSplitActive()}
+          />
+          <SidebarItem 
+            href="/(app)/(hub)" 
+            icon={<Gift size={20} color={isHubExtrasActive() ? colors.primary : colors.textSecondary} />} 
+            label="Refer & Earn" 
+            isActive={isHubExtrasActive()}
+          />
+        </SidebarGroup>
+
+        <SidebarGroup title="TOOLS">
+          <SidebarItem 
+            href="#" 
+            icon={<Shield size={20} color={colors.textSecondary} />} 
+            label="Digital Vault" 
+            isActive={false}
+          />
+          <SidebarItem 
+            href="/(app)/(hub)" 
+            icon={<Gift size={20} color={isHubExtrasActive() ? colors.primary : colors.textSecondary} />} 
+            label="Rewards & Offers" 
+            isActive={isHubExtrasActive()}
+          />
+          <SidebarItem 
+            href="/(app)/(hub)" 
+            icon={<Zap size={20} color={isHubExtrasActive() ? colors.primary : colors.textSecondary} />} 
+            label="Flash Deals" 
+            isActive={isHubExtrasActive()}
+          />
+          <SidebarItem 
+            href="/(app)/(hub)/settings" 
+            icon={<Settings size={20} color={isSettingsActive() ? colors.primary : colors.textSecondary} />} 
+            label="Settings" 
+            isActive={isSettingsActive()}
+          />
+        </SidebarGroup>
       </ScrollView>
 
       {/* Footer User Area */}
@@ -142,12 +219,22 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 8,
+    backgroundColor: '#000000',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoText: {
+  logoTextB: {
+    fontFamily: 'Inter_700Bold',
     fontWeight: '900',
     fontSize: 16,
+    letterSpacing: -0.5,
+  },
+  logoTextZ: {
+    fontFamily: 'Inter_700Bold',
+    fontWeight: '900',
+    fontSize: 16,
+    letterSpacing: -0.5,
   },
   brandName: {
     fontWeight: '700',

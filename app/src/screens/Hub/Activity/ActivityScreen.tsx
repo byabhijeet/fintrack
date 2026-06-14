@@ -29,16 +29,17 @@ export default function ActivityScreen() {
   useEffect(() => {
     if (!user) return;
 
-    // Realtime Subscription
+    // Realtime Subscription - Use a unique channel name per mount to prevent callback registration errors
+    const channelId = `notifications-${user.id}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     const channel = supabase
-      .channel('public:notifications')
+      .channel(channelId)
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
           table: 'notifications',
-          filter: `user_id=eq.${user.id}`, // Filtering by user directly in JS below to also catch platform events
+          filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
           console.log('New notification:', payload);
