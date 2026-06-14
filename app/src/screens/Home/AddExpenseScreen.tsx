@@ -3,14 +3,16 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../theme';
 import { useExpenseCategories, useAddExpenseMutation } from '../../lib/queries/expenses';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 export default function AddExpenseScreen() {
   const { colors, typography, spacing, borderRadius } = useAppTheme();
   const router = useRouter();
-  const [amount, setAmount] = useState('');
+  const params = useLocalSearchParams();
+
+  const [amount, setAmount] = useState(params.amount ? String(params.amount) : '');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState(params.description ? String(params.description) : '');
   const [notes, setNotes] = useState('');
   const [typeToggle, setTypeToggle] = useState<'expense' | 'outflow'>('expense');
 

@@ -101,7 +101,7 @@
   - **Blocked by**: Slices 2, 6
   - **Description**: Edit user profile via RPC, implement the Privacy Mode toggle in `uiStore`, and add Realtime notifications to the Activity tab.
 
-- [ ] **Slice 19: BOI AI Assistant (Voice to Intent)**
+- [x] **Slice 19: BOI AI Assistant (Voice to Intent)**
   - **Type**: HITL
   - **Blocked by**: Slices 5, 7, 12
   - **Description**: Build the Global FAB Bottom Sheet, integrate STT (`expo-speech`), and map intents to pre-fill various module forms.
