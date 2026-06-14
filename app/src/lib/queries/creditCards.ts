@@ -163,6 +163,7 @@ export const useAddCardSpendMutation = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['card_spends', variables.card_id] });
+      queryClient.invalidateQueries({ queryKey: ['card_spends_infinite', variables.card_id] });
     },
   });
 };

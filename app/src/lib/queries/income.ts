@@ -150,6 +150,7 @@ export const useAddIncomeMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['income_entries'] });
+      queryClient.invalidateQueries({ queryKey: ['income_entries_infinite'] });
     },
   });
 };

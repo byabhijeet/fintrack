@@ -37,6 +37,27 @@ export const useNotifications = () => {
   });
 };
 
+export const useUnreadNotificationCount = () => {
+  const user = useAuthStore((s) => s.user);
+
+  return useQuery({
+    queryKey: ['notifications_unread_count', user?.id],
+    queryFn: async () => {
+      if (!user) throw new Error('Not authenticated');
+
+      const { count, error } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('is_read', false);
+
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!user,
+  });
+};
+
 const PAGE_SIZE = 10;
 
 export const useInfiniteNotifications = () => {
@@ -86,6 +107,8 @@ export const useMarkAsReadMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['notifications_unread_count', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['notifications_infinite', user?.id] });
     },
   });
 };

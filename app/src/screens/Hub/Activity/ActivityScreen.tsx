@@ -2,7 +2,12 @@ import React, { useEffect, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../../../theme';
-import { useInfiniteNotifications, useMarkAsReadMutation, Notification } from '../../../lib/queries/notifications';
+import {
+  useInfiniteNotifications,
+  useMarkAsReadMutation,
+  useUnreadNotificationCount,
+  Notification
+} from '../../../lib/queries/notifications';
 import { useNotificationStore } from '../../../store/notificationStore';
 import { useAuthStore } from '../../../store/authStore';
 import { supabase } from '../../../lib/supabase';
@@ -24,6 +29,7 @@ export default function ActivityScreen() {
     refetch,
     isRefetching,
   } = useInfiniteNotifications();
+  const { data: unreadCount = 0 } = useUnreadNotificationCount();
   const markAsReadMutation = useMarkAsReadMutation();
   const { setUnreadCount, incrementUnread, decrementUnread } = useNotificationStore();
 
@@ -32,11 +38,8 @@ export default function ActivityScreen() {
   }, [data]);
 
   useEffect(() => {
-    if (notifications) {
-      const unread = notifications.filter(n => !n.is_read).length;
-      setUnreadCount(unread);
-    }
-  }, [notifications, setUnreadCount]);
+    setUnreadCount(unreadCount);
+  }, [unreadCount, setUnreadCount]);
 
   useEffect(() => {
     if (!user) return;
@@ -56,6 +59,8 @@ export default function ActivityScreen() {
         (payload) => {
           console.log('New notification:', payload);
           queryClient.invalidateQueries({ queryKey: ['notifications', user.id] });
+          queryClient.invalidateQueries({ queryKey: ['notifications_unread_count', user.id] });
+          queryClient.invalidateQueries({ queryKey: ['notifications_infinite', user.id] });
           incrementUnread();
         }
       )

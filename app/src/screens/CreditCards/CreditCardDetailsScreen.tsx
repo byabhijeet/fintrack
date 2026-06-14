@@ -8,7 +8,7 @@ import { useCreditCards, useInfiniteCardSpends, useCardSpends } from '../../lib/
 import { Plus } from 'lucide-react-native';
 
 export default function CreditCardDetailsScreen() {
-  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const { colors } = useAppTheme();
   const router = useRouter();
   const params = useLocalSearchParams();
   const cardId = params.id as string;
@@ -60,136 +60,14 @@ export default function CreditCardDetailsScreen() {
     </View>
   );
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    header: {
-      padding: spacing.lg,
-      backgroundColor: colors.surfaceElevated,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
-    },
-    cardName: {
-      ...typography.displayLgMobile,
-      color: colors.textPrimary,
-      marginBottom: spacing.xs,
-    },
-    bankName: {
-      ...typography.bodyMd,
-      color: colors.textSecondary,
-      marginBottom: spacing.md,
-    },
-    statsContainer: {
-      marginTop: spacing.sm,
-    },
-    statsRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: spacing.xs,
-    },
-    statsLabel: {
-      ...typography.bodySm,
-      color: colors.textSecondary,
-    },
-    statsValue: {
-      ...typography.bodyMd,
-      fontWeight: typography.weights.bold,
-      color: colors.textPrimary,
-    },
-    progressBarBg: {
-      height: 8,
-      backgroundColor: colors.border,
-      borderRadius: 4,
-      overflow: 'hidden',
-      marginTop: spacing.sm,
-    },
-    progressBarFill: {
-      height: '100%',
-      backgroundColor: utilization > 80 ? colors.error : colors.primary,
-      width: `${utilization}%`,
-    },
-    listContent: {
-      padding: spacing.md,
-    },
-    sectionTitle: {
-      ...typography.displayLgMobile,
-      color: colors.textPrimary,
-      marginBottom: spacing.md,
-      marginTop: spacing.lg,
-      marginHorizontal: spacing.md,
-    },
-    spendItem: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      backgroundColor: colors.surfaceElevated,
-      padding: spacing.md,
-      borderRadius: borderRadius.md,
-      marginBottom: spacing.sm,
-      borderWidth: 1,
-      borderColor: colors.border,
-    },
-    spendLeft: {
-      flex: 1,
-    },
-    merchant: {
-      ...typography.bodyMd,
-      fontWeight: typography.weights.semibold,
-      color: colors.textPrimary,
-      marginBottom: 2,
-    },
-    spendCategory: {
-      ...typography.bodySm,
-      color: colors.textSecondary,
-    },
-    spendDate: {
-      ...typography.bodySm,
-      color: colors.textMuted,
-      marginTop: 2,
-    },
-    amount: {
-      ...typography.bodyMd,
-      fontWeight: typography.weights.bold,
-      color: colors.textPrimary,
-    },
-    fab: {
-      position: 'absolute',
-      bottom: spacing.xl,
-      right: spacing.xl,
-      backgroundColor: colors.primary,
-      width: 56,
-      height: 56,
-      borderRadius: 28,
-      alignItems: 'center',
-      justifyContent: 'center',
-      elevation: 4,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-    },
-    emptyText: {
-      textAlign: 'center',
-      color: colors.textSecondary,
-      ...typography.bodyMd,
-      marginTop: spacing.xl,
-    },
-    footerLoader: {
-      paddingVertical: 20,
-      alignItems: 'center',
-    },
-  });
-
   const renderFooter = useCallback(() => {
     if (!isFetchingNextPage) return null;
     return (
-      <View style={styles.footerLoader}>
+      <View style={themedStyles.footerLoader}>
         <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
-  }, [isFetchingNextPage, colors.primary]);
+  }, [isFetchingNextPage, colors.primary, themedStyles.footerLoader]);
 
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -197,9 +75,11 @@ export default function CreditCardDetailsScreen() {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  const themedStyles = styles(useAppTheme(), utilization);
+
   if (isCardsLoading || (isSpendsLoading && !isRefetching)) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <View style={[themedStyles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
@@ -207,43 +87,43 @@ export default function CreditCardDetailsScreen() {
 
   if (!card) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text style={styles.emptyText}>Card not found</Text>
+      <View style={[themedStyles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={themedStyles.emptyText}>Card not found</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
-      <View style={styles.header}>
-        <Text style={styles.cardName}>{card.card_name}</Text>
-        <Text style={styles.bankName}>{card.bank} •••• {card.last4 || '****'}</Text>
+    <SafeAreaView style={themedStyles.container} edges={['bottom']}>
+      <View style={themedStyles.header}>
+        <Text style={themedStyles.cardName}>{card.card_name}</Text>
+        <Text style={themedStyles.bankName}>{card.bank} •••• {card.last4 || '****'}</Text>
 
-        <View style={styles.statsContainer}>
-          <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Current Cycle Spend</Text>
-            <Text style={styles.statsValue}>₹{currentCycleTotal.toLocaleString('en-IN')}</Text>
+        <View style={themedStyles.statsContainer}>
+          <View style={themedStyles.statsRow}>
+            <Text style={themedStyles.statsLabel}>Current Cycle Spend</Text>
+            <Text style={themedStyles.statsValue}>₹{currentCycleTotal.toLocaleString('en-IN')}</Text>
           </View>
-          <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>Credit Limit</Text>
-            <Text style={styles.statsValue}>
+          <View style={themedStyles.statsRow}>
+            <Text style={themedStyles.statsLabel}>Credit Limit</Text>
+            <Text style={themedStyles.statsValue}>
               {card.credit_limit ? `₹${card.credit_limit.toLocaleString('en-IN')}` : 'No Limit'}
             </Text>
           </View>
           {!!card.credit_limit && (
-            <View style={styles.progressBarBg}>
-              <View style={styles.progressBarFill} />
+            <View style={themedStyles.progressBarBg}>
+              <View style={themedStyles.progressBarFill} />
             </View>
           )}
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>Recent Spends</Text>
+      <Text style={themedStyles.sectionTitle}>Recent Spends</Text>
       <FlatList
         data={spends}
         keyExtractor={(item) => item.id}
         renderItem={renderSpend}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={themedStyles.listContent}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}
         ListFooterComponent={renderFooter}
@@ -256,12 +136,12 @@ export default function CreditCardDetailsScreen() {
           />
         }
         ListEmptyComponent={
-          <Text style={styles.emptyText}>No spends recorded yet.</Text>
+          <Text style={themedStyles.emptyText}>No spends recorded yet.</Text>
         }
       />
 
       <TouchableOpacity
-        style={styles.fab}
+        style={themedStyles.fab}
         onPress={() => router.push({ pathname: '/(app)/credit-cards/[id]/add-spend', params: { id: cardId } })}
       >
         <Plus color="#000" size={24} />
@@ -269,3 +149,125 @@ export default function CreditCardDetailsScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = ({ colors, typography, spacing, borderRadius }: any, utilization: number) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  header: {
+    padding: spacing.lg,
+    backgroundColor: colors.surfaceElevated,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  cardName: {
+    ...typography.displayLgMobile,
+    color: colors.textPrimary,
+    marginBottom: spacing.xs,
+  },
+  bankName: {
+    ...typography.bodyMd,
+    color: colors.textSecondary,
+    marginBottom: spacing.md,
+  },
+  statsContainer: {
+    marginTop: spacing.sm,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.xs,
+  },
+  statsLabel: {
+    ...typography.bodySm,
+    color: colors.textSecondary,
+  },
+  statsValue: {
+    ...typography.bodyMd,
+    fontWeight: typography.weights.bold,
+    color: colors.textPrimary,
+  },
+  progressBarBg: {
+    height: 8,
+    backgroundColor: colors.border,
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginTop: spacing.sm,
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: utilization > 80 ? colors.error : colors.primary,
+    width: `${utilization}%`,
+  },
+  listContent: {
+    padding: spacing.md,
+  },
+  sectionTitle: {
+    ...typography.displayLgMobile,
+    color: colors.textPrimary,
+    marginBottom: spacing.md,
+    marginTop: spacing.lg,
+    marginHorizontal: spacing.md,
+  },
+  spendItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: colors.surfaceElevated,
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  spendLeft: {
+    flex: 1,
+  },
+  merchant: {
+    ...typography.bodyMd,
+    fontWeight: typography.weights.semibold,
+    color: colors.textPrimary,
+    marginBottom: 2,
+  },
+  spendCategory: {
+    ...typography.bodySm,
+    color: colors.textSecondary,
+  },
+  spendDate: {
+    ...typography.bodySm,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+  amount: {
+    ...typography.bodyMd,
+    fontWeight: typography.weights.bold,
+    color: colors.textPrimary,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: spacing.xl,
+    right: spacing.xl,
+    backgroundColor: colors.primary,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: colors.textSecondary,
+    ...typography.bodyMd,
+    marginTop: spacing.xl,
+  },
+  footerLoader: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+});

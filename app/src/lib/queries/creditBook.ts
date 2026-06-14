@@ -351,6 +351,7 @@ export const useAddPartyMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['credit_parties'] });
+      queryClient.invalidateQueries({ queryKey: ['credit_parties_infinite'] });
     },
   });
 };
@@ -395,8 +396,10 @@ export const useAddTransactionMutation = () => {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['credit_transactions', variables.party_id] });
+      queryClient.invalidateQueries({ queryKey: ['credit_transactions_infinite', variables.party_id] });
       // Invalidate party list so net balances update
       queryClient.invalidateQueries({ queryKey: ['credit_parties'] });
+      queryClient.invalidateQueries({ queryKey: ['credit_parties_infinite'] });
     },
   });
 };
@@ -417,7 +420,9 @@ export const useDeleteTransactionMutation = () => {
     },
     onSuccess: (partyId) => {
       queryClient.invalidateQueries({ queryKey: ['credit_transactions', partyId] });
+      queryClient.invalidateQueries({ queryKey: ['credit_transactions_infinite', partyId] });
       queryClient.invalidateQueries({ queryKey: ['credit_parties'] });
+      queryClient.invalidateQueries({ queryKey: ['credit_parties_infinite'] });
     },
   });
 };

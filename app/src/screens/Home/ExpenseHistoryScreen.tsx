@@ -7,7 +7,7 @@ import { useInfiniteExpenseEntries, useDeleteExpenseMutation } from '../../lib/q
 import { Trash2 } from 'lucide-react-native';
 
 export default function ExpenseHistoryScreen() {
-  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const { colors } = useAppTheme();
   const {
     data,
     isLoading,
@@ -74,93 +74,6 @@ export default function ExpenseHistoryScreen() {
     </View>
   );
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    footerLoader: {
-      paddingVertical: 20,
-      alignItems: 'center',
-    },
-    listContent: {
-      padding: spacing.md,
-    },
-    card: {
-      backgroundColor: colors.surface,
-      borderRadius: borderRadius.md,
-      padding: spacing.md,
-      marginBottom: spacing.md,
-      borderWidth: 1,
-      borderColor: colors.border,
-    },
-    cardHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: spacing.sm,
-    },
-    categoryBadge: {
-      backgroundColor: colors.surfaceElevated,
-      paddingHorizontal: spacing.sm,
-      paddingVertical: 2,
-      borderRadius: borderRadius.sm,
-      borderWidth: 1,
-      borderColor: colors.border,
-    },
-    categoryText: {
-      ...typography.bodySm,
-      color: colors.textSecondary,
-    },
-    dateText: {
-      ...typography.bodySm,
-      color: colors.textMuted,
-    },
-    cardBody: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-      marginBottom: spacing.sm,
-    },
-    descriptionText: {
-      ...typography.bodyMd,
-      color: colors.textPrimary,
-      fontWeight: typography.weights.semibold,
-      marginBottom: 2,
-    },
-    notesText: {
-      ...typography.bodySm,
-      color: colors.textSecondary,
-    },
-    amountText: {
-      ...typography.bodyMd,
-      color: '#FF4B4B', // Standard red for expenses/outflows, can use colors.error if preferred
-      fontWeight: typography.weights.bold,
-    },
-    cardFooter: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      borderTopWidth: 1,
-      borderTopColor: colors.border,
-      paddingTop: spacing.sm,
-      marginTop: spacing.xs,
-    },
-    contextText: {
-      ...typography.labelCaps,
-      color: colors.textMuted,
-    },
-    deleteButton: {
-      padding: spacing.xs,
-    },
-    emptyText: {
-      ...typography.bodyMd,
-      color: colors.textSecondary,
-      textAlign: 'center',
-      marginTop: spacing.xl,
-    }
-  });
-
   const renderFooter = useCallback(() => {
     if (!isFetchingNextPage) return null;
     return (
@@ -168,7 +81,7 @@ export default function ExpenseHistoryScreen() {
         <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
-  }, [isFetchingNextPage, colors.primary, styles.footerLoader]);
+  }, [isFetchingNextPage, colors.primary]);
 
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -176,8 +89,10 @@ export default function ExpenseHistoryScreen() {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  const themedStyles = styles(useAppTheme());
+
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <SafeAreaView style={themedStyles.container} edges={['bottom']}>
       {isLoading && !isRefetching ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color={colors.primary} />
@@ -187,7 +102,7 @@ export default function ExpenseHistoryScreen() {
           data={entries}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={themedStyles.listContent}
           onEndReached={handleEndReached}
           onEndReachedThreshold={0.5}
           ListFooterComponent={renderFooter}
@@ -200,10 +115,97 @@ export default function ExpenseHistoryScreen() {
             />
           }
           ListEmptyComponent={
-            <Text style={styles.emptyText}>No expenses or outflows found.</Text>
+            <Text style={themedStyles.emptyText}>No expenses or outflows found.</Text>
           }
         />
       )}
     </SafeAreaView>
   );
 }
+
+const styles = ({ colors, typography, spacing, borderRadius }: any) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  footerLoader: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+  listContent: {
+    padding: spacing.md,
+  },
+  card: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  categoryBadge: {
+    backgroundColor: colors.surfaceElevated,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  categoryText: {
+    ...typography.bodySm,
+    color: colors.textSecondary,
+  },
+  dateText: {
+    ...typography.bodySm,
+    color: colors.textMuted,
+  },
+  cardBody: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: spacing.sm,
+  },
+  descriptionText: {
+    ...typography.bodyMd,
+    color: colors.textPrimary,
+    fontWeight: typography.weights.semibold,
+    marginBottom: 2,
+  },
+  notesText: {
+    ...typography.bodySm,
+    color: colors.textSecondary,
+  },
+  amountText: {
+    ...typography.bodyMd,
+    color: '#FF4B4B', // Standard red for expenses/outflows, can use colors.error if preferred
+    fontWeight: typography.weights.bold,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingTop: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  contextText: {
+    ...typography.labelCaps,
+    color: colors.textMuted,
+  },
+  deleteButton: {
+    padding: spacing.xs,
+  },
+  emptyText: {
+    ...typography.bodyMd,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginTop: spacing.xl,
+  }
+});

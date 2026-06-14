@@ -6,7 +6,7 @@ import { useAppTheme } from '../../theme';
 import { useInfiniteIncomeEntries, useDeleteIncomeMutation, IncomeEntry } from '../../lib/queries/income';
 
 export default function IncomeHistoryScreen() {
-  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const { colors } = useAppTheme();
   const {
     data,
     isLoading,
@@ -54,89 +54,14 @@ export default function IncomeHistoryScreen() {
     </View>
   );
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    listContent: {
-      padding: spacing.md,
-      gap: spacing.md,
-    },
-    card: {
-      backgroundColor: colors.surfaceElevated,
-      borderRadius: borderRadius.md,
-      padding: spacing.md,
-      borderWidth: 1,
-      borderColor: colors.border,
-    },
-    cardHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: spacing.sm,
-    },
-    badge: {
-      backgroundColor: colors.primary + '20', // 20% opacity
-      paddingHorizontal: spacing.sm,
-      paddingVertical: 2,
-      borderRadius: borderRadius.sm,
-    },
-    badgeText: {
-      color: colors.primary,
-      ...typography.labelCaps,
-    },
-    dateText: {
-      color: colors.textMuted,
-      ...typography.bodySm,
-    },
-    cardBody: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-end',
-    },
-    amountText: {
-      ...typography.displayLg,
-      fontSize: 24,
-      color: colors.primary,
-      lineHeight: 28,
-    },
-    notesText: {
-      color: colors.textSecondary,
-      ...typography.bodySm,
-      marginTop: spacing.xs,
-    },
-    deleteButton: {
-      padding: spacing.xs,
-    },
-    deleteText: {
-      color: colors.error,
-      ...typography.bodySm,
-    },
-    emptyState: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginTop: spacing.xxl * 2,
-    },
-    emptyText: {
-      color: colors.textSecondary,
-      ...typography.bodyMd,
-    },
-    footerLoader: {
-      paddingVertical: 20,
-      alignItems: 'center',
-    },
-  });
-
   const renderFooter = useCallback(() => {
     if (!isFetchingNextPage) return null;
     return (
-      <View style={styles.footerLoader}>
+      <View style={themedStyles.footerLoader}>
         <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
-  }, [isFetchingNextPage, colors.primary, styles.footerLoader]);
+  }, [isFetchingNextPage, colors.primary, themedStyles.footerLoader]);
 
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -144,10 +69,12 @@ export default function IncomeHistoryScreen() {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  const themedStyles = styles(useAppTheme());
+
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <SafeAreaView style={themedStyles.container} edges={['bottom']}>
       {isLoading && !isRefetching ? (
-        <View style={styles.emptyState}>
+        <View style={themedStyles.emptyState}>
           <ActivityIndicator color={colors.primary} />
         </View>
       ) : (
@@ -155,7 +82,7 @@ export default function IncomeHistoryScreen() {
           data={entries}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={themedStyles.listContent}
           onEndReached={handleEndReached}
           onEndReachedThreshold={0.5}
           ListFooterComponent={renderFooter}
@@ -168,8 +95,8 @@ export default function IncomeHistoryScreen() {
             />
           }
           ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>No income entries found.</Text>
+            <View style={themedStyles.emptyState}>
+              <Text style={themedStyles.emptyText}>No income entries found.</Text>
             </View>
           }
         />
@@ -177,3 +104,78 @@ export default function IncomeHistoryScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = ({ colors, typography, spacing, borderRadius }: any) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  listContent: {
+    padding: spacing.md,
+    gap: spacing.md,
+  },
+  card: {
+    backgroundColor: colors.surfaceElevated,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  badge: {
+    backgroundColor: colors.primary + '20', // 20% opacity
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+  },
+  badgeText: {
+    color: colors.primary,
+    ...typography.labelCaps,
+  },
+  dateText: {
+    color: colors.textMuted,
+    ...typography.bodySm,
+  },
+  cardBody: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+  },
+  amountText: {
+    ...typography.displayLg,
+    fontSize: 24,
+    color: colors.primary,
+    lineHeight: 28,
+  },
+  notesText: {
+    color: colors.textSecondary,
+    ...typography.bodySm,
+    marginTop: spacing.xs,
+  },
+  deleteButton: {
+    padding: spacing.xs,
+  },
+  deleteText: {
+    color: colors.error,
+    ...typography.bodySm,
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.xxl * 2,
+  },
+  emptyText: {
+    color: colors.textSecondary,
+    ...typography.bodyMd,
+  },
+  footerLoader: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+});

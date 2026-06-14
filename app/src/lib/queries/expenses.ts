@@ -145,6 +145,7 @@ export const useAddExpenseMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['finance_entries', 'expense_outflow'] });
+      queryClient.invalidateQueries({ queryKey: ['finance_entries_infinite', 'expense_outflow'] });
     },
   });
 };
