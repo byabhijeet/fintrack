@@ -1,1 +1,1 @@
-export { default } from '@/screens/Hub/HubScreen';
+export { default } from '@/screens/More/MoreScreen';
