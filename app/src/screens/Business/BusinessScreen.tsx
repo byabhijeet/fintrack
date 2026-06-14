@@ -20,8 +20,8 @@ export default function BusinessScreen() {
     }
   }, [businesses, selectedBusinessId]);
 
-  const { data: businessIncome, isLoading: loadingIncome } = useBusinessIncome(selectedBusinessId || undefined);
-  const { data: businessExpenses, isLoading: loadingExpenses } = useBusinessExpenses(selectedBusinessId || undefined);
+  const { data: businessIncome } = useBusinessIncome(selectedBusinessId || undefined);
+  const { data: businessExpenses } = useBusinessExpenses(selectedBusinessId || undefined);
 
   const totalIncome = businessIncome?.reduce((sum, entry) => sum + Number(entry.amount), 0) || 0;
   const totalExpenses = businessExpenses?.reduce((sum, entry) => sum + Number(entry.amount), 0) || 0;

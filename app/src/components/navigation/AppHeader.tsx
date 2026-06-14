@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { View, Text, StyleSheet } from 'react-native';
 import { useAppTheme } from '@/theme';
 
@@ -7,7 +7,7 @@ interface AppHeaderProps {
 }
 
 export default function AppHeader({ title = 'BillZest FinTrack' }: AppHeaderProps) {
-  const { colors, typography, spacing } = useAppTheme();
+  const { colors, typography } = useAppTheme();
 
   return (
     <View style={[styles.container, { 

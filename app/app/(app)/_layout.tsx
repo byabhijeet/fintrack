@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { View } from 'react-native';
 import { Tabs, Stack, useSegments } from 'expo-router';
 import { useBreakpoint } from '@/hooks/useBreakpoint';

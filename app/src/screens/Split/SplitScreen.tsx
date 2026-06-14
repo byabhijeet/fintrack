@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,14 +7,14 @@ import {
   ScrollView,
   Modal,
   TextInput,
-  FlatList,
+
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { useSplitGroups, useAddGroupMutation } from '../../lib/queries/splits';
-import { Plus, User, Trash2 } from 'lucide-react-native';
+import { Plus } from 'lucide-react-native';
 
 export default function SplitScreen() {
   const router = useRouter();

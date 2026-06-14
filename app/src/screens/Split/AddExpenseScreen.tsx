@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -35,7 +35,7 @@ export default function AddExpenseScreen() {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('Food');
-  const [expenseDate, setExpenseDate] = useState(new Date().toISOString().split('T')[0]);
+  const [expenseDate] = useState(new Date().toISOString().split('T')[0]);
   const [splitType, setSplitType] = useState<'equal' | 'percent' | 'exact' | 'shares'>('equal');
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [showAddParticipant, setShowAddParticipant] = useState(false);
@@ -119,7 +119,7 @@ export default function AddExpenseScreen() {
         value: p.value,
       }));
 
-      const calculated = calculatePennyPerfectSplit(numAmount, splitCalcs);
+      calculatePennyPerfectSplit(numAmount, splitCalcs);
 
       await addExpenseMutation.mutateAsync({
         group_id: groupId,

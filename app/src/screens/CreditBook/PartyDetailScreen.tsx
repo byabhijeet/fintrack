@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   View,
   Text,
@@ -30,7 +30,7 @@ import {
 } from '@/lib/queries/creditBook';
 
 export default function PartyDetailScreen() {
-  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const { colors, typography } = useAppTheme();
   const router = useRouter();
   const { id: partyId } = useLocalSearchParams<{ id: string }>();
   const { privacyMode } = useUIStore();

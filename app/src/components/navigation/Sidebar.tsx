@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useAppTheme } from '@/theme';
 import SidebarGroup from './SidebarGroup';
@@ -13,7 +13,7 @@ import {
   Users,
   Settings,
   LogOut,
-  ChevronRight
+
 } from 'lucide-react-native';
 
 interface SidebarProps {
@@ -21,7 +21,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ activeSegments }: SidebarProps) {
-  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const { colors, typography, borderRadius } = useAppTheme();
   const { signOut, user } = useAuthStore();
 
   const isActive = (segment: string) => activeSegments.includes(segment);

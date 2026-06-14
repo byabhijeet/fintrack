@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/theme';
@@ -8,7 +8,7 @@ import { Plus, CheckCircle, Calendar, RefreshCw } from 'lucide-react-native';
 import { useUIStore } from '@/store/uiStore';
 
 export default function BillsScreen() {
-  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const { colors } = useAppTheme();
   const router = useRouter();
   const { data: bills, isLoading } = useBills();
   const { privacyMode } = useUIStore();

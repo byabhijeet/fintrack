@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ import { useAddTransactionMutation } from '@/lib/queries/creditBook';
 type TxnType = 'gave' | 'got';
 
 export default function AddTransactionScreen() {
-  const { colors, typography, spacing, borderRadius } = useAppTheme();
+  const { colors, typography } = useAppTheme();
   const router = useRouter();
   const { id: partyId, mobile: partyMobile } =
     useLocalSearchParams<{ id: string; mobile: string }>();
