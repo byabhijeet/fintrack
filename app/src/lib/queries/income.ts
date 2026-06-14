@@ -61,7 +61,7 @@ export const useIncomeCategories = () => {
   });
 };
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export const useInfiniteIncomeEntries = () => {
   const user = useAuthStore((state) => state.user);

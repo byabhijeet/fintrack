@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tansta
 import { supabase } from '../supabase';
 import { useAuthStore } from '../../store/authStore';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 // ---------------------------------------------------------------------------
 // Types

@@ -37,7 +37,7 @@ export const useNotifications = () => {
   });
 };
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export const useInfiniteNotifications = () => {
   const user = useAuthStore((s) => s.user);

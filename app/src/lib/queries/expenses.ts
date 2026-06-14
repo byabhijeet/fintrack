@@ -54,7 +54,7 @@ export const useExpenseCategories = () => {
   });
 };
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export const useInfiniteExpenseEntries = () => {
   const user = useAuthStore((state) => state.user);

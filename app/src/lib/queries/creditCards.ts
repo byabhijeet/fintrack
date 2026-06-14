@@ -93,7 +93,7 @@ export const useCardSpends = (cardId: string) => {
   });
 };
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export const useInfiniteCardSpends = (cardId: string) => {
   const user = useAuthStore((state) => state.user);
