@@ -80,10 +80,10 @@ export default function PartyDetailScreen() {
   // ---------------------------------------------------------------------------
 
   const renderTxn = ({ item }: { item: PersonalCreditTransaction }) => {
-    const isGot = item.type === 'got';
-    const txnColor = isGot ? '#1ED760' : '#FF4B4B';
-    const Icon = isGot ? ArrowDownLeft : ArrowUpRight;
-    const prefix = isGot ? '+' : '−';
+    const isGave = item.type === 'gave';
+    const txnColor = isGave ? '#1ED760' : '#FF4B4B';
+    const Icon = isGave ? ArrowUpRight : ArrowDownLeft;
+    const prefix = isGave ? '+' : '−';
 
     return (
       <View style={[styles.txnRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -96,7 +96,7 @@ export default function PartyDetailScreen() {
         <View style={styles.txnDetails}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={[styles.txnType, { color: colors.textPrimary }]}>
-              {isGot ? 'You received' : 'You lent'}
+              {isGave ? 'You lent' : 'You received'}
             </Text>
             {item.is_b2b && (
               <Text style={{ fontSize: 10, color: colors.primary, marginLeft: 6, fontWeight: 'bold' }}> • B2B SYNC</Text>
@@ -190,25 +190,25 @@ export default function PartyDetailScreen() {
         {/* Summary chips */}
         <View style={styles.balanceSummaryRow}>
           <View style={styles.summaryChip}>
-            <ArrowDownLeft size={13} color="#1ED760" />
+            <ArrowUpRight size={13} color="#1ED760" />
             <Text style={[styles.summaryChipText, typography.caption, { color: '#1ED760' }]}>
-              Got:{' '}
-              {privacyMode
-                ? '***'
-                : `₹${txns
-                    .filter((t) => t.type === 'got')
-                    .reduce((s, t) => s + t.amount, 0)
-                    .toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-            </Text>
-          </View>
-          <View style={styles.summaryChip}>
-            <ArrowUpRight size={13} color="#FF4B4B" />
-            <Text style={[styles.summaryChipText, typography.caption, { color: '#FF4B4B' }]}>
               Gave:{' '}
               {privacyMode
                 ? '***'
                 : `₹${txns
                     .filter((t) => t.type === 'gave')
+                    .reduce((s, t) => s + t.amount, 0)
+                    .toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            </Text>
+          </View>
+          <View style={styles.summaryChip}>
+            <ArrowDownLeft size={13} color="#FF4B4B" />
+            <Text style={[styles.summaryChipText, typography.caption, { color: '#FF4B4B' }]}>
+              Got:{' '}
+              {privacyMode
+                ? '***'
+                : `₹${txns
+                    .filter((t) => t.type === 'got')
                     .reduce((s, t) => s + t.amount, 0)
                     .toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             </Text>

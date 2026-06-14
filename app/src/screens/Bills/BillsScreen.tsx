@@ -1,11 +1,11 @@
 
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/theme';
 import { useRouter } from 'expo-router';
-import { useBills, useMarkBillPaidMutation, RecurringTemplate } from '@/lib/queries/bills';
+import { useBills, useMarkBillPaidMutation, RecurringTransaction } from '@/lib/queries/bills';
 import { Plus, CheckCircle, Calendar, RefreshCw } from 'lucide-react-native';
 import { useUIStore } from '@/store/uiStore';
+import AppHeader from '@/components/navigation/AppHeader';
 
 export default function BillsScreen() {
   const { colors } = useAppTheme();
@@ -18,11 +18,11 @@ export default function BillsScreen() {
     return privacyMode ? '***' : `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  const handleMarkPaid = (bill: RecurringTemplate) => {
+  const handleMarkPaid = (bill: RecurringTransaction) => {
     markPaidMutation.mutate(bill);
   };
 
-  const renderBill = ({ item }: { item: RecurringTemplate }) => {
+  const renderBill = ({ item }: { item: RecurringTransaction }) => {
     const today = new Date().toISOString().split('T')[0];
     const isOverdue = item.next_due < today;
     const isDueToday = item.next_due === today;
@@ -36,7 +36,14 @@ export default function BillsScreen() {
     }
 
     return (
-      <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <TouchableOpacity
+        style={[
+          styles.card,
+          { backgroundColor: colors.surface, borderColor: colors.border },
+          !isActive && { opacity: 0.6 }
+        ]}
+        onPress={() => router.push(`/(app)/bills/${item.id}`)}
+      >
         <View style={styles.cardHeader}>
           <View>
             <Text style={[styles.title, { color: colors.textPrimary }]}>{item.title}</Text>
@@ -76,12 +83,18 @@ export default function BillsScreen() {
             </TouchableOpacity>
           )}
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
   return (
-    <SafeAreaView edges={['bottom']} style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <AppHeader
+        title="My Bills"
+        onRightPress={() => router.push('/(app)/bills/add')}
+        rightIcon={<Plus color={colors.primary} size={24} />}
+      />
+
       {isLoading ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color={colors.primary} />
@@ -101,14 +114,7 @@ export default function BillsScreen() {
           }
         />
       )}
-
-      <TouchableOpacity 
-        style={[styles.fab, { backgroundColor: colors.primary }]}
-        onPress={() => router.push('/(app)/bills/add')}
-      >
-        <Plus color="#fff" size={24} />
-      </TouchableOpacity>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -188,20 +194,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
     fontSize: 13,
-  },
-  fab: {
-    position: 'absolute',
-    bottom: 24,
-    right: 24,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
   },
 });

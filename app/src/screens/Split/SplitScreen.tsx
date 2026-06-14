@@ -7,14 +7,13 @@ import {
   ScrollView,
   Modal,
   TextInput,
-
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { theme } from '../../theme';
 import { useSplitGroups, useAddGroupMutation } from '../../lib/queries/splits';
 import { Plus, Users, ChevronRight, Home, Plane, Briefcase, Heart, FileText } from 'lucide-react-native';
+import AppHeader from '@/components/navigation/AppHeader';
 
 export default function SplitScreen() {
   const router = useRouter();
@@ -75,28 +74,25 @@ export default function SplitScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <AppHeader title="Split Bill" />
         <View style={styles.centerContent}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <AppHeader
+        title="Split Bill"
+        onRightPress={() => setShowAddModal(true)}
+        rightIcon={<Plus color={theme.colors.primary} size={24} />}
+      />
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.title}>Split Bill</Text>
-            <Text style={styles.subtitle}>Groups & Penny-Perfect Splits</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => setShowAddModal(true)}
-          >
-            <Plus color={theme.colors.textPrimary} size={24} />
-          </TouchableOpacity>
+        <View style={styles.headerInfo}>
+          <Text style={styles.subtitle}>Groups & Penny-Perfect Splits</Text>
         </View>
 
         {groups && groups.length > 0 ? (
@@ -197,7 +193,7 @@ export default function SplitScreen() {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -215,31 +211,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+  headerInfo: {
     marginBottom: theme.spacing.xl,
-  },
-  title: {
-    fontSize: theme.typography.sizes.xxl,
-    fontWeight: theme.typography.weights.bold,
-    color: theme.colors.textPrimary,
-    marginBottom: theme.spacing.xs,
   },
   subtitle: {
     fontSize: theme.typography.sizes.md,
     color: theme.colors.textSecondary,
-  },
-  addButton: {
-    width: 44,
-    height: 44,
-    borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.surfaceElevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: theme.colors.border,
-    borderWidth: 1,
   },
   groupsList: {
     gap: theme.spacing.md,
@@ -282,16 +259,9 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
     fontWeight: theme.typography.weights.medium,
   },
-  groupArrow: {
-    marginLeft: theme.spacing.md,
-  },
   emptyState: {
     alignItems: 'center',
     paddingVertical: theme.spacing.xxl,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: theme.spacing.md,
   },
   emptyTitle: {
     fontSize: theme.typography.sizes.lg,
