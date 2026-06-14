@@ -5,6 +5,7 @@ import { useBreakpoint } from '@/hooks/useBreakpoint';
 import { useAppTheme } from '@/theme';
 import Sidebar from '@/components/navigation/Sidebar';
 import AppHeader from '@/components/navigation/AppHeader';
+import { useHeaderStore } from '@/store/headerStore';
 import { LayoutDashboard, Wallet, ArrowLeftRight, Settings, Receipt } from 'lucide-react-native';
 import GlobalFAB from '@/components/boi/GlobalFAB';
 import BOIAssistant from '@/components/boi/BOIAssistant';
@@ -13,13 +14,18 @@ export default function AppLayout() {
   const breakpoint = useBreakpoint();
   const { colors, typography } = useAppTheme();
   const segments = useSegments();
+  const { title, rightIcon, onRightPress } = useHeaderStore();
 
   if (breakpoint === 'desktop') {
     return (
       <View style={{ flex: 1, flexDirection: 'row', backgroundColor: colors.background }}>
         <Sidebar activeSegments={segments} />
         <View style={{ flex: 1 }}>
-          <AppHeader title="BillZest" />
+          <AppHeader
+            title={title}
+            rightIcon={rightIcon}
+            onRightPress={onRightPress ?? undefined}
+          />
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
             <Stack.Screen name="(home)" />
             <Stack.Screen name="(credit-book)" />
