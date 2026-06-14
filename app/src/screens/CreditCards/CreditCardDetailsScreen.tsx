@@ -49,14 +49,16 @@ export default function CreditCardDetailsScreen() {
     ? Math.min((currentCycleTotal / card.credit_limit) * 100, 100) 
     : 0;
 
+  const themedStyles = styles(useAppTheme(), utilization);
+
   const renderSpend = ({ item }: { item: any }) => (
-    <View style={styles.spendItem}>
-      <View style={styles.spendLeft}>
-        <Text style={styles.merchant}>{item.merchant}</Text>
-        <Text style={styles.spendCategory}>{item.category || 'General'}</Text>
-        <Text style={styles.spendDate}>{item.spend_date}</Text>
+    <View style={themedStyles.spendItem}>
+      <View style={themedStyles.spendLeft}>
+        <Text style={themedStyles.merchant}>{item.merchant}</Text>
+        <Text style={themedStyles.spendCategory}>{item.category || 'General'}</Text>
+        <Text style={themedStyles.spendDate}>{item.spend_date}</Text>
       </View>
-      <Text style={styles.amount}>₹{Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</Text>
+      <Text style={themedStyles.amount}>₹{Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</Text>
     </View>
   );
 
@@ -75,7 +77,6 @@ export default function CreditCardDetailsScreen() {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const themedStyles = styles(useAppTheme(), utilization);
 
   if (isCardsLoading || (isSpendsLoading && !isRefetching)) {
     return (

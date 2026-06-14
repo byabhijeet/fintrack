@@ -127,7 +127,7 @@ export default function CreditBookListScreen() {
       fetchNextPage();
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-  const { data: parties = [], isLoading } = useCreditParties();
+
   const { mutate: importContacts, isPending: isImporting } = useImportContactsMutation();
 
   const handleSyncContacts = async () => {
@@ -221,7 +221,7 @@ export default function CreditBookListScreen() {
           }
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     alignItems: 'center',
   },
-  header: {
+  header: {},
   summaryInfo: {
     paddingHorizontal: 16,
     paddingVertical: 16,

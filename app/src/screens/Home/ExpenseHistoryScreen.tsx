@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert, ActivityIndicator, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../theme';
 import { useInfiniteExpenseEntries, useDeleteExpenseMutation } from '../../lib/queries/expenses';
@@ -8,6 +8,7 @@ import { Alert } from '@/lib/alert';
 
 export default function ExpenseHistoryScreen() {
   const { colors } = useAppTheme();
+  const styles = createStyles(useAppTheme());
   const {
     data,
     isLoading,
@@ -89,10 +90,9 @@ export default function ExpenseHistoryScreen() {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const themedStyles = styles(useAppTheme());
 
   return (
-    <SafeAreaView style={themedStyles.container} edges={['bottom']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       {isLoading && !isRefetching ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color={colors.primary} />
@@ -102,7 +102,7 @@ export default function ExpenseHistoryScreen() {
           data={entries}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          contentContainerStyle={themedStyles.listContent}
+          contentContainerStyle={styles.listContent}
           onEndReached={handleEndReached}
           onEndReachedThreshold={0.5}
           ListFooterComponent={renderFooter}
@@ -115,7 +115,7 @@ export default function ExpenseHistoryScreen() {
             />
           }
           ListEmptyComponent={
-            <Text style={themedStyles.emptyText}>No expenses or outflows found.</Text>
+            <Text style={styles.emptyText}>No expenses or outflows found.</Text>
           }
         />
       )}
@@ -123,7 +123,7 @@ export default function ExpenseHistoryScreen() {
   );
 }
 
-const styles = ({ colors, typography, spacing, borderRadius }: any) => StyleSheet.create({
+const createStyles = ({ colors, typography, spacing, borderRadius }: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -209,4 +209,3 @@ const styles = ({ colors, typography, spacing, borderRadius }: any) => StyleShee
     marginTop: spacing.xl,
   }
 });
-}

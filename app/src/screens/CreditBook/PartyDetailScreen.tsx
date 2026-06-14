@@ -7,10 +7,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Linking,
-  Alert,
   RefreshControl,
 } from 'react-native';
-import { useMemo } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Alert } from '@/lib/alert';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -237,8 +235,6 @@ export default function PartyDetailScreen() {
               {privacyMode
                 ? '***'
                 : `₹${fullTxns
-                    .filter((t) => t.type === 'got')
-                : `₹${txns
                     .filter((t) => t.type === 'gave')
                     .reduce((s, t) => s + t.amount, 0)
                     .toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
@@ -251,8 +247,6 @@ export default function PartyDetailScreen() {
               {privacyMode
                 ? '***'
                 : `₹${fullTxns
-                    .filter((t) => t.type === 'gave')
-                : `₹${txns
                     .filter((t) => t.type === 'got')
                     .reduce((s, t) => s + t.amount, 0)
                     .toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}

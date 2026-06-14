@@ -92,6 +92,10 @@ export const useAllCreditTransactions = () => {
       if (error) throw error;
       return data as PersonalCreditTransaction[];
     },
+    enabled: !!user,
+  });
+};
+
 /** Fetch credit parties with infinite scroll. */
 export const useInfiniteCreditParties = () => {
   const user = useAuthStore((s) => s.user);

@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Alert } from '@/lib/alert';
 import { useAppTheme } from '../../theme';
@@ -138,14 +138,12 @@ export default function IncomeHistoryScreen() {
       color: colors.textSecondary,
       ...typography.bodyMd,
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-  const themedStyles = styles(useAppTheme());
+  });
 
   return (
-    <SafeAreaView style={themedStyles.container} edges={['bottom']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       {isLoading && !isRefetching ? (
-        <View style={themedStyles.emptyState}>
+        <View style={styles.emptyState}>
           <ActivityIndicator color={colors.primary} />
         </View>
       ) : (
@@ -153,10 +151,7 @@ export default function IncomeHistoryScreen() {
           data={entries}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          contentContainerStyle={themedStyles.listContent}
-          onEndReached={handleEndReached}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={renderFooter}
+          contentContainerStyle={styles.listContent}
           refreshControl={
             <RefreshControl
               refreshing={isRefetching}
@@ -166,8 +161,8 @@ export default function IncomeHistoryScreen() {
             />
           }
           ListEmptyComponent={
-            <View style={themedStyles.emptyState}>
-              <Text style={themedStyles.emptyText}>No income entries found.</Text>
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>No income entries found.</Text>
             </View>
           }
         />
