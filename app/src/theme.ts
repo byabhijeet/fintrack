@@ -1,5 +1,3 @@
-import { useColorScheme } from 'react-native';
-
 const sharedColors = {
   primary: '#1ED760',
   primaryLight: '#1ED760', // For backward compatibility
@@ -8,6 +6,7 @@ const sharedColors = {
   transparent: 'transparent',
 };
 
+/*
 export const darkTheme = {
   colors: {
     ...sharedColors,
@@ -22,6 +21,7 @@ export const darkTheme = {
     inputBackground: '#282828',
   },
 };
+*/
 
 export const lightTheme = {
   colors: {
@@ -189,23 +189,23 @@ export const borderRadius = {
   full: 9999,
 };
 
-export type ThemeColors = typeof darkTheme.colors;
+export type ThemeColors = typeof lightTheme.colors;
 
 export const theme = {
-  colors: darkTheme.colors,
+  colors: lightTheme.colors,
   typography,
   spacing,
   borderRadius,
 };
 
 export function useAppTheme() {
-  // We enforce the 'Spotify for Finance' dark mode branding uniformly
+  // We enforce the 'Spotify for Finance' light mode branding uniformly
   // across all devices, ignoring the system light/dark preference.
-  const isDark = true;
+  const isDark = false;
 
   return {
     isDark,
-    colors: darkTheme.colors,
+    colors: lightTheme.colors,
     typography,
     spacing,
     borderRadius,
