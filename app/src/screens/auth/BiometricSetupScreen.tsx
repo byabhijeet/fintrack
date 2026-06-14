@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useAuthStore } from '../../store/authStore';
 import { useAppTheme } from '../../theme';
 import { checkAvailable, authenticate } from '../../services/biometrics';
 import { ShieldCheck } from 'lucide-react-native';
+import { Alert } from '@/lib/alert';
 
 export default function BiometricSetupScreen() {
   const { colors, typography, borderRadius } = useAppTheme();

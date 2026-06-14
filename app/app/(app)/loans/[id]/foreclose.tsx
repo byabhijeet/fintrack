@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
+import { Alert } from '@/lib/alert';
 import { useAppTheme } from '@/theme';
 import { useLoan, useForeclosure } from '@/lib/queries/loans';
 
