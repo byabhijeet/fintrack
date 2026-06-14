@@ -47,6 +47,35 @@ export const useBills = () => {
   });
 };
 
+// Fetch a single bill
+export const useBill = (id: string | undefined) => {
+  return useQuery({
+    queryKey: ['recurring_templates', id],
+    queryFn: async () => {
+      if (!id) throw new Error('No bill ID provided');
+
+      const { data, error } = await supabase
+        .from('recurring_templates')
+        .select(`
+          *,
+          finance_categories (
+            id,
+            name,
+            context,
+            type,
+            is_active
+          )
+        `)
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      return data as RecurringTemplate;
+    },
+    enabled: !!id,
+  });
+};
+
 // Add a new bill
 export const useAddBillMutation = () => {
   const queryClient = useQueryClient();
@@ -93,6 +122,25 @@ export const useUpdateBillMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recurring_transactions'] });
+    },
+  });
+};
+
+// Delete a bill
+export const useDeleteBillMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('recurring_templates')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recurring_templates'] });
     },
   });
 };

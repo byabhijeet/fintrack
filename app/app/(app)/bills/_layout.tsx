@@ -13,6 +13,7 @@ export default function BillsLayout() {
     }}>
       <Stack.Screen name="index" options={{ title: 'My Bills' }} />
       <Stack.Screen name="add" options={{ title: 'Add Recurring Bill', presentation: 'modal' }} />
+      <Stack.Screen name="[id]" options={{ title: 'Edit Bill' }} />
     </Stack>
   );
 }
